@@ -38,7 +38,7 @@ FR-08 — The system shall auto-remove expired listings from search and mark the
 Non-Functional Requirements
 
 Performance
-The website must respond to 95% of requests within 200 milliseconds.
+The app must respond to 95% of requests within 200 milliseconds.
 Price recalculation must complete within 30 seconds even with 10,000 active listings.
 Map search results must appear within 1 second.
 
@@ -53,28 +53,77 @@ Live price updates must be delivered to up to 5,000 simultaneous users.
 The architecture uses caching to ensure fast, scalable performance.
 
 Usability
-The website must meet standard accessibility guidelines.
-It must work on laptops from 2020 onwards.
+The app must meet standard accessibility guidelines.
+It must work on iPhones from 2020 onwards and Android devices from 2019 onwards.
 A consumer must be able to find, reserve, and pay for a meal in 3 taps or fewer.
+
+---
+
+High-Level System Architecture
+
+Layer — Clients
+Components — All operating system apps / retailer web dashboard
+Technology — Application (supporting all OS) and web browser UI
+
+Layer — API
+Components — Rate limiting, SSL cancellation, load levelization, user authentication
+Technology — A web server and a load balancer that handles all the requests that come in
+
+Layer — Services
+Components — Reservations, pricing, food options, login, location service and reservation service
+Technology — Separate services in the back that each do one thing
+
+Layer — Data
+Components — Geospatial + Relational Database, Cache + Pub/Sub, Time-series history of prices
+Technology — A main database that helps with finding locations, a database that caches information and another database that stores data over time
+
+Layer — External API
+Components — Storage, updated notifications, payments, mapping
+Technology — We use Google Maps for locations, Stripe for payments, a service that sends push notifications and cloud storage for images
+
+Layer — Real time running
+Components — Updated calculations for prices forwarded to clients
+Technology — A live connection that works both ways and sends price updates to users away
+
+Layer — Background tasks
+Components — The constant calculation timed every 15 mins
+Technology — A scheduler that runs in the background and recalculates prices every 15 minutes automatically
 
 ---
 
 Dynamic Pricing Algorithm
 
-Core Formula — Current price equals the base price multiplied by a time-decay factor and a demand adjustment.
-Linear Decay — Price drops at a steady, even rate from start until expiry, easy for consumers to predict.
-Exponential Decay — Price stays close to original for most of the listing period, then drops sharply in the final hour to create urgency.
-Stepped Decay — Price drops at set checkpoints, for example 90%, then 70%, then 50%, then 30% of the original price, very easy to understand.
-Demand Multiplier — When many people are viewing an item the price drops more slowly, when interest is low it drops faster to attract buyers.
-Price Floor — Vendor-set minimum, the system never drops below this value.
+Core Formula — The price you pay is the price of the item multiplied by a few things like how much time is left and how many people want it.
+Linear Decay — The price goes down at a rate from the start until it is time to stop selling the item so people can figure out what to expect.
+Exponential Decay — The price of the item stays close to the original price for most of the time it is for sale then it goes down really fast in the last hour, which makes people want to buy it before it is too late.
+Stepped Decay — The price goes down at times, for example it might go down to ninety percent of the original price then seventy percent, then fifty percent, then thirty percent, which is easy to understand.
+Demand Multiplier — When a lot of people are looking at an item the price does not go down fast but when not many people are interested the price goes down faster to get people to buy it.
+Price Floor — The person selling the item can set a price so the system will never sell the item for less than that price.
 
 ---
 
-UI Screens
+UI Wireframes — Main Screens
 
-Home / Discovery — Default consumer view showing deals expiring soon. Includes search bar, food cards with live price and countdown timer, and filter chips.
-Item Detail — Full details for a selected food listing. Includes photo, vendor name, distance, live price with decay progress bar, and Reserve/Save buttons.
-Map Search — Geospatial search view with vendor pins. Includes Google Maps with clustering, vendor list below map, and radius filter.
-Vendor Dashboard — Vendor-facing analytics and listing management. Includes today's stats, active listings table, and Add Listing button.
-Registration — Dual-path onboarding for new users. Includes Consumer/Vendor role toggle, form fields, and dietary preference selector.
-Impact / Gamification — Consumer sustainability profile page. Includes meals saved counter, CO2 saved, community rank, and achievement badges.
+1. Home / Discovery
+Description — Default consumer view showing deals that are ending.
+Key Elements — Search bar, food cards with live price and countdown timer, filter chips.
+
+2. Item Detail
+Description — Full details for a chosen food listing.
+Key Elements — Photo, vendor name, distance, current price with a progress bar showing how much time is left, Reserve or Save buttons.
+
+3. Map Search
+Description — Geospatial search view with vendor locations.
+Key Elements — Google Maps with grouped markers, list of vendors below the map, filter by distance.
+
+4. Vendor Dashboard
+Description — Vendor-facing analytics and listing management tools.
+Key Elements — Today's statistics including number of items sold and revenue earned, active listings table, Add New Listing button.
+
+5. Registration
+Description — Dual-path onboarding process for new users.
+Key Elements — Choose a role either Consumer or Vendor, form fields to fill in and options to select dietary preferences.
+
+6. Impact / Gamification
+Description — Consumer sustainability profile page.
+Key Elements — Number of meals saved, amount of CO2 saved, community rank and achievement badges.
