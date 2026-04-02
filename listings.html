@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Deals — EchoEats</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+  <style>
+    .listings-page { padding-top: calc(var(--nav-h) + 48px); padding-bottom: 80px; }
+    .listings-page-header { background: var(--green-800); padding: 56px 0 40px; margin-bottom: 0; }
+    .listings-page-header h1 { font-size: 40px; font-weight: 800; color: var(--white); letter-spacing: -1.5px; margin-bottom: 8px; }
+    .listings-page-header p  { color: var(--green-200); font-size: 16px; }
+    .filters-bar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .filters-bar .container { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .filter-search {
+      flex: 1;
+      min-width: 200px;
+      padding: 11px 18px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      background: var(--bg);
+      transition: border-color 0.2s;
+    }
+    .filter-search:focus { border-color: var(--green-400); }
+    .filter-chip {
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text-soft);
+    }
+    .filter-chip:hover, .filter-chip.active {
+      background: var(--green-800);
+      color: var(--white);
+      border-color: var(--green-800);
+    }
+    .sort-select {
+      padding: 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+      color: var(--text-soft);
+      background: var(--white);
+    }
+    .listings-results { padding: 40px 0 80px; }
+    .results-count { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+    .results-count strong { color: var(--dark); }
+    .all-listings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+    @media (max-width: 900px) { .all-listings-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 580px) { .all-listings-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar">
+  <div class="container">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-icon">🌿</div>EchoEats
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="listings.html" class="active">Browse Deals</a></li>
+      <li><a href="how-it-works.html">How It Works</a></li>
+      <li><a href="vendors.html">For Vendors</a></li>
+      <li><a href="impact.html">Our Impact</a></li>
+      <li><a href="tasks.html">📋 Tasks</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="login.html" class="nav-signin">Sign In</a>
+      <a href="#" class="btn btn-primary btn-sm">Get Started</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Page Header -->
+<div class="listings-page-header" style="margin-top:var(--nav-h)">
+  <div class="container">
+    <h1>Browse Live Deals</h1>
+    <p>Prices update every 15 minutes — the closer to expiry, the bigger the discount.</p>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+  <div class="container">
+    <input class="filter-search" type="text" placeholder="🔍  Search food, vendor, or tag..." oninput="filterListings(this.value)" />
+    <button class="filter-chip active" onclick="toggleFilter(this, 'all')">All</button>
+    <button class="filter-chip" onclick="toggleFilter(this, 'vegan')">🌿 Vegan</button>
+    <button class="filter-chip" onclick="toggleFilter(this, 'halal')">☪️ Halal</button>
+    <button class="filter-chip" onclick="toggleFilter(this, 'vegetarian')">🥗 Vegetarian</button>
+    <button class="filter-chip" onclick="toggleFilter(this, 'gluten-free')">🌾 Gluten-free</button>
+    <select class="sort-select" onchange="sortListings(this.value)">
+      <option value="expiry">Sort: Expiring soonest</option>
+      <option value="price-low">Sort: Price (low)</option>
+      <option value="discount">Sort: Best discount</option>
+      <option value="distance">Sort: Nearest</option>
+    </select>
+    <div style="display:flex;gap:5px;margin-left:auto">
+      <button class="filter-chip active view-btn" onclick="setView('list',this)" style="padding:8px 14px">List</button>
+      <button class="filter-chip view-btn" onclick="setView('map',this)" style="padding:8px 14px">Map</button>
+    </div>
+  </div>
+</div>
+
+<!-- Results -->
+<div id="list-section"><section class="listings-results">
+  <div class="container">
+    <div class="results-count"><strong id="count">12</strong> deals available near you</div>
+    <div class="all-listings-grid" id="listings-grid">
+
+      <!-- Cards (same pattern, 12 items) -->
+      <div class="listing-card reveal" data-tags="vegetarian" data-expiry="30" data-price="2.75" data-discount="45">
+        <div class="listing-img" style="background:linear-gradient(135deg,#1a1a3d,#0a0a20)">☕<div class="listing-discount">-45%</div><div class="listing-urgency">⏱ 30m left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Café Saffron · 0.2km</div>
+          <div class="listing-name">Coffee + Cake Bundle</div>
+          <div class="listing-tags"><span class="listing-tag">Vegetarian</span><span class="listing-tag">Last chance!</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$2.75</span><span class="listing-price-was">$5.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Coffee + Cake')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>30m left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:88%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-1" data-tags="vegetarian" data-expiry="45" data-price="2.50" data-discount="58">
+        <div class="listing-img" style="background:linear-gradient(135deg,#2d1a0a,#1a0f05)">🥐<div class="listing-discount">-58%</div><div class="listing-urgency">⏱ 45m left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Patisserie Nour · 0.3km</div>
+          <div class="listing-name">Croissant Box × 4</div>
+          <div class="listing-tags"><span class="listing-tag">Vegetarian</span><span class="listing-tag">Nut-free</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$2.50</span><span class="listing-price-was">$6.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Croissant Box')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>45m left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:75%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-2" data-tags="vegetarian" data-expiry="60" data-price="5.00" data-discount="50">
+        <div class="listing-img" style="background:linear-gradient(135deg,#2d1a1a,#1a0a0a)">🍕<div class="listing-discount">-50%</div><div class="listing-urgency">⏱ 1h left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Pizzeria Roma · 0.6km</div>
+          <div class="listing-name">Pizza Margherita (whole)</div>
+          <div class="listing-tags"><span class="listing-tag">Vegetarian</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$5.00</span><span class="listing-price-was">$10.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Pizza Margherita')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>1h left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:65%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal" data-tags="gluten-free seafood" data-expiry="80" data-price="8.00" data-discount="55">
+        <div class="listing-img" style="background:linear-gradient(135deg,#1a4a4a,#0d2b2b)">🍱<div class="listing-discount">-55%</div><div class="listing-urgency">⏱ 1h 20m left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Sakura Kitchen · 0.8km</div>
+          <div class="listing-name">Sushi Platter (12 pcs)</div>
+          <div class="listing-tags"><span class="listing-tag">Gluten-free</span><span class="listing-tag">Seafood</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$8.00</span><span class="listing-price-was">$18.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Sushi Platter')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>1h 20m left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:55%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-1" data-tags="vegan halal" data-expiry="180" data-price="6.00" data-discount="40">
+        <div class="listing-img" style="background:linear-gradient(135deg,#1a3d1a,#0a200a)">🥗<div class="listing-discount">-40%</div><div class="listing-urgency">⏱ 3h left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Green Bowl · 0.5km</div>
+          <div class="listing-name">Mezze Platter</div>
+          <div class="listing-tags"><span class="listing-tag">Vegan</span><span class="listing-tag">Halal</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$6.00</span><span class="listing-price-was">$10.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Mezze Platter')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>3h left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:28%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-2" data-tags="vegan" data-expiry="120" data-price="3.50" data-discount="56">
+        <div class="listing-img" style="background:linear-gradient(135deg,#3d2b1a,#1a0f0a)">🍞<div class="listing-discount">-56%</div><div class="listing-urgency">⏱ 2h left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Daily Bread · 1.1km</div>
+          <div class="listing-name">Sourdough Loaf</div>
+          <div class="listing-tags"><span class="listing-tag">Vegan</span><span class="listing-tag">Fresh today</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$3.50</span><span class="listing-price-was">$8.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Sourdough Loaf')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>2h left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:40%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal" data-tags="halal" data-expiry="90" data-price="7.00" data-discount="42">
+        <div class="listing-img" style="background:linear-gradient(135deg,#3d2a1a,#1a100a)">🍗<div class="listing-discount">-42%</div><div class="listing-urgency">⏱ 1.5h left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Al Waha Grill · 0.7km</div>
+          <div class="listing-name">Grilled Chicken Meal</div>
+          <div class="listing-tags"><span class="listing-tag">Halal</span><span class="listing-tag">Protein</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$7.00</span><span class="listing-price-was">$12.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Grilled Chicken')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>1.5h left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:58%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-1" data-tags="vegan gluten-free" data-expiry="150" data-price="4.50" data-discount="35">
+        <div class="listing-img" style="background:linear-gradient(135deg,#1a3a2a,#0a1f14)">🥑<div class="listing-discount">-35%</div><div class="listing-urgency">⏱ 2.5h left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Blossom Kitchen · 0.9km</div>
+          <div class="listing-name">Avocado Grain Bowl</div>
+          <div class="listing-tags"><span class="listing-tag">Vegan</span><span class="listing-tag">Gluten-free</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$4.50</span><span class="listing-price-was">$7.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Avocado Grain Bowl')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>2.5h left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:32%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-2" data-tags="vegetarian" data-expiry="50" data-price="3.00" data-discount="62">
+        <div class="listing-img" style="background:linear-gradient(135deg,#2a1a3a,#150a20)">🧁<div class="listing-discount">-62%</div><div class="listing-urgency">⏱ 50m left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Sugar & Spice · 0.4km</div>
+          <div class="listing-name">Cupcake Box (6 pcs)</div>
+          <div class="listing-tags"><span class="listing-tag">Vegetarian</span><span class="listing-tag">Sweet</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$3.00</span><span class="listing-price-was">$8.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Cupcake Box')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>50m left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:80%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal" data-tags="halal" data-expiry="100" data-price="9.00" data-discount="40">
+        <div class="listing-img" style="background:linear-gradient(135deg,#3a2010,#1f1008)">🥩<div class="listing-discount">-40%</div><div class="listing-urgency">⏱ 1h 40m left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Sultan's Table · 1.2km</div>
+          <div class="listing-name">Lamb Kofta Platter</div>
+          <div class="listing-tags"><span class="listing-tag">Halal</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$9.00</span><span class="listing-price-was">$15.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Lamb Kofta Platter')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>1h 40m left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:50%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-1" data-tags="vegan gluten-free" data-expiry="200" data-price="5.50" data-discount="31">
+        <div class="listing-img" style="background:linear-gradient(135deg,#1a2d1a,#0a180a)">🍜<div class="listing-discount">-31%</div><div class="listing-urgency">⏱ 3.5h left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Lotus Noodle · 1.4km</div>
+          <div class="listing-name">Veggie Ramen Bowl</div>
+          <div class="listing-tags"><span class="listing-tag">Vegan</span><span class="listing-tag">Gluten-free</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$5.50</span><span class="listing-price-was">$8.00</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Veggie Ramen')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>3.5h left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:20%"></div></div></div>
+      </div>
+
+      <div class="listing-card reveal reveal-delay-2" data-tags="vegetarian" data-expiry="70" data-price="4.00" data-discount="47">
+        <div class="listing-img" style="background:linear-gradient(135deg,#1a1a3a,#0a0a1f)">🫔<div class="listing-discount">-47%</div><div class="listing-urgency">⏱ 1h 10m left</div></div>
+        <div class="listing-body">
+          <div class="listing-vendor">Wrap & Roll · 0.5km</div>
+          <div class="listing-name">Falafel Wrap Combo</div>
+          <div class="listing-tags"><span class="listing-tag">Vegetarian</span><span class="listing-tag">Halal</span></div>
+          <div class="listing-footer"><div class="listing-price-block"><span class="listing-price-current">$4.00</span><span class="listing-price-was">$7.50</span></div><button class="listing-reserve-btn" onclick="authReserve(this,'Falafel Wrap')">Reserve</button></div>
+        </div>
+        <div class="decay-bar-wrap"><div class="decay-bar-label"><span>Price decay</span><span>1h 10m left</span></div><div class="decay-bar-track"><div class="decay-bar-fill" style="width:62%"></div></div></div>
+      </div>
+
+    </div>
+  </div>
+</section></div>
+
+<!-- MAP VIEW -->
+<div id="map-section" style="display:none;padding:32px 0 72px;background:var(--bg)">
+  <div class="container">
+    <div style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-radius:20px;height:360px;position:relative;overflow:hidden;border:1px solid var(--green-300);box-shadow:var(--shadow)">
+      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.04) 1px,transparent 1px);background-size:36px 36px"></div>
+      <div id="map-pins" style="position:absolute;inset:0"></div>
+      <div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.92);border-radius:100px;padding:6px 18px;font-size:12px;font-weight:700;color:var(--green-800);backdrop-filter:blur(8px);box-shadow:0 2px 8px rgba(0,0,0,.1)">Live Map — Manama, Bahrain</div>
+    </div>
+    <div style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px" id="map-list-grid"></div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom" style="border-top:none;padding-top:0">
+      <div class="footer-bottom-text">© 2026 EchoEats · SWEN 360 / CMPE 460 · Spring 2026</div>
+      <div><a href="index.html" class="btn btn-outline btn-sm">← Back to Home</a></div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+  // Filter chips
+  let activeFilter = 'all';
+  function toggleFilter(btn, tag) {
+    document.querySelectorAll('.filter-chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = tag;
+    applyFilters();
+  }
+  function filterListings(q) {
+    applyFilters(q);
+  }
+  function applyFilters(q = '') {
+    const cards = document.querySelectorAll('#listings-grid .listing-card');
+    let visible = 0;
+    cards.forEach(card => {
+      const tags = card.dataset.tags || '';
+      const text = card.innerText.toLowerCase();
+      const matchTag  = activeFilter === 'all' || tags.includes(activeFilter);
+      const matchText = !q || text.includes(q.toLowerCase());
+      const show = matchTag && matchText;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('count').textContent = visible;
+  }
+  function sortListings(val) {
+    const grid = document.getElementById('listings-grid');
+    const cards = [...grid.querySelectorAll('.listing-card')];
+    cards.sort((a, b) => {
+      if (val === 'expiry')    return +a.dataset.expiry - +b.dataset.expiry;
+      if (val === 'price-low') return +a.dataset.price  - +b.dataset.price;
+      if (val === 'discount')  return +b.dataset.discount - +a.dataset.discount;
+      return 0;
+    });
+    cards.forEach(c => grid.appendChild(c));
+  }
+
+  // Auth-aware reserve
+  function authReserve(btn, name) {
+    const user = localStorage.getItem('ee_current_user');
+    if (!user) {
+      showToast('Sign in to reserve items', 'warning');
+      setTimeout(() => window.location.href = 'login.html', 1300);
+      return;
+    }
+    reserveItem(btn, name);
+  }
+
+  // Map / List view toggle
+  let currentView = 'list';
+  function setView(view, btn) {
+    currentView = view;
+    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('list-section').style.display  = view === 'list' ? '' : 'none';
+    document.getElementById('map-section').style.display   = view === 'map'  ? '' : 'none';
+    if (view === 'map') renderMap();
+  }
+
+  function renderMap() {
+    const pins = [
+      {top:'20%',left:'26%',emoji:'🥐',name:'Croissant Box',price:'$2.50',vendor:'Patisserie Nour'},
+      {top:'36%',left:'54%',emoji:'🍱',name:'Sushi Platter',price:'$8.00',vendor:'Sakura Kitchen'},
+      {top:'55%',left:'36%',emoji:'🍞',name:'Sourdough Loaf',price:'$3.50',vendor:'Daily Bread'},
+      {top:'28%',left:'70%',emoji:'🥗',name:'Mezze Platter',price:'$6.00',vendor:'Green Bowl'},
+      {top:'65%',left:'20%',emoji:'🍕',name:'Pizza Margherita',price:'$5.00',vendor:'Pizzeria Roma'},
+      {top:'46%',left:'80%',emoji:'☕',name:'Coffee + Cake',price:'$2.75',vendor:'Cafe Saffron'},
+      {top:'70%',left:'58%',emoji:'🍗',name:'Grilled Chicken',price:'$7.00',vendor:'Al Waha Grill'},
+      {top:'18%',left:'46%',emoji:'🥑',name:'Avocado Bowl',price:'$4.50',vendor:'Blossom Kitchen'},
+    ];
+    document.getElementById('map-pins').innerHTML = pins.map(p => `
+      <div onclick="showToast('${p.vendor}: ${p.name} — ${p.price}')" style="position:absolute;top:${p.top};left:${p.left};transform:translate(-50%,-100%);cursor:pointer;z-index:3;transition:transform .15s" onmouseover="this.style.transform='translate(-50%,-110%) scale(1.12)'" onmouseout="this.style.transform='translate(-50%,-100%) scale(1)'">
+        <div style="background:var(--green-800);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:100px;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,.25)">${p.price} ${p.emoji}</div>
+        <div style="width:8px;height:8px;background:var(--green-800);border-radius:50%;margin:2px auto;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)"></div>
+      </div>`).join('');
+    document.getElementById('map-list-grid').innerHTML = pins.map(p => `
+      <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--white);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:box-shadow .2s" onmouseover="this.style.boxShadow='var(--shadow)'" onmouseout="this.style.boxShadow=''">
+        <div style="width:44px;height:44px;background:var(--green-50);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${p.emoji}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:700;color:var(--dark)">${p.name}</div><div style="font-size:11px;color:var(--text-muted)">${p.vendor}</div></div>
+        <div style="text-align:right"><div style="font-size:15px;font-weight:800;color:var(--green-700)">${p.price}</div></div>
+      </div>`).join('');
+  }
+</script>
+</body>
+</html>

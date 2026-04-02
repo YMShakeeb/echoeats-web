@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendor Dashboard — EchoEats</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+<body>
+
+<nav class="navbar scrolled" id="navbar" style="position:relative">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html" class="nav-logo"><div class="nav-logo-icon">🌿</div>EchoEats</a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="listings.html" class="btn btn-outline btn-sm">View Marketplace</a>
+      <button class="btn btn-sm" onclick="logout()" style="background:var(--bg);color:var(--text-soft);border:1px solid var(--border)">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-wrap">
+
+  <!-- SIDEBAR -->
+  <div class="dash-sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sb-av">V</div>
+      <div>
+        <div class="sidebar-name" id="sb-biz">My Business</div>
+        <div class="sidebar-role" id="sb-type">Vendor</div>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Vendor Panel</div>
+    <button class="sidebar-link active" onclick="showPage('overview',this)">📊 Overview</button>
+    <button class="sidebar-link" onclick="showPage('listings',this)">🍕 My Listings</button>
+    <button class="sidebar-link" onclick="showPage('add',this)">➕ Add Listing</button>
+    <button class="sidebar-link" onclick="showPage('analytics',this)">📈 Analytics</button>
+    <div class="sidebar-section-label">Account</div>
+    <a href="listings.html" class="sidebar-link">🌐 View Marketplace</a>
+    <button class="sidebar-link" onclick="logout()">🚪 Sign Out</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="dash-main">
+
+    <!-- OVERVIEW -->
+    <div id="page-overview">
+      <div class="dash-topbar">
+        <div>
+          <div class="dash-page-title" id="biz-title">Vendor Dashboard</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px">Today's performance</div>
+        </div>
+        <button class="btn btn-primary" onclick="showPage('add')">+ Add Listing</button>
+      </div>
+
+      <div class="dash-stats-grid">
+        <div class="dash-stat-card"><div class="dash-stat-num" id="v-active">3</div><div class="dash-stat-label">Active listings</div></div>
+        <div class="dash-stat-card"><div class="dash-stat-num" id="v-sold">12</div><div class="dash-stat-label">Items sold today</div></div>
+        <div class="dash-stat-card"><div class="dash-stat-num" id="v-revenue">BD 34</div><div class="dash-stat-label">Revenue recovered</div></div>
+        <div class="dash-stat-card"><div class="dash-stat-num" id="v-rate">94%</div><div class="dash-stat-label">Sell-through rate</div></div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title">Active Listings</div>
+          <button class="btn btn-outline btn-sm" onclick="showPage('add')">+ New Listing</button>
+        </div>
+        <div class="dash-table-wrap">
+          <table>
+            <thead><tr><th>Item</th><th>Base Price</th><th>Current Price</th><th>Expiry</th><th>Views</th><th>Curve</th><th>Status</th></tr></thead>
+            <tbody id="overview-listings-tbody">
+              <tr><td><strong>Croissant Box x4</strong></td><td>$6.00</td><td style="font-weight:800;color:var(--green-700)">$2.50</td><td style="color:var(--orange)">45m</td><td>38</td><td><span class="status-pill status-blue">Exponential</span></td><td><span class="status-pill status-green">Live</span></td></tr>
+              <tr><td><strong>Pain au Chocolat x6</strong></td><td>$8.00</td><td style="font-weight:800;color:var(--green-700)">$4.00</td><td>1h 20m</td><td>21</td><td><span class="status-pill status-blue">Linear</span></td><td><span class="status-pill status-green">Live</span></td></tr>
+              <tr><td><strong>Almond Tart x2</strong></td><td>$5.00</td><td style="font-weight:800;color:var(--green-700)">$5.00</td><td>3h</td><td>9</td><td><span class="status-pill status-blue">Stepped</span></td><td><span class="status-pill status-green">Live</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY LISTINGS -->
+    <div id="page-listings" style="display:none">
+      <div class="dash-topbar">
+        <div class="dash-page-title">My Listings</div>
+        <button class="btn btn-primary" onclick="showPage('add')">+ Add New</button>
+      </div>
+      <div class="dash-card">
+        <div class="dash-table-wrap">
+          <table id="all-listings-table">
+            <thead><tr><th>Item</th><th>Base</th><th>Current</th><th>Curve</th><th>Views</th><th>Expires</th><th>Status</th></tr></thead>
+            <tbody id="all-listings-tbody">
+              <tr><td><strong>Croissant Box x4</strong></td><td>$6.00</td><td style="font-weight:800;color:var(--green-700)">$2.50</td><td>Exponential</td><td>38</td><td style="color:var(--orange)">45m</td><td><span class="status-pill status-green">Live</span></td></tr>
+              <tr><td><strong>Pain au Chocolat x6</strong></td><td>$8.00</td><td style="font-weight:800;color:var(--green-700)">$4.00</td><td>Linear</td><td>21</td><td>1h 20m</td><td><span class="status-pill status-green">Live</span></td></tr>
+              <tr><td><strong>Almond Tart x2</strong></td><td>$5.00</td><td style="font-weight:800;color:var(--green-700)">$5.00</td><td>Stepped</td><td>9</td><td>3h</td><td><span class="status-pill status-green">Live</span></td></tr>
+              <tr><td>Baguette Bundle</td><td>$4.00</td><td>—</td><td>Linear</td><td>47</td><td>—</td><td><span class="status-pill status-orange">Sold</span></td></tr>
+              <tr><td>Danish Pastry x3</td><td>$7.00</td><td>—</td><td>Exponential</td><td>33</td><td>—</td><td><span class="status-pill status-orange">Sold</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD LISTING -->
+    <div id="page-add" style="display:none">
+      <div class="dash-topbar"><div class="dash-page-title">Add New Listing</div></div>
+      <div class="dash-card" style="max-width:600px">
+        <form onsubmit="submitListing(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Food Name</label>
+              <input type="text" id="f-name" placeholder="e.g. Croissant Box x4" required style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Emoji</label>
+              <input type="text" id="f-emoji" placeholder="e.g. 🥐" maxlength="2" value="🍕" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:18px;outline:none;text-align:center">
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Base Price (BD)</label>
+              <input type="number" id="f-price" placeholder="8.00" min="0.5" step="0.5" required oninput="drawCurve()" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Minimum Price (BD)</label>
+              <input type="number" id="f-floor" placeholder="1.50" min="0.1" step="0.1" required oninput="drawCurve()" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Expiry (hours from now)</label>
+              <select id="f-expiry" oninput="drawCurve()" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+                <option value="0.5">30 minutes</option>
+                <option value="1">1 hour</option>
+                <option value="1.5">1.5 hours</option>
+                <option value="2" selected>2 hours</option>
+                <option value="3">3 hours</option>
+                <option value="4">4 hours</option>
+                <option value="6">6 hours</option>
+              </select>
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Quantity</label>
+              <input type="number" id="f-qty" placeholder="1" min="1" value="1" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+            </div>
+          </div>
+
+          <!-- Pricing curve selector -->
+          <div style="margin-bottom:18px">
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:10px">Pricing Decay Curve</label>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+              <label style="cursor:pointer">
+                <input type="radio" name="curve" value="linear" checked onchange="drawCurve()" style="display:none">
+                <div id="crv-linear" style="text-align:center;padding:14px;border:2px solid var(--green-400);border-radius:14px;background:var(--green-50);transition:all .2s">
+                  <div style="font-size:18px;margin-bottom:5px">📐</div>
+                  <div style="font-size:13px;font-weight:700;color:var(--dark)">Linear</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Steady drop</div>
+                </div>
+              </label>
+              <label style="cursor:pointer">
+                <input type="radio" name="curve" value="exponential" onchange="drawCurve()" style="display:none">
+                <div id="crv-exponential" style="text-align:center;padding:14px;border:2px solid var(--border);border-radius:14px;transition:all .2s">
+                  <div style="font-size:18px;margin-bottom:5px">📉</div>
+                  <div style="font-size:13px;font-weight:700;color:var(--dark)">Exponential</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Drops near end</div>
+                </div>
+              </label>
+              <label style="cursor:pointer">
+                <input type="radio" name="curve" value="stepped" onchange="drawCurve()" style="display:none">
+                <div id="crv-stepped" style="text-align:center;padding:14px;border:2px solid var(--border);border-radius:14px;transition:all .2s">
+                  <div style="font-size:18px;margin-bottom:5px">📊</div>
+                  <div style="font-size:13px;font-weight:700;color:var(--dark)">Stepped</div>
+                  <div style="font-size:11px;color:var(--text-muted)">Checkpoints</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Live price curve preview -->
+          <div style="margin-bottom:18px">
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Price Curve Preview</label>
+            <div class="curve-canvas-wrap">
+              <canvas id="curve-canvas" width="500" height="100" style="width:100%;height:auto"></canvas>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px">
+                <span>Now (full price)</span><span>Expiry →</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dietary tags -->
+          <div style="margin-bottom:18px">
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Dietary Tags</label>
+            <div style="display:flex;flex-wrap:wrap;gap:7px">
+              <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🌿 Vegan</button>
+              <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">☪️ Halal</button>
+              <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🥗 Vegetarian</button>
+              <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🌾 Gluten-free</button>
+              <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🐟 Seafood</button>
+              <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🚫 Nut-free</button>
+            </div>
+          </div>
+
+          <div id="add-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none"></div>
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:15px">Post Listing</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="page-analytics" style="display:none">
+      <div class="dash-topbar"><div class="dash-page-title">Analytics</div></div>
+      <div class="dash-stats-grid">
+        <div class="dash-stat-card"><div class="dash-stat-num">18</div><div class="dash-stat-label">Total listings created</div></div>
+        <div class="dash-stat-card"><div class="dash-stat-num">16</div><div class="dash-stat-label">Successfully sold</div></div>
+        <div class="dash-stat-card"><div class="dash-stat-num">BD 128</div><div class="dash-stat-label">Total revenue recovered</div></div>
+        <div class="dash-stat-card"><div class="dash-stat-num">89%</div><div class="dash-stat-label">Sell-through rate</div></div>
+      </div>
+      <div class="dash-2col">
+        <div class="dash-card">
+          <div class="dash-card-header"><div class="dash-card-title">Revenue by Curve Type</div></div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Exponential</span><span style="font-weight:700;color:var(--green-700)">BD 68 — 53%</span></div>
+              <div style="height:8px;background:var(--border);border-radius:4px"><div style="height:100%;width:53%;background:var(--green-500);border-radius:4px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Linear</span><span style="font-weight:700;color:var(--green-700)">BD 40 — 31%</span></div>
+              <div style="height:8px;background:var(--border);border-radius:4px"><div style="height:100%;width:31%;background:var(--green-400);border-radius:4px"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span>Stepped</span><span style="font-weight:700;color:var(--green-700)">BD 20 — 16%</span></div>
+              <div style="height:8px;background:var(--border);border-radius:4px"><div style="height:100%;width:16%;background:var(--green-300);border-radius:4px"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-header"><div class="dash-card-title">Top Viewed Items</div></div>
+          <div style="display:flex;flex-direction:column;gap:0">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:18px">🥐</span>
+              <div style="flex:1;font-size:13px;font-weight:600">Croissant Box x4</div>
+              <div style="font-size:13px;font-weight:800;color:var(--green-700)">47 views</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:18px">🥐</span>
+              <div style="flex:1;font-size:13px;font-weight:600">Pain au Chocolat x6</div>
+              <div style="font-size:13px;font-weight:800;color:var(--green-700)">33 views</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+              <span style="font-size:18px">🥐</span>
+              <div style="flex:1;font-size:13px;font-weight:600">Almond Tart x2</div>
+              <div style="font-size:13px;font-weight:800;color:var(--green-700)">21 views</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-card-header"><div class="dash-card-title">Pricing Recommendations</div></div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:18px">📉</span>
+            <div><strong>Use exponential decay for high-demand items.</strong> It holds the price longer then drops sharply near expiry, maximising revenue while still clearing stock.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:18px">⏰</span>
+            <div><strong>Peak listing time is 4–6 PM.</strong> Consumers browse deals on their way home. Try to post your surplus food before 4 PM for maximum visibility.</div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="font-size:18px">💰</span>
+            <div><strong>Set your floor at 20–25% of base price.</strong> This ensures you always recover some revenue even in the final 30 minutes before expiry.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+let user = null;
+let selectedCurve = 'linear';
+
+document.addEventListener('DOMContentLoaded', () => {
+  user = JSON.parse(localStorage.getItem('ee_current_user'));
+  if (!user || user.role !== 'vendor') { window.location.href = 'login.html'; return; }
+  document.getElementById('sb-av').textContent   = (user.businessName || user.name)?.[0] || 'V';
+  document.getElementById('sb-biz').textContent  = user.businessName || user.name || 'Vendor';
+  document.getElementById('sb-type').textContent = user.businessType || 'Vendor';
+  document.getElementById('biz-title').textContent = (user.businessName || 'Dashboard') + ' — Overview';
+  setTimeout(drawCurve, 200);
+
+  // Hook up radio buttons for curve
+  document.querySelectorAll('input[name="curve"]').forEach(r => {
+    r.addEventListener('change', () => {
+      selectedCurve = r.value;
+      ['linear','exponential','stepped'].forEach(c => {
+        const el = document.getElementById('crv-' + c);
+        if (el) {
+          el.style.borderColor  = c === r.value ? 'var(--green-400)' : 'var(--border)';
+          el.style.background   = c === r.value ? 'var(--green-50)'  : '';
+        }
+      });
+      drawCurve();
+    });
+  });
+});
+
+function showPage(name, btn) {
+  ['overview','listings','add','analytics'].forEach(p => {
+    document.getElementById('page-' + p).style.display = p === name ? '' : 'none';
+  });
+  document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'add') setTimeout(drawCurve, 100);
+}
+
+function drawCurve() {
+  const canvas = document.getElementById('curve-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const base  = parseFloat(document.getElementById('f-price')?.value) || 8;
+  const floor = parseFloat(document.getElementById('f-floor')?.value) || 1.5;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+  for (let y = H/4; y < H; y += H/4) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+
+  // Price floor line (orange dashed)
+  ctx.setLineDash([5, 4]); ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 1.5;
+  const floorY = H - (floor / base) * (H - 8) - 4;
+  ctx.beginPath(); ctx.moveTo(0, floorY); ctx.lineTo(W, floorY); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Curve
+  ctx.beginPath(); ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2.5;
+  for (let px = 0; px <= W; px++) {
+    const t = 1 - px / W; // 1 = start, 0 = expiry
+    let decay;
+    if (selectedCurve === 'linear') {
+      decay = t;
+    } else if (selectedCurve === 'exponential') {
+      decay = t < 0.2 ? t * 2 : 0.4 + (t - 0.2) * 0.75;
+    } else { // stepped
+      decay = t > 0.75 ? 0.9 : t > 0.5 ? 0.7 : t > 0.25 ? 0.5 : 0.3;
+    }
+    const price = Math.max(floor, base * decay);
+    const py = H - (price / base) * (H - 8) - 4;
+    px === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.stroke();
+}
+
+function submitListing(e) {
+  e.preventDefault();
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) return;
+  showToast('Listing "' + name + '" posted successfully!');
+  document.getElementById('f-name').value  = '';
+  document.getElementById('f-price').value = '';
+  document.getElementById('f-floor').value = '';
+  drawCurve();
+  setTimeout(() => showPage('listings'), 1200);
+}
+
+function logout() {
+  localStorage.removeItem('ee_current_user');
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

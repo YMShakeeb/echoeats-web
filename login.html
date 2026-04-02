@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — EchoEats</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+
+<body class="auth-page" style="padding-top:0">
+
+  <!-- Full Navbar -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="tech-stack.html">Tech Stack</a></li>
+        <li><a href="tasks.html">📋 Tasks</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin active">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Body -->
+  <div class="auth-body" style="padding-top: calc(var(--nav-h, 72px) + 40px)">
+    <div class="auth-card">
+      <div style="text-align:center;margin-bottom:24px">
+        <div style="font-size:44px;margin-bottom:12px">👋</div>
+        <div class="auth-title">Welcome back</div>
+        <div class="auth-subtitle">Sign in to your EchoEats account</div>
+      </div>
+
+      <form onsubmit="handleLogin(event)">
+        <div style="margin-bottom:16px">
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Email
+            Address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s;background:var(--white);color:var(--dark)">
+        </div>
+        <div style="margin-bottom:16px">
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="Your password" required
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s;background:var(--white);color:var(--dark)">
+        </div>
+        <div id="login-error" class="auth-error"></div>
+        <button type="submit" class="btn btn-primary"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px">
+          Sign In
+        </button>
+      </form>
+
+      <!-- Quick demo logins -->
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+        <div style="font-size:12px;color:var(--text-muted);text-align:center;margin-bottom:10px">Quick demo access</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="quickLogin('consumer@test.com','123456')">Consumer
+            Demo</button>
+          <button class="btn btn-outline btn-sm" onclick="quickLogin('vendor@test.com','123456')">Vendor Demo</button>
+        </div>
+      </div>
+
+      <div class="auth-demo">
+        Demo: <strong>consumer@test.com</strong> or <strong>vendor@test.com</strong><br>password:
+        <strong>123456</strong>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // @ts-nocheck
+    (function () {
+      if (!localStorage.getItem('ee_users')) {
+        var users = [
+          { id: 'u1', name: 'Demo Consumer', email: 'consumer@test.com', password: '123456', role: 'consumer', mealsSaved: 47, co2Saved: 22.6, streak: 7, badges: ['🌱', '💚', '🔥'] },
+          { id: 'v1', name: 'Nadia Mahmoud', email: 'vendor@test.com', password: '123456', role: 'vendor', businessName: 'Patisserie Nour', businessType: 'Bakery', mealsSaved: 0, co2Saved: 0, streak: 0, badges: [] }
+        ];
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      }
+    })();
+
+    function handleLogin(e) {
+      e.preventDefault();
+      var email = document.getElementById('login-email').value.trim();
+      var pass = document.getElementById('login-password').value;
+      var errEl = document.getElementById('login-error');
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = null;
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].email === email && users[i].password === pass) {
+          user = users[i];
+          break;
+        }
+      }
+      errEl.style.display = 'none';
+      if (!user) {
+        errEl.textContent = 'Invalid email or password. Try the demo buttons below.';
+        errEl.style.display = 'block';
+        return;
+      }
+      localStorage.setItem('ee_current_user', JSON.stringify(user));
+      showToast('Welcome back, ' + user.name.split(' ')[0] + '!');
+      setTimeout(function () {
+        window.location.href = user.role === 'vendor' ? 'vendor-dashboard.html' : 'consumer-dashboard.html';
+      }, 700);
+    }
+
+    function quickLogin(email, pass) {
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-password').value = pass;
+      handleLogin({ preventDefault: function () { } });
+    }
+  </script>
+
+</body>
+
+</html>

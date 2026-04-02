@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Dashboard — EchoEats</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+<body>
+
+<!-- Thin top nav -->
+<nav class="navbar scrolled" id="navbar" style="position:relative">
+  <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+    <a href="index.html" class="nav-logo"><div class="nav-logo-icon">🌿</div>EchoEats</a>
+    <div style="display:flex;align-items:center;gap:10px">
+      <a href="listings.html" class="btn btn-outline btn-sm">Browse Deals</a>
+      <button class="btn btn-sm" onclick="logout()" style="background:var(--bg);color:var(--text-soft);border:1px solid var(--border)">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="dash-wrap">
+
+  <!-- SIDEBAR -->
+  <div class="dash-sidebar">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sb-av">U</div>
+      <div>
+        <div class="sidebar-name" id="sb-name">Consumer</div>
+        <div class="sidebar-role" id="sb-email">Loading...</div>
+      </div>
+    </div>
+    <div class="sidebar-section-label">Main</div>
+    <button class="sidebar-link active" onclick="showPage('overview',this)">🏠 Overview</button>
+    <button class="sidebar-link" onclick="showPage('reservations',this)">🛒 My Reservations</button>
+    <button class="sidebar-link" onclick="showPage('impact',this)">🌍 My Impact</button>
+    <button class="sidebar-link" onclick="showPage('notifications',this)">🔔 Notifications</button>
+    <div class="sidebar-section-label">Explore</div>
+    <a href="listings.html" class="sidebar-link">🍽️ Browse Deals</a>
+    <a href="impact.html" class="sidebar-link">🏆 Leaderboard</a>
+    <button class="sidebar-link" onclick="logout()">🚪 Sign Out</button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="dash-main">
+
+    <!-- OVERVIEW PAGE -->
+    <div id="page-overview">
+      <div class="dash-topbar">
+        <div>
+          <div class="dash-page-title">Welcome back, <span id="user-first">there</span>!</div>
+          <div style="font-size:13px;color:var(--text-muted);margin-top:2px">Your impact summary</div>
+        </div>
+        <a href="listings.html" class="btn btn-primary">Browse Deals</a>
+      </div>
+
+      <div class="dash-stats-grid">
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="d-meals">0</div>
+          <div class="dash-stat-label">Meals saved total</div>
+          <div class="dash-stat-sub">Keep it up!</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="d-co2">0kg</div>
+          <div class="dash-stat-label">CO2 prevented</div>
+          <div class="dash-stat-sub">Great impact</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="d-streak">0</div>
+          <div class="dash-stat-label">Day streak</div>
+          <div class="dash-stat-sub">Stay consistent!</div>
+        </div>
+        <div class="dash-stat-card">
+          <div class="dash-stat-num" id="d-saved">$0</div>
+          <div class="dash-stat-label">Money saved</div>
+          <div class="dash-stat-sub">vs. full price</div>
+        </div>
+      </div>
+
+      <div class="dash-2col">
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-title">Recent Activity</div>
+            <a href="listings.html" style="font-size:12px;color:var(--green-600)">Browse more</a>
+          </div>
+          <div id="recent-activity">
+            <div style="padding:20px 0;text-align:center;color:var(--text-muted);font-size:13px">
+              No reservations yet —
+              <a href="listings.html" style="color:var(--green-600);font-weight:600">browse live deals</a>
+            </div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-header"><div class="dash-card-title">Your Badges</div></div>
+          <div id="overview-badges" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
+        </div>
+      </div>
+
+      <!-- Quick deals -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-title">Live Deals Near You</div>
+          <a href="listings.html" style="font-size:12px;color:var(--green-600)">See all 12 deals</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="quick-deals"></div>
+      </div>
+    </div>
+
+    <!-- RESERVATIONS PAGE -->
+    <div id="page-reservations" style="display:none">
+      <div class="dash-topbar">
+        <div class="dash-page-title">My Reservations</div>
+        <a href="listings.html" class="btn btn-primary">Browse Deals</a>
+      </div>
+      <div class="dash-card">
+        <div id="res-content">
+          <div style="padding:40px;text-align:center;color:var(--text-muted)">
+            <div style="font-size:40px;margin-bottom:12px">🛒</div>
+            <div style="font-weight:700;margin-bottom:6px">No reservations yet</div>
+            <div style="font-size:13px">
+              <a href="listings.html" style="color:var(--green-600)">Browse live deals</a> and hit Reserve to lock in a price.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IMPACT PAGE -->
+    <div id="page-impact" style="display:none">
+      <div class="dash-topbar"><div class="dash-page-title">My Impact</div></div>
+      <div class="dash-stats-grid" style="margin-bottom:24px">
+        <div class="dash-stat-card" style="text-align:center">
+          <div style="font-size:40px;font-weight:800;color:var(--green-700);letter-spacing:-2px" id="imp-meals">0</div>
+          <div class="dash-stat-label">Meals Saved</div>
+        </div>
+        <div class="dash-stat-card" style="text-align:center">
+          <div style="font-size:40px;font-weight:800;color:var(--green-600);letter-spacing:-2px" id="imp-co2">0</div>
+          <div class="dash-stat-label">kg CO2 Prevented</div>
+        </div>
+        <div class="dash-stat-card" style="text-align:center">
+          <div style="font-size:40px;font-weight:800;color:var(--yellow);letter-spacing:-2px" id="imp-rank">#-</div>
+          <div class="dash-stat-label">Community Rank</div>
+        </div>
+        <div class="dash-stat-card" style="text-align:center">
+          <div style="font-size:40px;font-weight:800;color:var(--orange);letter-spacing:-2px" id="imp-streak">0</div>
+          <div class="dash-stat-label">Day Streak</div>
+        </div>
+      </div>
+      <div class="dash-2col">
+        <div class="dash-card">
+          <div class="dash-card-header"><div class="dash-card-title">Achievement Badges</div></div>
+          <div id="all-badges" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px"></div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-header"><div class="dash-card-title">Community Leaderboard</div></div>
+          <div id="leaderboard"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS PAGE -->
+    <div id="page-notifications" style="display:none">
+      <div class="dash-topbar">
+        <div class="dash-page-title">Notifications</div>
+        <button class="btn btn-outline btn-sm" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <div class="dash-card" id="notif-wrap"></div>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+const BADGES_DEF = [
+  { e:'🌱', n:'First Meal',    r:'Save your first meal',        need:1,   key:'mealsSaved' },
+  { e:'💚', n:'10 Meals',      r:'Save 10 meals total',          need:10,  key:'mealsSaved' },
+  { e:'🔥', n:'7-Day Streak',  r:'Save a meal 7 days in a row',  need:7,   key:'streak'     },
+  { e:'🌍', n:'10kg CO2',      r:'Prevent 10kg of CO2',          need:10,  key:'co2Saved'   },
+  { e:'🏅', n:'50 Meals',      r:'Save 50 meals total',          need:50,  key:'mealsSaved' },
+  { e:'⚡', n:'Speed Saver',   r:'Reserve within 5 min',         need:1,   key:'badges'     },
+  { e:'👑', n:'Top 10',        r:'Reach the top 10 leaderboard', need:100, key:'mealsSaved' },
+  { e:'🏆', n:'Legend',        r:'Save 500 meals total',         need:500, key:'mealsSaved' },
+];
+const NOTIFS = [
+  { icon:'🔥', text:'Cafe Saffron: Coffee + Cake is 55% off — only 30 mins left!', time:'2 min ago',  unread:true  },
+  { icon:'📍', text:'New deal nearby: Patisserie Nour just posted Pain au Chocolat x3', time:'18 min ago', unread:true  },
+  { icon:'⏰', text:'Last chance! Croissant Box expires in 1 hour', time:'45 min ago', unread:false },
+  { icon:'✅', text:'Your reservation for Sushi Platter is confirmed. Pick up by 3:45 PM!', time:'1h ago', unread:false },
+];
+const QUICK_DEALS = [
+  { e:'🥐', n:'Croissant Box x4', v:'Patisserie Nour', p:'$2.50', d:'-58%', bg:'#fef3c7' },
+  { e:'🍱', n:'Sushi Platter',    v:'Sakura Kitchen',  p:'$8.00', d:'-55%', bg:'#e0f2fe' },
+  { e:'☕', n:'Coffee + Cake',    v:'Cafe Saffron',    p:'$2.75', d:'-45%', bg:'#fdf4ff' },
+];
+
+let user = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  user = JSON.parse(localStorage.getItem('ee_current_user'));
+  if (!user || user.role !== 'consumer') { window.location.href = 'login.html'; return; }
+  document.getElementById('sb-av').textContent    = user.name?.[0] || 'U';
+  document.getElementById('sb-name').textContent  = user.name || 'Consumer';
+  document.getElementById('sb-email').textContent = user.email || '';
+  document.getElementById('user-first').textContent = user.name?.split(' ')[0] || 'there';
+  renderOverview();
+});
+
+function showPage(name, btn) {
+  ['overview','reservations','impact','notifications'].forEach(p => {
+    document.getElementById('page-' + p).style.display = p === name ? '' : 'none';
+  });
+  document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (name === 'impact')        renderImpact();
+  if (name === 'notifications') renderNotifications();
+}
+
+function renderOverview() {
+  document.getElementById('d-meals').textContent  = user.mealsSaved || 0;
+  document.getElementById('d-co2').textContent    = (user.co2Saved || 0) + 'kg';
+  document.getElementById('d-streak').textContent = user.streak || 0;
+  document.getElementById('d-saved').textContent  = '$' + ((user.mealsSaved || 0) * 3.2).toFixed(2);
+
+  // Badges (4 preview)
+  document.getElementById('overview-badges').innerHTML = BADGES_DEF.slice(0,4).map(b => {
+    const ok = (user[b.key] || 0) >= b.need;
+    return `<div style="text-align:center;padding:10px 6px;background:var(--bg);border:1px solid var(--border);border-radius:12px;opacity:${ok?1:.35}" title="${b.r}">
+      <div style="font-size:24px;margin-bottom:4px">${b.e}</div>
+      <div style="font-size:10px;font-weight:700;color:var(--dark)">${b.n}</div>
+    </div>`;
+  }).join('');
+
+  // Quick deals
+  document.getElementById('quick-deals').innerHTML = QUICK_DEALS.map(d => `
+    <a href="listings.html" style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;transition:box-shadow .2s;text-decoration:none" onmouseover="this.style.boxShadow='var(--shadow)'" onmouseout="this.style.boxShadow=''">
+      <div style="font-size:30px;margin-bottom:8px;width:48px;height:48px;background:${d.bg};border-radius:10px;display:flex;align-items:center;justify-content:center">${d.e}</div>
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px">${d.n}</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">${d.v}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:15px;font-weight:800;color:var(--green-700)">${d.p}</span>
+        <span style="font-size:10px;font-weight:700;background:#fff7ed;color:var(--orange);padding:2px 8px;border-radius:100px">${d.d}</span>
+      </div>
+    </a>`).join('');
+}
+
+function renderImpact() {
+  document.getElementById('imp-meals').textContent  = user.mealsSaved || 0;
+  document.getElementById('imp-co2').textContent    = user.co2Saved   || 0;
+  document.getElementById('imp-streak').textContent = user.streak     || 0;
+  const rank = Math.max(1, 50 - (user.mealsSaved || 0));
+  document.getElementById('imp-rank').textContent   = '#' + rank;
+
+  // All badges
+  document.getElementById('all-badges').innerHTML = BADGES_DEF.map(b => {
+    const ok = (user[b.key] || 0) >= b.need;
+    return `<div style="text-align:center;padding:14px 8px;background:var(--bg);border:1px solid var(--border);border-radius:14px;opacity:${ok?1:.4};cursor:${ok?'pointer':'not-allowed'}" title="${b.r}" onclick="${ok?`showToast('Badge: ${b.n} earned!')`:''}">
+      <div style="font-size:28px;margin-bottom:6px">${b.e}</div>
+      <div style="font-size:11px;font-weight:700;color:var(--dark);margin-bottom:2px">${b.n}</div>
+      <div style="font-size:10px;color:var(--text-muted)">${b.r}</div>
+    </div>`;
+  }).join('');
+
+  // Leaderboard
+  const lb = [
+    { av:'AK', bg:'#ca8a04', name:'Ahmad K.',  meals:143 },
+    { av:'SL', bg:'#6b7280', name:'Sara L.',   meals:128 },
+    { av:'MR', bg:'#c2410c', name:'Maya R.',   meals:117 },
+    { av:user.name?.[0]||'U', bg:'var(--green-600)', name:'You · '+user.name, meals:user.mealsSaved||0, you:true },
+  ].sort((a,b) => b.meals - a.meals);
+  const medals = ['🥇','🥈','🥉'];
+  document.getElementById('leaderboard').innerHTML = lb.map((r, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);${r.you?'background:var(--green-50);border-radius:8px;padding:10px 8px;border-bottom:none!important':''}">
+      <div style="font-size:16px;width:22px">${medals[i] || i+1}</div>
+      <div style="width:34px;height:34px;border-radius:50%;background:${r.bg};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">${r.av}</div>
+      <div style="flex:1;font-size:13px;font-weight:700;color:var(--dark)">${r.name}</div>
+      <div style="font-size:13px;font-weight:800;color:var(--green-700)">${r.meals}</div>
+    </div>`).join('');
+}
+
+function renderNotifications() {
+  document.getElementById('notif-wrap').innerHTML = NOTIFS.map(n => `
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);background:${n.unread?'var(--green-50)':''}">
+      <div style="width:36px;height:36px;border-radius:50%;background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${n.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;color:var(--text);margin-bottom:2px">${n.text}</div>
+        <div style="font-size:11px;color:var(--text-muted)">${n.time}</div>
+      </div>
+      ${n.unread ? '<div style="width:8px;height:8px;background:var(--green-500);border-radius:50%;flex-shrink:0;margin-top:4px"></div>' : ''}
+    </div>`).join('') || '<div style="padding:30px;text-align:center;color:var(--text-muted)">No notifications</div>';
+}
+
+function markAllRead() {
+  NOTIFS.forEach(n => n.unread = false);
+  renderNotifications();
+  showToast('All notifications marked as read');
+}
+
+function logout() {
+  localStorage.removeItem('ee_current_user');
+  window.location.href = 'index.html';
+}
+</script>
+</body>
+</html>

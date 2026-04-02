@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — EchoEats</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+
+<body class="auth-page" style="padding-top:0">
+
+  <!-- Full Navbar -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="tech-stack.html">Tech Stack</a></li>
+        <li><a href="tasks.html">📋 Tasks</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-body" style="padding-top: calc(var(--nav-h, 72px) + 40px)">
+    <div class="auth-card" style="max-width:520px">
+      <div style="text-align:center;margin-bottom:22px">
+        <div style="font-size:44px;margin-bottom:12px">🌿</div>
+        <div class="auth-title">Create your account</div>
+        <div class="auth-subtitle">Join thousands saving money and fighting food waste</div>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="tab-consumer"
+          onclick="switchRole('consumer')">Consumer</button>
+        <button type="button" class="auth-tab" id="tab-vendor" onclick="switchRole('vendor')">Vendor</button>
+      </div>
+
+      <form onsubmit="handleRegister(event)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0">
+          <div style="margin-bottom:14px">
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">First
+              Name</label>
+            <input type="text" id="r-first" placeholder="Yousif" required
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Last
+              Name</label>
+            <input type="text" id="r-last" placeholder="Shakeeb" required
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+          </div>
+        </div>
+        <div style="margin-bottom:14px">
+          <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Email
+            Address</label>
+          <input type="email" id="r-email" placeholder="you@example.com" required
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+        </div>
+        <div style="margin-bottom:14px">
+          <label
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Password</label>
+          <input type="password" id="r-pass" placeholder="Min 6 characters" required minlength="6"
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+        </div>
+
+        <div id="consumer-fields">
+          <div style="margin-bottom:14px">
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:7px">
+              Dietary Preferences <span style="color:var(--text-muted);font-weight:400">(optional)</span>
+            </label>
+            <div class="diet-chips">
+              <button type="button" class="diet-chip" onclick="toggleDiet(this,'Vegan')">🌿 Vegan</button>
+              <button type="button" class="diet-chip" onclick="toggleDiet(this,'Halal')">☪️ Halal</button>
+              <button type="button" class="diet-chip" onclick="toggleDiet(this,'Vegetarian')">🥗 Vegetarian</button>
+              <button type="button" class="diet-chip" onclick="toggleDiet(this,'Gluten-free')">🌾 Gluten-free</button>
+            </div>
+          </div>
+          <div style="margin-bottom:14px">
+            <label
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Location /
+              Area</label>
+            <input type="text" id="r-location" placeholder="e.g. Manama, Bahrain"
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+          </div>
+        </div>
+
+        <div id="vendor-fields" style="display:none">
+          <div style="margin-bottom:14px">
+            <label
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Business
+              Name</label>
+            <input type="text" id="r-biz" placeholder="e.g. Patisserie Nour"
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+          </div>
+          <div style="margin-bottom:14px">
+            <label
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Business
+              Type</label>
+            <select id="r-biztype"
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+              <option value="">Select type...</option>
+              <option>Restaurant</option>
+              <option>Cafe / Coffee Shop</option>
+              <option>Bakery</option>
+              <option>Supermarket</option>
+              <option>Home Cook</option>
+            </select>
+          </div>
+          <div style="margin-bottom:14px">
+            <label
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Business
+              Address</label>
+            <input type="text" id="r-address" placeholder="Full address"
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+          </div>
+        </div>
+
+        <div id="reg-error" style="display:none;color:red;font-size:12px;margin-bottom:10px;"></div>
+
+        <button type="submit" class="btn btn-primary"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-top:4px">
+          Create Account
+        </button>
+      </form>
+
+      <div class="auth-demo">
+        Demo: <strong>consumer@test.com</strong> or <strong>vendor@test.com</strong> — password: <strong>123456</strong>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js"></script>
+  <script>
+    // @ts-nocheck
+    var currentRole = 'consumer';
+    var selectedDiets = [];
+
+    function switchRole(role) {
+      currentRole = role;
+      document.getElementById('tab-consumer').classList.toggle('active', role === 'consumer');
+      document.getElementById('tab-vendor').classList.toggle('active', role === 'vendor');
+      document.getElementById('consumer-fields').style.display = (role === 'consumer' ? 'block' : 'none');
+      document.getElementById('vendor-fields').style.display = (role === 'vendor' ? 'block' : 'none');
+    }
+
+    function toggleDiet(btn, diet) {
+      btn.classList.toggle('active');
+      var i = selectedDiets.indexOf(diet);
+      if (i >= 0) {
+        selectedDiets.splice(i, 1);
+      } else {
+        selectedDiets.push(diet);
+      }
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      var errEl = document.getElementById('reg-error');
+      errEl.style.display = 'none';
+
+      var first = document.getElementById('r-first').value.trim();
+      var last = document.getElementById('r-last').value.trim();
+      var email = document.getElementById('r-email').value.trim();
+      var pass = document.getElementById('r-pass').value;
+
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+
+      var exists = false;
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].email === email) { exists = true; break; }
+      }
+      if (exists) {
+        errEl.textContent = 'Email already registered — try signing in instead.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      var newUser = {
+        id: 'u' + Date.now(),
+        name: first + ' ' + last,
+        email: email,
+        password: pass,
+        role: currentRole,
+        mealsSaved: 0,
+        co2Saved: 0,
+        streak: 0,
+        badges: [],
+        joinDate: new Date().toISOString()
+      };
+
+      if (currentRole === 'consumer') {
+        newUser.dietary = selectedDiets.slice();
+        newUser.location = document.getElementById('r-location').value.trim();
+      } else {
+        var bizName = document.getElementById('r-biz').value.trim();
+        if (!bizName) {
+          errEl.textContent = 'Please enter your business name.';
+          errEl.style.display = 'block';
+          return;
+        }
+        newUser.businessName = bizName;
+        newUser.businessType = document.getElementById('r-biztype').value;
+        newUser.businessAddress = document.getElementById('r-address').value.trim();
+      }
+
+      users.push(newUser);
+      localStorage.setItem('ee_users', JSON.stringify(users));
+      localStorage.setItem('ee_current_user', JSON.stringify(newUser));
+
+      setTimeout(function () {
+        window.location.href = currentRole === 'vendor' ? 'vendor-dashboard.html' : 'consumer-dashboard.html';
+      }, 500);
+    }
+  </script>
+</body>
+
+</html>

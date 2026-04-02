@@ -1,0 +1,848 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EchoEats — Dynamic Pricing Food Waste Marketplace</title>
+  <meta name="description"
+    content="EchoEats connects you with restaurants, cafes, and bakeries selling surplus food at prices that drop as expiry approaches. Save money, fight food waste." />
+  <link rel="stylesheet" href="css/style.css" />
+  <!-- Favicon emoji -->
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════
+     NAVIGATION
+══════════════════════════════════════════ -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>
+        EchoEats
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <a href="tech-stack.html">Tech Stack</a>
+        <li><a href="tasks.html">📋 Tasks</a></li>
+      </ul>
+
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+
+  <!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-inner">
+
+        <!-- LEFT: Copy -->
+        <div class="hero-copy">
+          <div class="hero-label">
+            <span></span>
+            Live deals updating now
+          </div>
+
+          <h1 class="hero-title">
+            Great food,<br>
+            <em>falling prices.</em>
+          </h1>
+
+          <p class="hero-desc">
+            Discover surplus meals from local restaurants and cafes at prices that automatically drop as expiry
+            approaches. Save money, fight food waste, and earn rewards.
+          </p>
+
+          <div class="hero-cta">
+            <a href="listings.html" class="btn btn-primary btn-lg">
+              🍽️ Browse Deals Now
+            </a>
+            <a href="how-it-works.html" class="btn btn-outline btn-lg">
+              How It Works
+            </a>
+          </div>
+
+          <div class="hero-stats">
+            <div>
+              <div class="hero-stat-num">2,400+</div>
+              <div class="hero-stat-label">Meals saved this week</div>
+            </div>
+            <div>
+              <div class="hero-stat-num">340kg</div>
+              <div class="hero-stat-label">CO₂ prevented</div>
+            </div>
+            <div>
+              <div class="hero-stat-num">85+</div>
+              <div class="hero-stat-label">Local vendors</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Phone mockup -->
+        <div class="hero-visual">
+          <!-- Floating badges -->
+          <div class="hero-float hero-float-1">
+            <div class="float-num">-58%</div>
+            <div class="float-label">avg. savings</div>
+          </div>
+          <div class="hero-float hero-float-2">
+            <div class="float-num">1h 20m</div>
+            <div class="float-label">before expiry ⏱</div>
+          </div>
+          <div class="hero-float hero-float-3">
+            <div class="float-num">🏆</div>
+            <div class="float-label">47 meals saved</div>
+          </div>
+
+          <!-- Phone UI -->
+          <div class="hero-phone">
+            <div class="phone-statusbar">
+              <span class="phone-logo">EchoEats</span>
+              <span class="phone-time">9:41 AM</span>
+            </div>
+
+            <div class="phone-search">
+              <div class="phone-search-bar">
+                🔍 Search food near you...
+              </div>
+            </div>
+
+            <div class="phone-section-label">Expiring Soon 🔥</div>
+
+            <!-- Card 1 -->
+            <div class="phone-card">
+              <div class="phone-card-img">🥐</div>
+              <div style="flex:1">
+                <div class="phone-card-name">Croissant x4</div>
+                <div class="phone-card-vendor">Patisserie Nour · 0.3km</div>
+                <div class="phone-card-bottom">
+                  <div>
+                    <span class="phone-price">$2.50</span>
+                    <span class="phone-price-was">$6.00</span>
+                  </div>
+                  <div class="phone-timer">⏱ 45m</div>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- Card 2 -->
+            <div class="phone-card">
+              <div class="phone-card-img">🍱</div>
+              <div style="flex:1">
+                <div class="phone-card-name">Sushi Platter</div>
+                <div class="phone-card-vendor">Sakura Kitchen · 0.8km</div>
+                <div class="phone-card-bottom">
+                  <div>
+                    <span class="phone-price">$8.00</span>
+                    <span class="phone-price-was">$18.00</span>
+                  </div>
+                  <div class="phone-timer">⏱ 1h 20m</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="phone-card">
+              <div class="phone-card-img">🍞</div>
+              <div style="flex:1">
+                <div class="phone-card-name">Sourdough Loaf</div>
+                <div class="phone-card-vendor">Daily Bread · 1.1km</div>
+                <div class="phone-card-bottom">
+                  <div>
+                    <span class="phone-price">$3.50</span>
+                    <span class="phone-price-was">$8.00</span>
+                  </div>
+                  <div class="phone-timer">⏱ 2h</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="height:16px;"></div>
+          </div>
+          <!-- /phone -->
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════ -->
+  <section class="how-it-works">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-eyebrow">Simple by design</p>
+        <h2 class="section-title">How <em>EchoEats</em> works</h2>
+        <p class="section-desc">From discovery to pickup in under 3 taps. Prices automatically fall — the longer you
+          wait, the bigger your deal.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card reveal reveal-delay-1">
+          <div class="step-num">1</div>
+          <span class="step-icon">📍</span>
+          <div class="step-title">Find deals nearby</div>
+          <div class="step-desc">Search by location or browse the live map to see surplus food from vendors within your
+            chosen radius. Filter by dietary preferences.</div>
+        </div>
+
+        <div class="step-card reveal reveal-delay-2">
+          <div class="step-num">2</div>
+          <span class="step-icon">📉</span>
+          <div class="step-title">Watch prices drop</div>
+          <div class="step-desc">Our dynamic pricing engine recalculates every 15 minutes. The closer to expiry, the
+            lower the price — you decide when to strike.</div>
+        </div>
+
+        <div class="step-card reveal reveal-delay-3">
+          <div class="step-num">3</div>
+          <span class="step-icon">🛒</span>
+          <div class="step-title">Reserve & pay</div>
+          <div class="step-desc">Lock in your price with a 15-minute hold. No double-booking, no surprises. Pay securely
+            and get a pickup confirmation.</div>
+        </div>
+
+        <div class="step-card reveal reveal-delay-3">
+          <div class="step-num">4</div>
+          <span class="step-icon">🌍</span>
+          <div class="step-title">Earn & track impact</div>
+          <div class="step-desc">Every meal saved earns you badges and CO₂ credits. Climb the community leaderboard and
+            get streak bonuses.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════
+     FEATURES
+══════════════════════════════════════════ -->
+  <section class="features">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-eyebrow">Everything you need</p>
+        <h2 class="section-title">Built for <em>real impact</em></h2>
+        <p class="section-desc">From AI-powered pricing to gamified sustainability — EchoEats is engineered to sell
+          every last bite.</p>
+      </div>
+
+      <div class="features-grid">
+
+        <!-- FEATURED: Pricing Engine -->
+        <div class="feature-card featured reveal">
+          <div class="featured-inner">
+            <div>
+              <div class="feature-icon">💰</div>
+              <h3 class="feature-title">Dynamic Pricing Engine</h3>
+              <p class="feature-desc">The heart of EchoEats. Our algorithm balances vendor revenue, consumer value, and
+                expiry urgency in real time. Choose from linear, exponential, or stepped decay curves.</p>
+            </div>
+            <div>
+              <div class="formula-label">Core Formula</div>
+              <div class="pricing-formula">
+                Price(t) =<br>
+                BasePrice<br>
+                × Decay(t)<br>
+                × Demand
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">📍</div>
+          <h3 class="feature-title">Live Map Search</h3>
+          <p class="feature-desc">Geospatial search powered by PostGIS. Vendor pins update in real time as you pan the
+            map. Results within 1km load in under 50ms.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">🔔</div>
+          <h3 class="feature-title">Smart Notifications</h3>
+          <p class="feature-desc">Get alerted when your saved items drop to target prices, when a favourite vendor posts
+            new stock, or 1 hour before expiry.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">🏆</div>
+          <h3 class="feature-title">Gamified Sustainability</h3>
+          <p class="feature-desc">Earn achievement badges, track your CO₂ savings, and compete on community
+            leaderboards. Streak bonuses reward consistent savers.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">📊</div>
+          <h3 class="feature-title">Vendor Analytics</h3>
+          <p class="feature-desc">A live dashboard showing sales trends, peak waste times, pricing effectiveness, and
+            revenue optimization suggestions.</p>
+        </div>
+
+        <div class="feature-card reveal">
+          <div class="feature-icon">🛡️</div>
+          <h3 class="feature-title">Secure Payments</h3>
+          <p class="feature-desc">Stripe-powered payments with instant vendor payouts. 15-minute reservation holds
+            prevent double-booking with full concurrency protection.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+     LIVE LISTINGS DEMO
+══════════════════════════════════════════ -->
+  <section class="listings-demo">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-eyebrow">Live deals</p>
+        <h2 class="section-title" style="color:var(--white);">Today's best <em
+            style="color:var(--green-400)">bargains</em></h2>
+        <p class="section-desc">Prices shown are live. They drop every 15 minutes — reload to see the latest.</p>
+      </div>
+
+      <div class="listings-grid">
+
+        <!-- Listing 1 -->
+        <div class="listing-card reveal reveal-delay-1">
+          <div class="listing-img">
+            🥐
+            <div class="listing-discount">-58%</div>
+            <div class="listing-urgency">⏱ 45 min left</div>
+          </div>
+          <div class="listing-body">
+            <div class="listing-vendor">Patisserie Nour · 0.3km</div>
+            <div class="listing-name">Croissant Box × 4</div>
+            <div class="listing-tags">
+              <span class="listing-tag">Vegetarian</span>
+              <span class="listing-tag">Nut-free</span>
+            </div>
+            <div class="listing-footer">
+              <div class="listing-price-block">
+                <span class="listing-price-current">$2.50</span>
+                <span class="listing-price-was">$6.00</span>
+              </div>
+              <button class="listing-reserve-btn" onclick="reserveItem(this, 'Croissant Box')">Reserve</button>
+            </div>
+          </div>
+          <div class="decay-bar-wrap">
+            <div class="decay-bar-label">
+              <span>Price decay</span>
+              <span>Expiry in 45m</span>
+            </div>
+            <div class="decay-bar-track">
+              <div class="decay-bar-fill" style="width:75%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing 2 -->
+        <div class="listing-card reveal reveal-delay-2">
+          <div class="listing-img" style="background:linear-gradient(135deg,#1a4a4a,#0d2b2b)">
+            🍱
+            <div class="listing-discount">-55%</div>
+            <div class="listing-urgency">⏱ 1h 20m left</div>
+          </div>
+          <div class="listing-body">
+            <div class="listing-vendor">Sakura Kitchen · 0.8km</div>
+            <div class="listing-name">Sushi Platter (12 pcs)</div>
+            <div class="listing-tags">
+              <span class="listing-tag">Gluten-free</span>
+              <span class="listing-tag">Seafood</span>
+            </div>
+            <div class="listing-footer">
+              <div class="listing-price-block">
+                <span class="listing-price-current">$8.00</span>
+                <span class="listing-price-was">$18.00</span>
+              </div>
+              <button class="listing-reserve-btn" onclick="reserveItem(this, 'Sushi Platter')">Reserve</button>
+            </div>
+          </div>
+          <div class="decay-bar-wrap">
+            <div class="decay-bar-label">
+              <span>Price decay</span>
+              <span>Expiry in 1h 20m</span>
+            </div>
+            <div class="decay-bar-track">
+              <div class="decay-bar-fill" style="width:55%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing 3 -->
+        <div class="listing-card reveal reveal-delay-3">
+          <div class="listing-img" style="background:linear-gradient(135deg,#3d2b1a,#1a0f0a)">
+            🍞
+            <div class="listing-discount">-56%</div>
+            <div class="listing-urgency">⏱ 2h left</div>
+          </div>
+          <div class="listing-body">
+            <div class="listing-vendor">Daily Bread · 1.1km</div>
+            <div class="listing-name">Sourdough Loaf</div>
+            <div class="listing-tags">
+              <span class="listing-tag">Vegan</span>
+              <span class="listing-tag">Fresh today</span>
+            </div>
+            <div class="listing-footer">
+              <div class="listing-price-block">
+                <span class="listing-price-current">$3.50</span>
+                <span class="listing-price-was">$8.00</span>
+              </div>
+              <button class="listing-reserve-btn" onclick="reserveItem(this, 'Sourdough Loaf')">Reserve</button>
+            </div>
+          </div>
+          <div class="decay-bar-wrap">
+            <div class="decay-bar-label">
+              <span>Price decay</span>
+              <span>Expiry in 2h</span>
+            </div>
+            <div class="decay-bar-track">
+              <div class="decay-bar-fill" style="width:40%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing 4 -->
+        <div class="listing-card reveal reveal-delay-1">
+          <div class="listing-img" style="background:linear-gradient(135deg,#1a3d1a,#0a200a)">
+            🥗
+            <div class="listing-discount">-40%</div>
+            <div class="listing-urgency">⏱ 3h left</div>
+          </div>
+          <div class="listing-body">
+            <div class="listing-vendor">Green Bowl · 0.5km</div>
+            <div class="listing-name">Mezze Platter</div>
+            <div class="listing-tags">
+              <span class="listing-tag">Vegan</span>
+              <span class="listing-tag">Halal</span>
+            </div>
+            <div class="listing-footer">
+              <div class="listing-price-block">
+                <span class="listing-price-current">$6.00</span>
+                <span class="listing-price-was">$10.00</span>
+              </div>
+              <button class="listing-reserve-btn" onclick="reserveItem(this, 'Mezze Platter')">Reserve</button>
+            </div>
+          </div>
+          <div class="decay-bar-wrap">
+            <div class="decay-bar-label">
+              <span>Price decay</span>
+              <span>Expiry in 3h</span>
+            </div>
+            <div class="decay-bar-track">
+              <div class="decay-bar-fill" style="width:28%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing 5 -->
+        <div class="listing-card reveal reveal-delay-2">
+          <div class="listing-img" style="background:linear-gradient(135deg,#2d1a1a,#1a0a0a)">
+            🍕
+            <div class="listing-discount">-50%</div>
+            <div class="listing-urgency">⏱ 1h left</div>
+          </div>
+          <div class="listing-body">
+            <div class="listing-vendor">Pizzeria Roma · 0.6km</div>
+            <div class="listing-name">Pizza Margherita (whole)</div>
+            <div class="listing-tags">
+              <span class="listing-tag">Vegetarian</span>
+            </div>
+            <div class="listing-footer">
+              <div class="listing-price-block">
+                <span class="listing-price-current">$5.00</span>
+                <span class="listing-price-was">$10.00</span>
+              </div>
+              <button class="listing-reserve-btn" onclick="reserveItem(this, 'Pizza Margherita')">Reserve</button>
+            </div>
+          </div>
+          <div class="decay-bar-wrap">
+            <div class="decay-bar-label">
+              <span>Price decay</span>
+              <span>Expiry in 1h</span>
+            </div>
+            <div class="decay-bar-track">
+              <div class="decay-bar-fill" style="width:65%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Listing 6 -->
+        <div class="listing-card reveal reveal-delay-3">
+          <div class="listing-img" style="background:linear-gradient(135deg,#1a1a3d,#0a0a20)">
+            ☕
+            <div class="listing-discount">-45%</div>
+            <div class="listing-urgency">⏱ 30m left</div>
+          </div>
+          <div class="listing-body">
+            <div class="listing-vendor">Café Saffron · 0.2km</div>
+            <div class="listing-name">Coffee + Cake Bundle</div>
+            <div class="listing-tags">
+              <span class="listing-tag">Vegetarian</span>
+              <span class="listing-tag">Last chance!</span>
+            </div>
+            <div class="listing-footer">
+              <div class="listing-price-block">
+                <span class="listing-price-current">$2.75</span>
+                <span class="listing-price-was">$5.00</span>
+              </div>
+              <button class="listing-reserve-btn" onclick="reserveItem(this, 'Coffee + Cake')">Reserve</button>
+            </div>
+          </div>
+          <div class="decay-bar-wrap">
+            <div class="decay-bar-label">
+              <span>Price decay</span>
+              <span>Expiry in 30m</span>
+            </div>
+            <div class="decay-bar-track">
+              <div class="decay-bar-fill" style="width:88%"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="text-center" style="margin-top:48px">
+        <a href="listings.html" class="btn btn-white btn-lg">View All Deals →</a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+     IMPACT
+══════════════════════════════════════════ -->
+  <section class="impact">
+    <div class="container">
+      <div class="impact-inner">
+
+        <div class="reveal">
+          <p class="section-eyebrow">Real-world results</p>
+          <h2 class="section-title">Every meal saved <em>matters</em></h2>
+          <p class="section-desc" style="margin:0 0 0 0; max-width:100%">
+            30–40% of the global food supply is wasted. EchoEats turns unsold food into affordable meals — and gives you
+            credit for every bite saved.
+          </p>
+
+          <div class="impact-stats">
+            <div class="impact-stat">
+              <div class="impact-stat-num">12,400</div>
+              <div class="impact-stat-label">🍽️ Meals saved total</div>
+            </div>
+            <div class="impact-stat">
+              <div class="impact-stat-num">1.8t</div>
+              <div class="impact-stat-label">🌿 CO₂ prevented (kg)</div>
+            </div>
+            <div class="impact-stat">
+              <div class="impact-stat-num">85+</div>
+              <div class="impact-stat-label">🏪 Partner vendors</div>
+            </div>
+            <div class="impact-stat">
+              <div class="impact-stat-num">$48,000</div>
+              <div class="impact-stat-label">💰 Saved by consumers</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Badges + Leaderboard -->
+        <div class="badges-wrap reveal reveal-delay-2">
+          <div class="badges-title">🏆 Achievement Badges</div>
+          <div class="badges-grid">
+            <div class="badge-item">
+              <div class="badge-icon">🌱</div>
+              <div class="badge-name">First Meal</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-icon">🔥</div>
+              <div class="badge-name">7-Day Streak</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-icon">💚</div>
+              <div class="badge-name">50 Meals</div>
+            </div>
+            <div class="badge-item locked">
+              <div class="badge-icon">🏅</div>
+              <div class="badge-name">100 Meals</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-icon">🌍</div>
+              <div class="badge-name">10kg CO₂</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-icon">⚡</div>
+              <div class="badge-name">Speed Saver</div>
+            </div>
+            <div class="badge-item locked">
+              <div class="badge-icon">👑</div>
+              <div class="badge-name">Top 10</div>
+            </div>
+            <div class="badge-item locked">
+              <div class="badge-icon">🦋</div>
+              <div class="badge-name">Carbon Hero</div>
+            </div>
+          </div>
+
+          <div class="leaderboard" style="margin-top:28px">
+            <div style="font-size:13px;font-weight:700;color:var(--white);margin-bottom:12px;">🏅 Top Savers This Month
+            </div>
+            <div class="leaderboard-row">
+              <span class="lb-rank gold">1</span>
+              <div class="lb-avatar">AK</div>
+              <span class="lb-name">Ahmad K.</span>
+              <span class="lb-meals">143 meals</span>
+            </div>
+            <div class="leaderboard-row">
+              <span class="lb-rank silver">2</span>
+              <div class="lb-avatar">SL</div>
+              <span class="lb-name">Sara L.</span>
+              <span class="lb-meals">128 meals</span>
+            </div>
+            <div class="leaderboard-row">
+              <span class="lb-rank bronze">3</span>
+              <div class="lb-avatar">MR</div>
+              <span class="lb-name">Maya R.</span>
+              <span class="lb-meals">117 meals</span>
+            </div>
+            <div class="leaderboard-row">
+              <span class="lb-rank">12</span>
+              <div class="lb-avatar" style="background:var(--green-500)">YS</div>
+              <span class="lb-name">You · Yousif S.</span>
+              <span class="lb-meals">47 meals</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+     VENDOR CTA
+══════════════════════════════════════════ -->
+  <section class="vendor-cta">
+    <div class="container">
+      <div class="vendor-cta-inner">
+
+        <div class="reveal">
+          <p class="section-eyebrow" style="color:var(--green-400)">For restaurants & cafes</p>
+          <h2 class="section-title">Turn waste into <em style="color:var(--green-400)">revenue</em></h2>
+          <p class="section-desc">Instead of throwing away unsold food at closing time, sell it on EchoEats. Set your
+            prices, choose your decay curve, and let the algorithm do the rest.</p>
+
+          <div class="vendor-perks">
+            <div class="vendor-perk">
+              <div class="vendor-perk-icon">📈</div>
+              <span>Recover up to 60% of revenue on food that would otherwise be discarded</span>
+            </div>
+            <div class="vendor-perk">
+              <div class="vendor-perk-icon">⚙️</div>
+              <span>Full control: set minimum price floors and choose linear, exponential, or stepped decay</span>
+            </div>
+            <div class="vendor-perk">
+              <div class="vendor-perk-icon">📊</div>
+              <span>Analytics dashboard showing waste patterns, peak times, and pricing effectiveness</span>
+            </div>
+            <div class="vendor-perk">
+              <div class="vendor-perk-icon">💳</div>
+              <span>Instant Stripe payouts — no waiting, no invoicing, no hassle</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="vendor-cta-form reveal reveal-delay-2">
+          <div class="form-title">List your first item free</div>
+          <div class="form-subtitle">Join 85+ vendors already on EchoEats</div>
+
+          <div class="form-group">
+            <label class="form-label">Business Name</label>
+            <input type="text" class="form-input" placeholder="e.g. Patisserie Nour" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" placeholder="hello@yourbusiness.com" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Business Type</label>
+            <select class="form-select">
+              <option>Restaurant</option>
+              <option>Cafe / Coffee Shop</option>
+              <option>Bakery</option>
+              <option>Supermarket</option>
+              <option>Home Cook</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-input" placeholder="+973 XXXX XXXX" />
+          </div>
+
+          <button class="btn btn-white btn-lg" style="width:100%;justify-content:center;margin-top:8px"
+            onclick="vendorSignup(this)">
+            🚀 Get Started Free
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════ -->
+  <section class="testimonials">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-eyebrow">What people say</p>
+        <h2 class="section-title">Loved by <em>savers</em> and <em>vendors</em></h2>
+      </div>
+
+      <div class="testimonials-grid">
+
+        <div class="testimonial-card reveal reveal-delay-1">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"I save around BD 15 every week just from grabbing deals on my way home from uni.
+            The price countdown makes it genuinely exciting — like a game."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">HY</div>
+            <div>
+              <div class="author-name">Hussain Y.</div>
+              <div class="author-role">Student, University of Bahrain</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card reveal reveal-delay-2">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"We used to throw away 30% of our daily pastry stock. Since joining EchoEats, we
+            sell 90% of it. The analytics dashboard showed us exactly when to start discounting."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">NM</div>
+            <div>
+              <div class="author-name">Nadia M.</div>
+              <div class="author-role">Owner, Patisserie Nour</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card reveal reveal-delay-3">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The map view is brilliant — I can literally see which vendors near me have
+            last-minute deals. Found an amazing sushi platter for $8 that would've cost $18 at dinner."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">AK</div>
+            <div>
+              <div class="author-name">Ali K.</div>
+              <div class="author-role">Regular consumer, Manama</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+
+        <div>
+          <div class="footer-brand-name">
+            <div class="nav-logo-icon">🌿</div>
+            EchoEats
+          </div>
+          <p class="footer-brand-desc">
+            Turning surplus food into affordable meals. Every reservation reduces food waste and fights climate change —
+            one meal at a time.
+          </p>
+          <div class="footer-socials">
+            <a href="#" class="social-btn" title="Twitter">𝕏</a>
+            <a href="#" class="social-btn" title="Instagram">📷</a>
+            <a href="#" class="social-btn" title="LinkedIn">in</a>
+            <a href="#" class="social-btn" title="GitHub">⌥</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Consumers</div>
+          <ul class="footer-links">
+            <li><a href="listings.html">Browse Deals</a></li>
+            <li><a href="#">Map Search</a></li>
+            <li><a href="#">My Reservations</a></li>
+            <li><a href="impact.html">My Impact</a></li>
+            <li><a href="#">Leaderboard</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Vendors</div>
+          <ul class="footer-links">
+            <li><a href="vendors.html">Vendor Signup</a></li>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Pricing Guide</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Payouts</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Project</div>
+          <ul class="footer-links">
+            <li><a href="how-it-works.html">How It Works</a></li>
+            <li><a href="#">About EchoEats</a></li>
+            <li><a href="#">SWEN 360 Docs</a></li>
+            <li><a href="#">GitHub Repo</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <div class="footer-bottom-text">
+          © 2026 EchoEats · Built for SWEN 360 / CMPE 460 · Spring 2026 · Team: Yousif Shakeeb, Mohamed Elshamy, Rashid
+          Bomtia, Ali Al Buainain, Hussain Yusuf
+        </div>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+  <script src="js/main.js"></script>
+</body>
+
+</html>
+
+
+

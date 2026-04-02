@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tech Stack — EchoEats</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+    <style>
+        /* ── PAGE HERO ── */
+        .page-hero {
+            background: linear-gradient(160deg, var(--green-900), #0a1f0d);
+            padding: calc(var(--nav-h) + 64px) 0 72px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(circle, rgba(74, 222, 128, 0.07) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
+
+        .page-hero-inner {
+            position: relative;
+        }
+
+        .page-hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -2px;
+            margin-bottom: 14px;
+            line-height: 1.1;
+        }
+
+        .page-hero p {
+            color: var(--green-200);
+            font-size: 17px;
+            max-width: 540px;
+            line-height: 1.7;
+        }
+
+        .page-hero-meta {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+
+        .meta-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 100px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--green-200);
+        }
+
+        .meta-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green-400);
+        }
+
+        /* ── LAYER NAV ── */
+        .layer-nav {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: var(--nav-h);
+            z-index: 100;
+        }
+
+        .layer-nav-inner {
+            display: flex;
+            gap: 4px;
+            padding: 12px 0;
+            overflow-x: auto;
+        }
+
+        .layer-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--text-soft);
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+            font-family: var(--font-main);
+        }
+
+        .layer-btn:hover {
+            border-color: var(--green-400);
+            color: var(--green-800);
+            background: var(--green-50);
+        }
+
+        .layer-btn.active {
+            background: var(--green-800);
+            color: #fff;
+            border-color: var(--green-800);
+        }
+
+        /* ── ARCH DIAGRAM ── */
+        .arch-section {
+            background: var(--green-900);
+            padding: 80px 0;
+        }
+
+        .arch-diagram {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            margin-top: 48px;
+        }
+
+        .arch-layer {
+            padding: 32px 28px;
+            background: rgba(255, 255, 255, 0.03);
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+            transition: background .2s;
+        }
+
+        .arch-layer:last-child {
+            border-right: none;
+        }
+
+        .arch-layer:hover {
+            background: rgba(74, 222, 128, 0.06);
+        }
+
+        .arch-layer-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--green-400);
+            margin-bottom: 16px;
+        }
+
+        .arch-layer-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .arch-layer-desc {
+            font-size: 13px;
+            color: var(--green-200);
+            line-height: 1.65;
+        }
+
+        .arch-tech-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .arch-chip {
+            padding: 4px 11px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(74, 222, 128, 0.12);
+            color: var(--green-300);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+        }
+
+        /* ── STACK SECTIONS ── */
+        .stack-section {
+            padding: 80px 0;
+        }
+
+        .stack-section:nth-child(even) {
+            background: var(--white);
+        }
+
+        .stack-section:nth-child(odd) {
+            background: var(--bg);
+        }
+
+        .stack-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 48px;
+        }
+
+        .tech-card {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px 24px;
+            position: relative;
+            transition: all .3s;
+            cursor: default;
+        }
+
+        .stack-section:nth-child(even) .tech-card {
+            background: var(--bg);
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--green-300);
+        }
+
+        .tech-card.chosen {
+            border-color: var(--green-500);
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+        }
+
+        .tech-card.chosen::after {
+            content: '✓ Selected';
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--green-100);
+            color: var(--green-700);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .5px;
+            padding: 3px 10px;
+            border-radius: 100px;
+        }
+
+        .tech-card-icon {
+            font-size: 36px;
+            margin-bottom: 14px;
+        }
+
+        .tech-card-name {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 6px;
+            letter-spacing: -.3px;
+        }
+
+        .tech-card-role {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--green-600);
+            margin-bottom: 10px;
+        }
+
+        .tech-card-desc {
+            font-size: 13px;
+            color: var(--text-soft);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .tech-card-why {
+            background: var(--green-50);
+            border: 1px solid var(--green-100);
+            border-radius: 10px;
+            padding: 10px 13px;
+            font-size: 12px;
+            color: var(--green-700);
+            line-height: 1.6;
+        }
+
+        .tech-card-why strong {
+            font-weight: 700;
+        }
+
+        /* ── COMPARISON TABLE ── */
+        .compare-section {
+            background: var(--white);
+            padding: 80px 0;
+        }
+
+        .compare-table-wrap {
+            overflow-x: auto;
+            margin-top: 48px;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .compare-table th {
+            background: var(--green-900);
+            color: #fff;
+            padding: 14px 18px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+        .compare-table th:first-child {
+            border-radius: var(--radius-sm) 0 0 0;
+        }
+
+        .compare-table th:last-child {
+            border-radius: 0 var(--radius-sm) 0 0;
+        }
+
+        .compare-table td {
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            vertical-align: middle;
+        }
+
+        .compare-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .compare-table tr:hover td {
+            background: var(--green-50);
+        }
+
+        .compare-table td:first-child {
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .check {
+            color: var(--green-600);
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .cross {
+            color: var(--red);
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .partial {
+            color: var(--orange);
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .highlight-row td {
+            background: var(--green-50) !important;
+        }
+
+        .highlight-row td:first-child {
+            border-left: 3px solid var(--green-500);
+        }
+
+        /* ── DECISION RATIONALE ── */
+        .rationale-section {
+            background: var(--green-900);
+            padding: 80px 0;
+        }
+
+        .rationale-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 48px;
+        }
+
+        .rationale-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            transition: all .2s;
+        }
+
+        .rationale-card:hover {
+            background: rgba(74, 222, 128, 0.07);
+        }
+
+        .rationale-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+        }
+
+        .rationale-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .rationale-text {
+            font-size: 13px;
+            color: var(--green-200);
+            line-height: 1.7;
+        }
+
+        /* ── DEV SETUP ── */
+        .setup-section {
+            background: var(--bg);
+            padding: 80px 0;
+        }
+
+        .setup-steps {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 48px;
+        }
+
+        .setup-card {
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            transition: all .3s;
+        }
+
+        .setup-card:hover {
+            border-color: var(--green-300);
+            box-shadow: var(--shadow);
+        }
+
+        .setup-step-num {
+            width: 32px;
+            height: 32px;
+            background: var(--green-800);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 14px;
+        }
+
+        .setup-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .setup-desc {
+            font-size: 13px;
+            color: var(--text-soft);
+            line-height: 1.65;
+            margin-bottom: 14px;
+        }
+
+        .code-block {
+            background: var(--green-900);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--green-300);
+            line-height: 1.8;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: rgba(74, 222, 128, 0.45);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width: 900px) {
+            .arch-diagram {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-layer {
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            }
+
+            .stack-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .rationale-grid,
+            .setup-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 600px) {
+            .stack-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-hero h1 {
+                font-size: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ══════════════ NAVBAR ══════════════ -->
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🌿</div>EchoEats
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="listings.html">Browse Deals</a></li>
+                <li><a href="how-it-works.html">How It Works</a></li>
+                <li><a href="vendors.html">For Vendors</a></li>
+                <li><a href="impact.html">Our Impact</a></li>
+                <li><a href="tech-stack.html" class="active">🛠 Tech Stack</a></li>
+                <li><a href="tasks.html">📋 Tasks</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="login.html" class="nav-signin">Sign In</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══════════════ HERO ══════════════ -->
+    <div class="page-hero">
+        <div class="container page-hero-inner">
+            <div class="tag tag-green" style="margin-bottom:20px">🛠 Engineering · SWEN 360 / CMPE 460</div>
+            <h1>Our Tech Stack &<br><em style="font-family:var(--font-serif);color:var(--green-400)">Architecture</em>
+            </h1>
+            <p>A full breakdown of every technology powering EchoEats — from the dynamic pricing engine to the
+                consumer-facing PWA — and why we chose each one.</p>
+            <div class="page-hero-meta">
+                <div class="meta-pill">
+                    <div class="meta-dot"></div>Vanilla HTML/CSS/JS Frontend
+                </div>
+                <div class="meta-pill">
+                    <div class="meta-dot"></div>Node.js + Express Backend
+                </div>
+                <div class="meta-pill">
+                    <div class="meta-dot"></div>PostgreSQL Database
+                </div>
+                <div class="meta-pill">
+                    <div class="meta-dot"></div>Stripe Payments
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════ STICKY LAYER NAV ══════════════ -->
+    <div class="layer-nav">
+        <div class="container">
+            <div class="layer-nav-inner">
+                <button class="layer-btn active" onclick="scrollToSection('arch', this)">🗺 Architecture</button>
+                <button class="layer-btn" onclick="scrollToSection('frontend', this)">🖥 Frontend</button>
+                <button class="layer-btn" onclick="scrollToSection('backend', this)">⚙️ Backend</button>
+                <button class="layer-btn" onclick="scrollToSection('database', this)">🗄 Database</button>
+                <button class="layer-btn" onclick="scrollToSection('payments', this)">💳 Payments</button>
+                <button class="layer-btn" onclick="scrollToSection('devops', this)">🚀 DevOps</button>
+                <button class="layer-btn" onclick="scrollToSection('compare', this)">📊 Comparison</button>
+                <button class="layer-btn" onclick="scrollToSection('setup', this)">💻 Dev Setup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════ ARCHITECTURE ══════════════ -->
+    <section class="arch-section" id="arch">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow" style="color:var(--green-400)">System Design</p>
+                <h2 class="section-title" style="color:#fff">Three-Layer <em
+                        style="color:var(--green-400)">Architecture</em></h2>
+                <p style="color:var(--green-200);max-width:560px;margin:0 auto;font-size:15px;">EchoEats follows a clean
+                    separation of concerns: a lightweight frontend, a stateless REST API, and a relational database —
+                    each independently deployable.</p>
+            </div>
+            <div class="arch-diagram reveal">
+                <div class="arch-layer">
+                    <div class="arch-layer-label">Layer 1 · Client</div>
+                    <div class="arch-layer-title">Frontend</div>
+                    <div class="arch-layer-desc">Static HTML/CSS/JS served as a PWA. No build step required — all pages
+                        link to a shared stylesheet and a single main.js. Designed for zero-dependency portability.
+                    </div>
+                    <div class="arch-tech-chips">
+                        <span class="arch-chip">HTML5</span>
+                        <span class="arch-chip">CSS3 Custom Props</span>
+                        <span class="arch-chip">Vanilla JS</span>
+                        <span class="arch-chip">PWA</span>
+                        <span class="arch-chip">localStorage</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-layer-label">Layer 2 · Server</div>
+                    <div class="arch-layer-title">Backend API</div>
+                    <div class="arch-layer-desc">A stateless REST API built with Node.js and Express. Handles auth
+                        (JWT), listing CRUD, dynamic pricing recalculation (cron every 15 min), and Stripe webhook
+                        processing.</div>
+                    <div class="arch-tech-chips">
+                        <span class="arch-chip">Node.js</span>
+                        <span class="arch-chip">Express</span>
+                        <span class="arch-chip">JWT Auth</span>
+                        <span class="arch-chip">node-cron</span>
+                        <span class="arch-chip">Stripe SDK</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="arch-layer-label">Layer 3 · Data</div>
+                    <div class="arch-layer-title">Database</div>
+                    <div class="arch-layer-desc">PostgreSQL stores users, listings, reservations, transactions, and
+                        impact stats. Row-level locking prevents double-reservations. Redis caches hot listing prices
+                        between cron runs.</div>
+                    <div class="arch-tech-chips">
+                        <span class="arch-chip">PostgreSQL 16</span>
+                        <span class="arch-chip">Redis</span>
+                        <span class="arch-chip">Prisma ORM</span>
+                        <span class="arch-chip">Row Locking</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ FRONTEND ══════════════ -->
+    <section class="stack-section" id="frontend">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow">Layer 1</p>
+                <h2 class="section-title">Frontend <em>Technologies</em></h2>
+                <p class="section-desc">Intentionally lightweight — no framework overhead, instant load times, and full
+                    team accessibility regardless of JS framework experience.</p>
+            </div>
+            <div class="stack-grid">
+
+                <div class="tech-card chosen reveal">
+                    <div class="tech-card-icon">📄</div>
+                    <div class="tech-card-name">HTML5 + CSS3</div>
+                    <div class="tech-card-role">Markup & Styling</div>
+                    <div class="tech-card-desc">Semantic HTML5 structure across 10 pages, driven by a single shared
+                        stylesheet using CSS custom properties for the design token system (colors, radii, shadows).
+                    </div>
+                    <div class="tech-card-why"><strong>Why:</strong> Zero build step. Every team member can open and
+                        edit any file instantly. CSS variables give us a full design system without Tailwind or Sass.
+                    </div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-1">
+                    <div class="tech-card-icon">⚡</div>
+                    <div class="tech-card-name">Vanilla JavaScript</div>
+                    <div class="tech-card-role">Interactivity & Logic</div>
+                    <div class="tech-card-desc">All client-side logic — auth flows, dynamic pricing simulation, toast
+                        notifications, localStorage state, drag-and-drop task board — in a single main.js plus
+                        page-level scripts.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> No bundle size, no dependency risk. The dynamic
+                        pricing ticker, reserve button, and scroll animations all run in under 5KB of JS.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-2">
+                    <div class="tech-card-icon">📱</div>
+                    <div class="tech-card-name">Progressive Web App</div>
+                    <div class="tech-card-role">PWA + Offline Support</div>
+                    <div class="tech-card-desc">A service worker caches the shell, fonts, and last-viewed listings.
+                        Users can add EchoEats to their home screen and browse previously-seen deals offline.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Critical for Bahrain's mobile-first user base. PWA
+                        gives native-app feel without App Store friction or React Native complexity.</div>
+                </div>
+
+                <div class="tech-card chosen reveal">
+                    <div class="tech-card-icon">🗂</div>
+                    <div class="tech-card-name">localStorage</div>
+                    <div class="tech-card-role">Client-Side State (Demo)</div>
+                    <div class="tech-card-desc">All demo auth, user profiles, listings, and task board state is
+                        persisted in localStorage. This powers a fully functional prototype with zero backend dependency
+                        for grading/demo purposes.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Lets the entire frontend be evaluated standalone.
+                        In production, this is replaced by API calls to the Node backend.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-1">
+                    <div class="tech-card-icon">🅰</div>
+                    <div class="tech-card-name">Plus Jakarta Sans</div>
+                    <div class="tech-card-role">Typography</div>
+                    <div class="tech-card-desc">Primary sans-serif via Google Fonts. Paired with Instrument Serif for
+                        editorial headings. Loaded with <code>display=swap</code> to prevent layout shift during font
+                        loading.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Modern geometric humanist — legible at small sizes
+                        on mobile, distinctive at large display sizes. Free and widely supported.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-2">
+                    <div class="tech-card-icon">🎞</div>
+                    <div class="tech-card-name">IntersectionObserver</div>
+                    <div class="tech-card-role">Scroll Animations</div>
+                    <div class="tech-card-desc">Native browser API drives all <code>.reveal</code> scroll animations —
+                        no GSAP, no ScrollMagic. Elements fade and slide in as they enter the viewport with staggered
+                        delays.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Zero KB of animation library. Performant,
+                        GPU-composited transforms only. Works perfectly across all modern browsers.</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ BACKEND ══════════════ -->
+    <section class="stack-section" id="backend">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow">Layer 2</p>
+                <h2 class="section-title">Backend <em>Technologies</em></h2>
+                <p class="section-desc">A stateless REST API designed around the core pricing engine — with scheduled
+                    jobs, webhook handling, and role-based access control baked in.</p>
+            </div>
+            <div class="stack-grid">
+
+                <div class="tech-card chosen reveal">
+                    <div class="tech-card-icon">🟢</div>
+                    <div class="tech-card-name">Node.js 20 LTS</div>
+                    <div class="tech-card-role">Runtime Environment</div>
+                    <div class="tech-card-desc">JavaScript runtime for the API server. Uses the LTS release for
+                        stability. The pricing engine's decay calculations run in the same language as the frontend,
+                        enabling shared utility functions.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Full-stack JavaScript means the team works in one
+                        language. Event-loop I/O handles concurrent reservation requests efficiently without thread
+                        management.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-1">
+                    <div class="tech-card-icon">🚂</div>
+                    <div class="tech-card-name">Express.js 4</div>
+                    <div class="tech-card-role">Web Framework</div>
+                    <div class="tech-card-desc">Minimal, unopinionated REST framework. Routes are split by domain:
+                        <code>/api/auth</code>, <code>/api/listings</code>, <code>/api/reservations</code>,
+                        <code>/api/vendors</code>, <code>/api/impact</code>. Middleware handles CORS, rate-limiting, and
+                        validation.
+                    </div>
+                    <div class="tech-card-why"><strong>Why:</strong> Lightweight and well-understood by the team. We
+                        don't need the full NestJS/Fastify ecosystem — Express gives us exactly what's required.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-2">
+                    <div class="tech-card-icon">🔐</div>
+                    <div class="tech-card-name">JWT + bcrypt</div>
+                    <div class="tech-card-role">Authentication</div>
+                    <div class="tech-card-desc">JSON Web Tokens for stateless auth. Consumer and vendor roles encoded in
+                        the token payload. Passwords hashed with bcrypt (12 rounds). Refresh token rotation via httpOnly
+                        cookie.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Stateless tokens scale horizontally without session
+                        store coordination. Role-based middleware protects vendor-only and consumer-only routes cleanly.
+                    </div>
+                </div>
+
+                <div class="tech-card chosen reveal">
+                    <div class="tech-card-icon">⏱</div>
+                    <div class="tech-card-name">node-cron</div>
+                    <div class="tech-card-role">Pricing Engine Scheduler</div>
+                    <div class="tech-card-desc">Scheduled job runs every 15 minutes to recalculate all active listing
+                        prices using the chosen decay curve (linear, exponential, or stepped). Expired listings are
+                        auto-archived.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> The 15-minute tick is central to EchoEats UX.
+                        node-cron keeps this logic server-side so prices are consistent across all clients
+                        simultaneously.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-1">
+                    <div class="tech-card-icon">🧪</div>
+                    <div class="tech-card-name">Zod</div>
+                    <div class="tech-card-role">Input Validation</div>
+                    <div class="tech-card-desc">Schema-based validation for all incoming API request bodies. Listing
+                        creation, reservation requests, and user registration are all validated before hitting the
+                        database.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> TypeScript-first with great error messages.
+                        Prevents invalid data from reaching Prisma and the DB — critical for price floor / expiry
+                        validation.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-2">
+                    <div class="tech-card-icon">📬</div>
+                    <div class="tech-card-name">Nodemailer</div>
+                    <div class="tech-card-role">Transactional Email</div>
+                    <div class="tech-card-desc">Sends pickup confirmations, reservation hold warnings (at 10 min), and
+                        vendor payout summaries. Configured with SendGrid as the SMTP relay in production.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Simple, battle-tested, zero vendor lock-in for the
+                        SMTP provider. The 15-minute reservation window makes timely email notifications essential.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ DATABASE ══════════════ -->
+    <section class="stack-section" id="database">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow">Layer 3</p>
+                <h2 class="section-title">Data <em>Layer</em></h2>
+                <p class="section-desc">Relational data with strong consistency guarantees — critical for the
+                    reservation lock system that prevents two users buying the same item.</p>
+            </div>
+            <div class="stack-grid">
+
+                <div class="tech-card chosen reveal">
+                    <div class="tech-card-icon">🐘</div>
+                    <div class="tech-card-name">PostgreSQL 16</div>
+                    <div class="tech-card-role">Primary Database</div>
+                    <div class="tech-card-desc">Stores users, listings, reservations, transactions, badges, and impact
+                        stats. Row-level locking (<code>SELECT FOR UPDATE</code>) ensures atomic reservation — no
+                        double-booking even under concurrent load.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> ACID guarantees are non-negotiable for payments and
+                        reservations. Postgres's JSONB columns also store the flexible decay curve config per listing
+                        without a separate table.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-1">
+                    <div class="tech-card-icon">🔷</div>
+                    <div class="tech-card-name">Prisma ORM</div>
+                    <div class="tech-card-role">Database Access Layer</div>
+                    <div class="tech-card-desc">Type-safe database client generated from a <code>schema.prisma</code>
+                        file. Handles migrations, relationships, and query building. Used for all CRUD operations on
+                        listings, users, and reservations.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Auto-generated types catch data shape errors at
+                        compile time. Migrations-as-code means schema changes are version-controlled alongside
+                        application code.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-2">
+                    <div class="tech-card-icon">🔴</div>
+                    <div class="tech-card-name">Redis 7</div>
+                    <div class="tech-card-role">Cache + Rate Limiter</div>
+                    <div class="tech-card-desc">Caches the current calculated price of every active listing between cron
+                        ticks. Also powers the API rate limiter (100 req/min per IP) and the 15-minute reservation TTL
+                        lock.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Price reads are extremely frequent (every user
+                        pageload). Redis serves them in &lt;1ms vs ~5ms Postgres. The TTL-based reservation lock is a
+                        natural Redis pattern.</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ PAYMENTS ══════════════ -->
+    <section class="stack-section" id="payments">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow">Monetisation</p>
+                <h2 class="section-title">Payments & <em>Payouts</em></h2>
+                <p class="section-desc">End-to-end payment infrastructure — from consumer checkout to automatic vendor
+                    payout — without EchoEats ever touching card data.</p>
+            </div>
+            <div class="stack-grid">
+
+                <div class="tech-card chosen reveal">
+                    <div class="tech-card-icon">💳</div>
+                    <div class="tech-card-name">Stripe Checkout</div>
+                    <div class="tech-card-role">Consumer Payments</div>
+                    <div class="tech-card-desc">Hosted checkout handles card processing, 3DS, Apple Pay, and Google Pay.
+                        A <code>PaymentIntent</code> is created server-side at the current dynamic price, then confirmed
+                        in Stripe's hosted UI.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> PCI-compliant out of the box. Stripe's hosted
+                        checkout means zero card data touches EchoEats servers — critical for a student project with
+                        real payment flows.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-1">
+                    <div class="tech-card-icon">🏦</div>
+                    <div class="tech-card-name">Stripe Connect</div>
+                    <div class="tech-card-role">Vendor Payouts</div>
+                    <div class="tech-card-desc">Each vendor onboards via Stripe Connect Express. When a sale completes,
+                        the platform fee (15%) is split automatically — the vendor receives their portion instantly via
+                        Stripe's managed payouts.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Removes all payout complexity. No manual transfers,
+                        no invoicing, no currency risk. Stripe handles KYC for vendors in GCC markets including Bahrain.
+                    </div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-2">
+                    <div class="tech-card-icon">🪝</div>
+                    <div class="tech-card-name">Stripe Webhooks</div>
+                    <div class="tech-card-role">Event Processing</div>
+                    <div class="tech-card-desc">Listens for <code>payment_intent.succeeded</code>,
+                        <code>payment_intent.payment_failed</code>, and <code>checkout.session.completed</code> events
+                        to confirm reservations, update listing status, and trigger impact stat updates.
+                    </div>
+                    <div class="tech-card-why"><strong>Why:</strong> Asynchronous — the frontend doesn't wait for the DB
+                        write. The webhook is the source of truth for reservation confirmation, handling network drops
+                        gracefully.</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ DEVOPS ══════════════ -->
+    <section class="stack-section" id="devops">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow">Infrastructure</p>
+                <h2 class="section-title">DevOps & <em>Deployment</em></h2>
+                <p class="section-desc">CI/CD pipeline, hosting, and monitoring — keeping EchoEats live and observable
+                    at all times.</p>
+            </div>
+            <div class="stack-grid">
+
+                <div class="tech-card chosen reveal">
+                    <div class="tech-card-icon">🐙</div>
+                    <div class="tech-card-name">GitHub Actions</div>
+                    <div class="tech-card-role">CI/CD Pipeline</div>
+                    <div class="tech-card-desc">On every push to <code>main</code>: run ESLint, Jest unit tests, Prisma
+                        migration check, then deploy. PRs require passing checks and one peer review before merge.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Native to GitHub where our repo lives. Free for the
+                        team. Enforces code quality gates without relying on individual discipline.</div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-1">
+                    <div class="tech-card-icon">🔺</div>
+                    <div class="tech-card-name">Vercel + Railway</div>
+                    <div class="tech-card-role">Hosting</div>
+                    <div class="tech-card-desc">Static frontend deployed to Vercel (edge CDN, global). Node.js API on
+                        Railway with auto-scaling. PostgreSQL and Redis also hosted on Railway in the same private
+                        network.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> Zero-config deploys from GitHub. Free tier covers
+                        our demo traffic. Same-network DB colocation keeps API latency under 2ms for Postgres queries.
+                    </div>
+                </div>
+
+                <div class="tech-card chosen reveal reveal-delay-2">
+                    <div class="tech-card-icon">🧪</div>
+                    <div class="tech-card-name">Jest + Supertest</div>
+                    <div class="tech-card-role">Testing</div>
+                    <div class="tech-card-desc">Unit tests for the pricing engine's decay curve functions (linear,
+                        exponential, stepped). Integration tests for reservation endpoints using Supertest against a
+                        test database.</div>
+                    <div class="tech-card-why"><strong>Why:</strong> The pricing math is the core of EchoEats — it needs
+                        bullet-proof tests. Supertest lets us test the full Express middleware stack without spinning up
+                        a server.</div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ COMPARISON TABLE ══════════════ -->
+    <section class="compare-section" id="compare">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow">Decision Log</p>
+                <h2 class="section-title">Frontend Framework <em>Comparison</em></h2>
+                <p class="section-desc">We evaluated four approaches before committing to Vanilla JS. Here's the full
+                    analysis.</p>
+            </div>
+            <div class="compare-table-wrap reveal">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th>Criteria</th>
+                            <th>⭐ Vanilla JS <em style="font-weight:400;opacity:.7">(chosen)</em></th>
+                            <th>React + Vite</th>
+                            <th>Vue 3</th>
+                            <th>Next.js</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="highlight-row">
+                            <td>Zero build step</td>
+                            <td><span class="check">✓</span></td>
+                            <td><span class="cross">✗</span></td>
+                            <td><span class="cross">✗</span></td>
+                            <td><span class="cross">✗</span></td>
+                        </tr>
+                        <tr>
+                            <td>Team familiarity</td>
+                            <td><span class="check">✓ All</span></td>
+                            <td><span class="partial">~ 2/5 members</span></td>
+                            <td><span class="partial">~ 1/5 members</span></td>
+                            <td><span class="partial">~ 2/5 members</span></td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>Initial page load</td>
+                            <td><span class="check">~18KB</span></td>
+                            <td><span class="cross">~140KB+</span></td>
+                            <td><span class="cross">~80KB+</span></td>
+                            <td><span class="cross">~200KB+</span></td>
+                        </tr>
+                        <tr>
+                            <td>Live price DOM updates</td>
+                            <td><span class="check">✓ setInterval</span></td>
+                            <td><span class="check">✓ useState</span></td>
+                            <td><span class="check">✓ reactive()</span></td>
+                            <td><span class="check">✓ useState</span></td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>Multi-page routing</td>
+                            <td><span class="check">✓ Native HTML</span></td>
+                            <td><span class="partial">~ React Router</span></td>
+                            <td><span class="partial">~ Vue Router</span></td>
+                            <td><span class="check">✓ Built-in</span></td>
+                        </tr>
+                        <tr>
+                            <td>SEO (no SSR)</td>
+                            <td><span class="check">✓ Static HTML</span></td>
+                            <td><span class="cross">✗ SPA</span></td>
+                            <td><span class="cross">✗ SPA</span></td>
+                            <td><span class="check">✓ SSR</span></td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>Suitable for grading demo</td>
+                            <td><span class="check">✓ Open file</span></td>
+                            <td><span class="cross">✗ npm run dev</span></td>
+                            <td><span class="cross">✗ npm run dev</span></td>
+                            <td><span class="cross">✗ npm run dev</span></td>
+                        </tr>
+                        <tr>
+                            <td>Component reuse</td>
+                            <td><span class="partial">~ Manual HTML</span></td>
+                            <td><span class="check">✓ JSX</span></td>
+                            <td><span class="check">✓ SFC</span></td>
+                            <td><span class="check">✓ JSX</span></td>
+                        </tr>
+                        <tr class="highlight-row">
+                            <td>Setup time</td>
+                            <td><span class="check">0 min</span></td>
+                            <td><span class="cross">~30 min</span></td>
+                            <td><span class="cross">~30 min</span></td>
+                            <td><span class="cross">~45 min</span></td>
+                        </tr>
+                        <tr>
+                            <td>Production scalability</td>
+                            <td><span class="partial">~ Limited</span></td>
+                            <td><span class="check">✓ Strong</span></td>
+                            <td><span class="check">✓ Strong</span></td>
+                            <td><span class="check">✓ Excellent</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ RATIONALE ══════════════ -->
+    <section class="rationale-section" id="rationale">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow" style="color:var(--green-400)">Decision Rationale</p>
+                <h2 class="section-title" style="color:#fff">Why this stack <em style="color:var(--green-400)">wins</em>
+                </h2>
+                <p style="color:var(--green-200);max-width:540px;margin:0 auto;font-size:15px;">Four key reasons this
+                    stack outperforms alternatives for our specific project constraints.</p>
+            </div>
+            <div class="rationale-grid">
+                <div class="rationale-card reveal">
+                    <div class="rationale-icon">🎓</div>
+                    <div class="rationale-title">Fits the academic context</div>
+                    <div class="rationale-text">The project is graded and demoed by opening HTML files — no
+                        <code>npm install</code>, no localhost, no build errors mid-demo. Our stack works identically on
+                        any machine with a browser.
+                    </div>
+                </div>
+                <div class="rationale-card reveal reveal-delay-1">
+                    <div class="rationale-icon">⚡</div>
+                    <div class="rationale-title">Speed to working prototype</div>
+                    <div class="rationale-text">We shipped a 10-page interactive prototype in two sprints. No time was
+                        lost on framework configuration, Webpack tuning, or TypeScript errors in JSX templates. Every
+                        hour went into product features.</div>
+                </div>
+                <div class="rationale-card reveal reveal-delay-2">
+                    <div class="rationale-icon">🌍</div>
+                    <div class="rationale-title">Mobile-first for Bahrain</div>
+                    <div class="rationale-text">The Bahrain food & beverage market is overwhelmingly mobile. Our 18KB
+                        PWA loads in under 1 second on 4G — faster than any React SPA could achieve without aggressive
+                        code-splitting and SSR.</div>
+                </div>
+                <div class="rationale-card reveal reveal-delay-3">
+                    <div class="rationale-icon">🔀</div>
+                    <div class="rationale-title">Clear upgrade path</div>
+                    <div class="rationale-text">Moving to React or Next.js post-graduation is straightforward: the API
+                        contract, DB schema, and CSS design system are all framework-agnostic. The frontend is the only
+                        layer that would change.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ DEV SETUP ══════════════ -->
+    <section class="setup-section" id="setup">
+        <div class="container">
+            <div class="text-center reveal">
+                <p class="section-eyebrow">Getting Started</p>
+                <h2 class="section-title">Local Dev <em>Setup</em></h2>
+                <p class="section-desc">Get the full EchoEats stack running locally in under 10 minutes.</p>
+            </div>
+            <div class="setup-steps">
+
+                <div class="setup-card reveal">
+                    <div class="setup-step-num">1</div>
+                    <div class="setup-title">Clone & install</div>
+                    <div class="setup-desc">Clone the repo and install backend dependencies. The frontend needs no
+                        installation — just open any HTML file.</div>
+                    <div class="code-block">
+                        <span class="code-comment"># Clone the repository</span><br>
+                        git clone https://github.com/echoeats/app.git<br>
+                        cd app<br><br>
+                        <span class="code-comment"># Install backend dependencies</span><br>
+                        cd backend && npm install
+                    </div>
+                </div>
+
+                <div class="setup-card reveal reveal-delay-1">
+                    <div class="setup-step-num">2</div>
+                    <div class="setup-title">Configure environment</div>
+                    <div class="setup-desc">Copy the example env file and fill in your local Postgres, Redis, and Stripe
+                        test keys.</div>
+                    <div class="code-block">
+                        cp .env.example .env<br><br>
+                        <span class="code-comment"># .env values needed:</span><br>
+                        DATABASE_URL=postgresql://...<br>
+                        REDIS_URL=redis://localhost:6379<br>
+                        JWT_SECRET=your-secret-here<br>
+                        STRIPE_SECRET_KEY=sk_test_...
+                    </div>
+                </div>
+
+                <div class="setup-card reveal">
+                    <div class="setup-step-num">3</div>
+                    <div class="setup-title">Run migrations & seed</div>
+                    <div class="setup-desc">Apply the Prisma schema to your local Postgres instance and seed demo data
+                        (vendors, listings, users).</div>
+                    <div class="code-block">
+                        <span class="code-comment"># Apply schema migrations</span><br>
+                        npx prisma migrate dev<br><br>
+                        <span class="code-comment"># Seed demo data</span><br>
+                        npx prisma db seed<br><br>
+                        <span class="code-comment"># Open Prisma Studio (optional)</span><br>
+                        npx prisma studio
+                    </div>
+                </div>
+
+                <div class="setup-card reveal reveal-delay-1">
+                    <div class="setup-step-num">4</div>
+                    <div class="setup-title">Start the servers</div>
+                    <div class="setup-desc">Run the Node API server, then open the frontend directly in your browser.
+                        The demo also works fully offline via localStorage without the backend running.</div>
+                    <div class="code-block">
+                        <span class="code-comment"># Start the API server</span><br>
+                        npm run dev<br>
+                        <span class="code-comment"># → http://localhost:3001</span><br><br>
+                        <span class="code-comment"># Open frontend (no server needed)</span><br>
+                        open frontend/index.html<br>
+                        <span class="code-comment"># → file:///path/to/index.html</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ CTA ══════════════ -->
+    <section style="background:var(--green-800);padding:80px 0">
+        <div class="container text-center reveal">
+            <h2 class="section-title" style="color:#fff">See it in action</h2>
+            <p style="color:var(--green-200);font-size:17px;max-width:480px;margin:0 auto 36px">Browse live deals, log
+                in as a vendor, or check the task board — all powered by the stack above.</p>
+            <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+                <a href="listings.html" class="btn btn-white btn-lg">🍽️ Browse Deals</a>
+                <a href="tasks.html" class="btn btn-outline btn-lg"
+                    style="color:var(--green-300);border-color:var(--green-500)">📋 View Task Board</a>
+                <a href="vendor-dashboard.html" class="btn btn-outline btn-lg"
+                    style="color:var(--green-300);border-color:var(--green-500)">📊 Vendor Dashboard</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══════════════ FOOTER ══════════════ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0">
+                <div class="footer-bottom-text">© 2026 EchoEats · SWEN 360 / CMPE 460 · Spring 2026</div>
+                <a href="index.html" class="btn btn-outline btn-sm"
+                    style="color:var(--green-300);border-color:var(--green-700)">← Back to Home</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        /* Layer nav scroll + active state */
+        function scrollToSection(id, btn) {
+            const el = document.getElementById(id);
+            if (el) {
+                const offset = el.getBoundingClientRect().top + window.scrollY - 120;
+                window.scrollTo({ top: offset, behavior: 'smooth' });
+            }
+            document.querySelectorAll('.layer-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        /* Update active layer button on scroll */
+        const layerSections = ['arch', 'frontend', 'backend', 'database', 'payments', 'devops', 'compare', 'setup'];
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY + 160;
+            let current = layerSections[0];
+            layerSections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.offsetTop <= scrollY) current = id;
+            });
+            document.querySelectorAll('.layer-btn').forEach((b, i) => {
+                b.classList.toggle('active', layerSections[i] === current);
+            });
+        });
+    </script>
+</body>
+
+</html>
