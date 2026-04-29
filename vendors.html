@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Vendors — EchoEats</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+  <style>
+    .page-hero {
+      background: linear-gradient(160deg, #0d2e12 0%, #1a4a26 50%, #0f2d16 100%);
+      padding: calc(var(--nav-h) + 28px) 24px 36px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(74, 222, 128, 0.15);
+    }
+
+    .page-hero::before {
+      display: none;
+    }
+
+    .page-hero::after {
+      display: none;
+    }
+
+    .page-hero .container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    .page-hero h1 {
+      font-size: 52px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -2px;
+      margin-bottom: 10px;
+      line-height: 1.15;
+      position: relative;
+    }
+
+    .page-hero p {
+      color: var(--green-200);
+      font-size: 17px;
+      max-width: 560px;
+      line-height: 1.75;
+      margin-bottom: 0;
+      position: relative;
+    }
+
+    .page-hero-floats {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-hero-floats span {
+      position: absolute;
+      opacity: 0.08;
+      user-select: none;
+      font-size: 56px;
+    }
+
+    .page-hero-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .page-hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green-200);
+    }
+
+    .stats-bar {
+      background: var(--green-800);
+      padding: 18px 0;
+    }
+
+    .stats-bar-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      text-align: center;
+    }
+
+    .stats-bar-item {
+      padding: 0 24px;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stats-bar-item:last-child {
+      border-right: none;
+    }
+
+    .stats-bar-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--green-400);
+      letter-spacing: -0.5px;
+    }
+
+    .stats-bar-label {
+      font-size: 12px;
+      color: var(--green-200);
+      margin-top: 2px;
+    }
+
+    .pricing-tiers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 56px;
+    }
+
+    .tier-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 36px 30px;
+      transition: all .3s;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tier-card .btn {
+      margin-top: auto;
+    }
+
+    .tier-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .tier-card.popular {
+      border-color: var(--green-500);
+      position: relative;
+    }
+
+    .tier-card.popular::before {
+      content: 'Most Popular';
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--green-700);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 100px;
+    }
+
+    .tier-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .tier-price {
+      font-size: 40px;
+      font-weight: 800;
+      color: var(--green-700);
+      letter-spacing: -1.5px;
+      margin: 16px 0 4px;
+    }
+
+    .tier-period {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .tier-features {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0 32px;
+      text-align: left;
+    }
+
+    .tier-features li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text-soft);
+      display: flex;
+      gap: 10px;
+    }
+
+    .tier-features li:last-child {
+      border-bottom: none;
+    }
+
+    .tier-features li::before {
+      content: '✓';
+      color: var(--green-600);
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .dashboard-preview {
+      background: var(--green-900);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      margin-top: 56px;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .dash-stat {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .dash-stat-num {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--green-400);
+      margin-bottom: 4px;
+    }
+
+    .dash-stat-label {
+      font-size: 12px;
+      color: var(--green-200);
+    }
+
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .dash-table th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--green-400);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .dash-table td {
+      padding: 11px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .status-live {
+      color: var(--green-400);
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    .status-sold {
+      color: var(--yellow);
+      font-weight: 700;
+      font-size: 11px;
+    }
+
+    @media(max-width:768px) {
+
+      .pricing-tiers,
+      .stats-bar-grid,
+      .dash-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media(max-width:500px) {
+
+      .pricing-tiers,
+      .stats-bar-grid,
+      .dash-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html" class="active">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="notifications.html">🔔 Notifications</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page-hero">
+    <!-- Aurora glow layers -->
+    <div class="aurora-bg"></div>
+    <!-- Animated dot grid -->
+    <div class="dot-grid"></div>
+    <!-- Mesh diagonal lines -->
+    <div class="mesh-lines"></div>
+    <!-- Noise texture -->
+    <div class="noise-overlay"></div>
+    <!-- Light sweep -->
+    <div class="sweep-light"></div>
+
+    <!-- Floating emoji decorations -->
+    <div class="hero-floats-deco">
+      <span class="fd float-slow" style="top:14%;right:14%;font-size:80px;opacity:0.85">🏪</span>
+      <span class="fd float-med" style="top:55%;right:7%;font-size:66px;opacity:0.75">💰</span>
+      <span class="fd float-fast" style="bottom:12%;right:30%;font-size:56px;opacity:0.70">📈</span>
+      <span class="fd float-slow" style="top:28%;right:42%;font-size:50px;opacity:0.65">🥐</span>
+      <span class="fd float-med" style="top:70%;left:5%;font-size:52px;opacity:0.60">🌿</span>
+    </div>
+
+    <div class="container" style="position:relative;z-index:3">
+      <div class="glow-pill" style="margin-bottom:16px;width:fit-content">
+        <span class="pill-dot"></span>
+        🏪 For Restaurants, Cafes &amp; Bakeries
+      </div>
+      <h1 style="position:relative">
+        Turn waste into<br>
+        <em class="text-shimmer" style="font-family:var(--font-serif);font-style:italic;font-size:1.1em">revenue</em>
+      </h1>
+      <p>Stop throwing away perfectly good food at closing time. List your surplus on EchoEats and our algorithm sells
+        it for you — automatically.</p>
+
+      <!-- Shiny stat pills row -->
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;margin-bottom:12px">
+        <div class="hero-stat-pill">
+          <div>
+            <div class="hero-stat-pill-num">85+</div>
+            <div class="hero-stat-pill-label">Active vendors</div>
+          </div>
+        </div>
+        <div class="hero-stat-pill">
+          <div>
+            <div class="hero-stat-pill-num">60%</div>
+            <div class="hero-stat-pill-label">Avg. revenue recovered</div>
+          </div>
+        </div>
+        <div class="hero-stat-pill">
+          <div>
+            <div class="hero-stat-pill-num">BD 0</div>
+            <div class="hero-stat-pill-label">Setup cost</div>
+          </div>
+        </div>
+        <div class="hero-stat-pill">
+          <div>
+            <div class="hero-stat-pill-num">24h</div>
+            <div class="hero-stat-pill-label">Time to first listing</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-hero-pills" style="margin-top:0;margin-bottom:14px">
+        <span class="page-hero-pill">✅ Free to join</span>
+        <span class="page-hero-pill">⚡ First listing in 24h</span>
+        <span class="page-hero-pill">📊 Live analytics dashboard</span>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <a href="#signup" class="btn btn-primary btn-lg">🚀 Join Free</a>
+        <a href="how-it-works.html" class="btn btn-outline btn-lg"
+          style="color:var(--green-300);border-color:var(--green-600)">See How It Works</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+
+
+  <!-- Features -->
+  <section class="section" style="background:var(--bg)">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-eyebrow">Why vendors choose EchoEats</p>
+        <h2 class="section-title">Everything you need to <em>stop wasting</em></h2>
+      </div>
+      <div class="features-grid" style="margin-top:56px">
+        <div class="feature-card reveal">
+          <div class="feature-icon">⚙️</div>
+          <h3 class="feature-title">Full Pricing Control</h3>
+          <p class="feature-desc">Choose your decay curve (linear, exponential, or stepped), set a minimum price floor,
+            and let the algorithm do the rest. You're always in control.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">📊</div>
+          <h3 class="feature-title">Analytics Dashboard</h3>
+          <p class="feature-desc">See which items sell fastest, when your peak waste times are, and get AI-powered
+            suggestions to optimise your pricing strategy week by week.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">💳</div>
+          <h3 class="feature-title">Instant Stripe Payouts</h3>
+          <p class="feature-desc">No invoicing, no waiting. Every sale triggers an automatic payout to your linked
+            Stripe account. See your earnings in real time.</p>
+        </div>
+        <div class="feature-card reveal">
+          <div class="feature-icon">📸</div>
+          <h3 class="feature-title">Easy Listing</h3>
+          <p class="feature-desc">Add a listing in under 2 minutes. Upload a photo, set a base price and expiry time,
+            add dietary tags, and go live instantly.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-icon">🔔</div>
+          <h3 class="feature-title">Smart Demand Alerts</h3>
+          <p class="feature-desc">Get notified when an item has high views but no reservations — a signal to speed up
+            your decay curve before the window closes.</p>
+        </div>
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-icon">🌍</div>
+          <h3 class="feature-title">Sustainability Badge</h3>
+          <p class="feature-desc">Every vendor gets a public CO₂ impact score. Display your sustainability credentials
+            to attract eco-conscious customers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Preview -->
+  <section class="section" style="background:var(--white)">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-eyebrow">Your command centre</p>
+        <h2 class="section-title">The Vendor <em>Dashboard</em></h2>
+      </div>
+      <div class="dashboard-preview reveal">
+        <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:20px">📊 Patisserie Nour — Today's
+          Overview</div>
+        <div class="dash-grid">
+          <div class="dash-stat">
+            <div class="dash-stat-num">12</div>
+            <div class="dash-stat-label">Items sold today</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-num">BD 34</div>
+            <div class="dash-stat-label">Revenue recovered</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-num">3</div>
+            <div class="dash-stat-label">Active listings</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-num">94%</div>
+            <div class="dash-stat-label">Sell-through rate</div>
+          </div>
+        </div>
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Base Price</th>
+              <th>Current Price</th>
+              <th>Expiry</th>
+              <th>Views</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Croissant Box ×4</td>
+              <td>$6.00</td>
+              <td>$2.50</td>
+              <td>45 min</td>
+              <td>38</td>
+              <td><span class="status-live">● LIVE</span></td>
+            </tr>
+            <tr>
+              <td>Pain au Chocolat ×6</td>
+              <td>$8.00</td>
+              <td>$4.00</td>
+              <td>1h 20m</td>
+              <td>21</td>
+              <td><span class="status-live">● LIVE</span></td>
+            </tr>
+            <tr>
+              <td>Almond Tart ×2</td>
+              <td>$5.00</td>
+              <td>$5.00</td>
+              <td>3h</td>
+              <td>9</td>
+              <td><span class="status-live">● LIVE</span></td>
+            </tr>
+            <tr>
+              <td>Baguette Bundle</td>
+              <td>$4.00</td>
+              <td>—</td>
+              <td>—</td>
+              <td>47</td>
+              <td><span class="status-sold">✓ SOLD</span></td>
+            </tr>
+            <tr>
+              <td>Danish Pastry ×3</td>
+              <td>$7.00</td>
+              <td>—</td>
+              <td>—</td>
+              <td>33</td>
+              <td><span class="status-sold">✓ SOLD</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Tiers -->
+  <section class="section" style="background:var(--bg)">
+    <div class="container">
+      <div class="text-center reveal">
+        <p class="section-eyebrow">Simple pricing</p>
+        <h2 class="section-title">Plans for every <em>vendor</em></h2>
+      </div>
+      <div class="pricing-tiers">
+        <div class="tier-card reveal">
+          <div class="tier-name">Starter</div>
+          <div class="tier-price">Free</div>
+          <div class="tier-period">forever</div>
+          <ul class="tier-features">
+            <li>Up to 5 listings/day</li>
+            <li>Linear decay only</li>
+            <li>Basic analytics</li>
+            <li>Stripe payouts</li>
+            <li>Email support</li>
+          </ul>
+          <a href="#signup" onclick="selectPlan('Starter')" class="btn btn-outline"
+            style="width:100%;justify-content:center">Get Started Free</a>
+        </div>
+        <div class="tier-card popular reveal reveal-delay-1">
+          <div class="tier-name">Growth</div>
+          <div class="tier-price">BD 15</div>
+          <div class="tier-period">per month</div>
+          <ul class="tier-features">
+            <li>Unlimited listings</li>
+            <li>All 3 decay curves</li>
+            <li>Full analytics dashboard</li>
+            <li>Demand alerts</li>
+            <li>Priority support</li>
+            <li>Sustainability badge</li>
+          </ul>
+          <a href="#signup" onclick="selectPlan('Growth')" class="btn btn-primary"
+            style="width:100%;justify-content:center">Start Free Trial</a>
+        </div>
+        <div class="tier-card reveal reveal-delay-2">
+          <div class="tier-name">Enterprise</div>
+          <div class="tier-price">Custom</div>
+          <div class="tier-period">contact us</div>
+          <ul class="tier-features">
+            <li>Multi-location support</li>
+            <li>API access</li>
+            <li>ML pricing predictions</li>
+            <li>A/B testing framework</li>
+            <li>Dedicated account manager</li>
+            <li>White-label option</li>
+          </ul>
+          <a href="#signup" onclick="selectPlan('Enterprise')" class="btn btn-outline"
+            style="width:100%;justify-content:center">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Signup Form -->
+  <section id="signup" style="background:linear-gradient(135deg,var(--green-800),var(--green-900));padding:80px 0">
+    <div class="container" style="max-width:560px">
+      <div class="text-center reveal" style="margin-bottom:40px">
+        <p class="section-eyebrow" style="color:var(--green-400)">Get started today</p>
+        <h2 class="section-title" style="color:#fff">List your first item <em style="color:var(--green-400)">free</em>
+        </h2>
+      </div>
+      <div class="vendor-cta-form reveal">
+        <div id="plan-banner"
+          style="display:none;background:#163420;border:1px solid #22c55e;border-radius:12px;padding:14px 20px;margin-bottom:20px;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div>
+            <div id="plan-banner-name" style="font-size:15px;font-weight:800;color:#fff"></div>
+            <div id="plan-banner-note" style="font-size:12px;color:#86efac;margin-top:3px"></div>
+          </div>
+          <div id="plan-banner-price" style="font-size:22px;font-weight:800;color:#4ade80"></div>
+        </div>
+        <div id="form-title" class="form-title">Vendor Application</div>
+        <div id="form-subtitle" class="form-subtitle">We'll review and approve your account within 24 hours.</div>
+        <div class="form-group"><label class="form-label">Business Name</label><input type="text" class="form-input"
+            placeholder="e.g. Patisserie Nour" /></div>
+        <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input"
+            placeholder="hello@yourbusiness.com" /></div>
+        <div class="form-group"><label class="form-label">Phone Number</label><input type="tel" class="form-input"
+            placeholder="+973 XXXX XXXX" /></div>
+        <div class="form-group"><label class="form-label">Business Type</label>
+          <select class="form-select">
+            <option>Restaurant</option>
+            <option>Cafe / Coffee Shop</option>
+            <option>Bakery</option>
+            <option>Supermarket</option>
+            <option>Home Cook</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Location / Area</label><input type="text" class="form-input"
+            placeholder="e.g. Manama, Bahrain" /></div>
+        <button class="btn btn-white btn-lg" style="width:100%;justify-content:center;margin-top:8px"
+          id="form-submit-btn" onclick="vendorSignup(this)">🚀 Submit Application</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <div class="footer-bottom-text">© 2026 EchoEats · SWEN 360 / CMPE 460 · Spring 2026</div>
+        <a href="index.html" class="btn btn-outline btn-sm"
+          style="color:var(--green-300);border-color:var(--green-700)">← Back to Home</a>
+      </div>
+    </div>
+  </footer>
+  <script src="main.js"></script>
+  <script>
+    function selectPlan(plan) {
+      var configs = {
+        Starter: {
+          title: 'Vendor Application',
+          sub: 'Free forever. We will review and approve your account within 24 hours.',
+          btnText: '🚀 Submit Application',
+          price: 'Free',
+          note: 'No credit card needed, free forever'
+        },
+        Growth: {
+          title: 'Start Your Free Trial',
+          sub: '14 days free on the Growth plan, then BD 15/month. No credit card required to start.',
+          btnText: '🚀 Start Free Trial',
+          price: 'BD 15/mo',
+          note: '14-day free trial included'
+        },
+        Enterprise: {
+          title: 'Contact Our Sales Team',
+          sub: 'Tell us about your business and we will put together a custom proposal within 24 hours.',
+          btnText: '📞 Request a Demo Call',
+          price: 'Custom',
+          note: 'Our team will reach out within 24h'
+        }
+      };
+      var cfg = configs[plan];
+      if (!cfg) return;
+
+      // Show banner
+      var banner = document.getElementById('plan-banner');
+      if (banner) {
+        banner.style.display = 'flex';
+        document.getElementById('plan-banner-name').textContent = plan + ' Plan Selected';
+        document.getElementById('plan-banner-price').textContent = cfg.price;
+        document.getElementById('plan-banner-note').textContent = cfg.note;
+      }
+
+      var t = document.getElementById('form-title');
+      var s = document.getElementById('form-subtitle');
+      var b = document.getElementById('form-submit-btn');
+      if (t) t.textContent = cfg.title;
+      if (s) s.textContent = cfg.sub;
+      if (b) b.textContent = cfg.btnText;
+
+      // Enterprise: add textarea if not present
+      var eg = document.getElementById('enterprise-msg-group');
+      if (plan === 'Enterprise') {
+        if (!eg && b) {
+          var mg = document.createElement('div');
+          mg.id = 'enterprise-msg-group';
+          mg.className = 'form-group';
+          mg.innerHTML = '<label class="form-label">Message <span style="font-weight:400;color:#9ca3af">(optional)</span></label>' +
+            '<textarea class="form-input" rows="3" placeholder="Number of locations, current waste volume, specific needs..." ' +
+            'style="resize:vertical;padding:11px 14px;font-family:inherit;font-size:14px;width:100%;box-sizing:border-box"></textarea>';
+          b.parentNode.insertBefore(mg, b);
+        }
+      } else {
+        if (eg) eg.remove();
+      }
+    }
+  </script>
+</body>
+
+</html>
