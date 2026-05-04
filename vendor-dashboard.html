@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vendor Dashboard — EchoEats</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+
+<body>
+
+  <nav class="navbar scrolled" id="navbar" style="position:relative">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <div style="display:flex;align-items:center;gap:10px">
+        <a href="listings.html" class="btn btn-outline btn-sm">View Marketplace</a>
+        <button class="btn btn-sm" onclick="logout()"
+          style="background:var(--bg);color:var(--text-soft);border:1px solid var(--border)">Sign Out</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-wrap">
+
+    <!-- SIDEBAR -->
+    <div class="dash-sidebar">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sb-av">V</div>
+        <div>
+          <div class="sidebar-name" id="sb-biz">My Business</div>
+          <div class="sidebar-role" id="sb-type">Vendor</div>
+        </div>
+      </div>
+      <div class="sidebar-section-label">Vendor Panel</div>
+      <button class="sidebar-link active" onclick="showPage('overview',this)">📊 Overview</button>
+      <button class="sidebar-link" onclick="showPage('listings',this)">🍕 My Listings</button>
+      <button class="sidebar-link" onclick="showPage('add',this)">➕ Add Listing</button>
+      <button class="sidebar-link" onclick="showPage('analytics',this)">📈 Analytics</button>
+      <div class="sidebar-section-label">Account</div>
+      <a href="listings.html" class="sidebar-link">🌐 View Marketplace</a>
+      <a href="notifications.html" class="sidebar-link">🔔 Notifications</a>
+      <button class="sidebar-link" onclick="logout()">🚪 Sign Out</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="dash-main">
+
+      <!-- OVERVIEW -->
+      <div id="page-overview">
+        <div class="dash-topbar">
+          <div>
+            <div class="dash-page-title" id="biz-title">Vendor Dashboard</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:2px">Today's performance</div>
+          </div>
+          <button class="btn btn-primary" onclick="showPage('add')">+ Add Listing</button>
+        </div>
+
+        <div class="dash-stats-grid">
+          <div class="dash-stat-card">
+            <div class="dash-stat-num" id="v-active">3</div>
+            <div class="dash-stat-label">Active listings</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num" id="v-sold">12</div>
+            <div class="dash-stat-label">Items sold today</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num" id="v-revenue">BD 34</div>
+            <div class="dash-stat-label">Revenue recovered</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num" id="v-rate">94%</div>
+            <div class="dash-stat-label">Sell-through rate</div>
+          </div>
+        </div>
+
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-title">Active Listings</div>
+
+          </div>
+          <div class="dash-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick="sortTable('overview','name')" style="cursor:pointer;user-select:none">Item <span
+                      id="ov-sort-name"></span></th>
+                  <th onclick="sortTable('overview','base')" style="cursor:pointer;user-select:none">Base Price <span
+                      id="ov-sort-base"></span></th>
+                  <th onclick="sortTable('overview','cur')" style="cursor:pointer;user-select:none">Current Price <span
+                      id="ov-sort-cur"></span></th>
+                  <th onclick="sortTable('overview','expiry')" style="cursor:pointer;user-select:none">Expiry <span
+                      id="ov-sort-expiry"></span></th>
+                  <th onclick="sortTable('overview','views')" style="cursor:pointer;user-select:none">Views <span
+                      id="ov-sort-views"></span></th>
+                  <th>Demand</th>
+                  <th>Curve</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="overview-listings-tbody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- MY LISTINGS -->
+      <div id="page-listings" style="display:none">
+        <div class="dash-topbar">
+          <div class="dash-page-title">My Listings</div>
+          <button class="btn btn-primary" onclick="showPage('add')">+ Add New</button>
+        </div>
+        <div class="dash-card">
+          <div class="dash-table-wrap">
+            <table id="all-listings-table">
+              <thead>
+                <tr>
+                  <th onclick="sortTable('all','name')" style="cursor:pointer;user-select:none">Item <span
+                      id="al-sort-name"></span></th>
+                  <th onclick="sortTable('all','base')" style="cursor:pointer;user-select:none">Base <span
+                      id="al-sort-base"></span></th>
+                  <th onclick="sortTable('all','cur')" style="cursor:pointer;user-select:none">Current <span
+                      id="al-sort-cur"></span></th>
+                  <th>Curve</th>
+                  <th onclick="sortTable('all','views')" style="cursor:pointer;user-select:none">Views <span
+                      id="al-sort-views"></span></th>
+                  <th onclick="sortTable('all','expiry')" style="cursor:pointer;user-select:none">Expires <span
+                      id="al-sort-expiry"></span></th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="all-listings-tbody">
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD LISTING -->
+      <div id="page-add" style="display:none">
+        <div class="dash-topbar">
+          <div class="dash-page-title">Add New Listing</div>
+        </div>
+        <div class="dash-card" style="max-width:600px;margin:0 auto">
+          <form onsubmit="submitListing(event)">
+            <div style="display:grid;grid-template-columns:1fr;gap:14px">
+              <div style="margin-bottom:0">
+                <label
+                  style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Food
+                  Name</label>
+                <input type="text" id="f-name" placeholder="e.g. Croissant Box x4" required maxlength="80"
+                  style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+              </div>
+              <div style="margin-bottom:0">
+                <label
+                  style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Food
+                  Photo <span style="color:#ef4444">*</span></label>
+                <label id="upload-label" for="f-photo-file"
+                  style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 14px;border:1.5px dashed var(--border);border-radius:12px;font-size:13px;color:var(--text-soft);cursor:pointer;transition:border-color .2s,background .2s;background:var(--white)"
+                  onmouseover="this.style.borderColor='var(--green-400)';this.style.background='var(--green-50)'"
+                  onmouseout="this.style.borderColor='var(--border)';this.style.background='var(--white)'">
+                  📷 <span id="upload-label-text">Click to upload photo</span>
+                </label>
+                <input type="file" id="f-photo-file" accept="image/*" style="display:none"
+                  onchange="handlePhotoUpload(this)">
+                <div id="photo-preview"
+                  style="margin-top:10px;display:none;border-radius:14px;overflow:hidden;width:100%;aspect-ratio:4/3;background:var(--bg);position:relative;box-shadow:0 2px 8px rgba(0,0,0,0.08)">
+                  <img id="photo-preview-img"
+                    style="width:100%;height:100%;object-fit:cover;object-position:center;display:block" alt="preview">
+                  <button type="button" onclick="clearPhoto()"
+                    style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.55);color:#fff;border:none;border-radius:50%;width:28px;height:28px;font-size:15px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="margin-bottom:14px">
+                <label
+                  style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Base
+                  Price (BD)</label>
+                <input type="number" id="f-price" placeholder="8.00" min="0.5" step="0.5" required oninput="drawCurve()"
+                  style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+              </div>
+              <div style="margin-bottom:14px">
+                <label
+                  style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Minimum
+                  Price (BD)</label>
+                <input type="number" id="f-floor" placeholder="1.50" min="0.1" step="0.1" required oninput="drawCurve()"
+                  style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+              <div style="margin-bottom:14px">
+                <label
+                  style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Expiry
+                  (hours from now)</label>
+                <select id="f-expiry" oninput="drawCurve()"
+                  style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+                  <option value="0.5">30 minutes</option>
+                  <option value="1">1 hour</option>
+                  <option value="1.5">1.5 hours</option>
+                  <option value="2" selected>2 hours</option>
+                  <option value="3">3 hours</option>
+                  <option value="4">4 hours</option>
+                  <option value="6">6 hours</option>
+                </select>
+              </div>
+              <div style="margin-bottom:14px">
+                <label
+                  style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Quantity</label>
+                <input type="number" id="f-qty" placeholder="1" min="1" value="1"
+                  style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none">
+              </div>
+            </div>
+
+            <!-- Pricing curve selector -->
+            <div style="margin-bottom:18px">
+              <label
+                style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:10px">Pricing
+                Decay Curve</label>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+                <label style="cursor:pointer">
+                  <input type="radio" name="curve" value="linear" checked onchange="drawCurve()" style="display:none">
+                  <div id="crv-linear"
+                    style="text-align:center;padding:14px;border:2px solid var(--green-400);border-radius:14px;background:var(--green-50);transition:all .2s">
+                    <div style="font-size:18px;margin-bottom:5px">📐</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--dark)">Linear</div>
+                    <div style="font-size:11px;color:var(--text-muted)">Steady drop</div>
+                  </div>
+                </label>
+                <label style="cursor:pointer">
+                  <input type="radio" name="curve" value="exponential" onchange="drawCurve()" style="display:none">
+                  <div id="crv-exponential"
+                    style="text-align:center;padding:14px;border:2px solid var(--border);border-radius:14px;transition:all .2s">
+                    <div style="font-size:18px;margin-bottom:5px">📉</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--dark)">Exponential</div>
+                    <div style="font-size:11px;color:var(--text-muted)">Drops near end</div>
+                  </div>
+                </label>
+                <label style="cursor:pointer">
+                  <input type="radio" name="curve" value="stepped" onchange="drawCurve()" style="display:none">
+                  <div id="crv-stepped"
+                    style="text-align:center;padding:14px;border:2px solid var(--border);border-radius:14px;transition:all .2s">
+                    <div style="font-size:18px;margin-bottom:5px">📊</div>
+                    <div style="font-size:13px;font-weight:700;color:var(--dark)">Stepped</div>
+                    <div style="font-size:11px;color:var(--text-muted)">Checkpoints</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Live price curve preview -->
+            <div style="margin-bottom:18px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Price
+                Curve Preview</label>
+              <div class="curve-canvas-wrap">
+                <canvas id="curve-canvas" width="500" height="100" style="width:100%;height:auto"></canvas>
+                <div
+                  style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px">
+                  <span>Now (full price)</span><span>Expiry →</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Dietary tags -->
+            <div style="margin-bottom:18px">
+              <label
+                style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:8px">Dietary
+                Tags</label>
+              <div style="display:flex;flex-wrap:wrap;gap:7px">
+                <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">☪️ Halal</button>
+                <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🥗 Vegetarian</button>
+                <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🌾
+                  Gluten-free</button>
+                <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🐟 Seafood</button>
+                <button type="button" class="diet-chip" onclick="this.classList.toggle('active')">🚫
+                  Peanut-Free</button>
+              </div>
+            </div>
+
+            <div id="add-error" style="color:var(--red);font-size:13px;margin-bottom:12px;display:none"></div>
+            <button type="submit" class="btn btn-primary"
+              style="width:100%;justify-content:center;padding:13px;font-size:15px">Post Listing</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="page-analytics" style="display:none">
+        <div class="dash-topbar">
+          <div class="dash-page-title">Analytics</div>
+        </div>
+        <div class="dash-stats-grid">
+          <div class="dash-stat-card">
+            <div class="dash-stat-num">18</div>
+            <div class="dash-stat-label">Total listings created</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num">16</div>
+            <div class="dash-stat-label">Successfully sold</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num">BD 128</div>
+            <div class="dash-stat-label">Total revenue recovered</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-num">89%</div>
+            <div class="dash-stat-label">Sell-through rate</div>
+          </div>
+        </div>
+        <div class="dash-2col">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Revenue by Curve Type</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px;margin-top:4px">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+                  <span>Exponential</span><span style="font-weight:700;color:var(--green-700)">BD 68 — 53%</span>
+                </div>
+                <div style="height:8px;background:var(--border);border-radius:4px">
+                  <div style="height:100%;width:53%;background:var(--green-500);border-radius:4px"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+                  <span>Linear</span><span style="font-weight:700;color:var(--green-700)">BD 40 — 31%</span>
+                </div>
+                <div style="height:8px;background:var(--border);border-radius:4px">
+                  <div style="height:100%;width:31%;background:var(--green-400);border-radius:4px"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px">
+                  <span>Stepped</span><span style="font-weight:700;color:var(--green-700)">BD 20 — 16%</span>
+                </div>
+                <div style="height:8px;background:var(--border);border-radius:4px">
+                  <div style="height:100%;width:16%;background:var(--green-300);border-radius:4px"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Top Viewed Items</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0">
+              <div
+                style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:18px">🥐</span>
+                <div style="flex:1;font-size:13px;font-weight:600">Croissant Box x4</div>
+                <div style="font-size:13px;font-weight:800;color:var(--green-700)">47 views</div>
+              </div>
+              <div
+                style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+                <span style="font-size:18px">🥐</span>
+                <div style="flex:1;font-size:13px;font-weight:600">Pain au Chocolat x6</div>
+                <div style="font-size:13px;font-weight:800;color:var(--green-700)">33 views</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:10px;padding:10px 0">
+                <span style="font-size:18px">🥐</span>
+                <div style="flex:1;font-size:13px;font-weight:600">Almond Tart x2</div>
+                <div style="font-size:13px;font-weight:800;color:var(--green-700)">21 views</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-title">Pricing Recommendations</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="font-size:18px">📉</span>
+              <div><strong>Use exponential decay for high-demand items.</strong> It holds the price longer then drops
+                sharply near expiry, maximising revenue while still clearing stock.</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="font-size:18px">⏰</span>
+              <div><strong>Peak listing time is 4–6 PM.</strong> Consumers browse deals on their way home. Try to post
+                your surplus food before 4 PM for maximum visibility.</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start">
+              <span style="font-size:18px">💰</span>
+              <div><strong>Set your floor at 20–25% of base price.</strong> This ensures you always recover some revenue
+                even in the final 30 minutes before expiry.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ML PRICING PREDICTIONS -->
+        <div class="dash-card" style="margin-top:20px">
+          <div class="dash-card-header">
+            <div class="dash-card-title">🤖 ML Pricing Predictions</div>
+            <span
+              style="font-size:11px;background:var(--green-100);color:var(--green-700);padding:3px 10px;border-radius:100px;font-weight:700">AI-Powered</span>
+          </div>
+          <p style="font-size:13px;color:var(--text-soft);margin-bottom:16px">Our model has analysed 847 of your past
+            listings and learned your optimal pricing patterns.</p>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+            <div
+              style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+              <div style="font-size:22px;font-weight:800;color:var(--green-700)">+18%</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-top:4px">Revenue uplift vs manual</div>
+            </div>
+            <div
+              style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+              <div style="font-size:22px;font-weight:800;color:var(--green-700)">94%</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-top:4px">Sell-through prediction accuracy</div>
+            </div>
+            <div
+              style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+              <div style="font-size:22px;font-weight:800;color:var(--green-700)">847</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-top:4px">Listings trained on</div>
+            </div>
+          </div>
+          <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px">Suggested optimal base prices
+            for tomorrow</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">🥐</span>
+                <div>
+                  <div style="font-weight:600;font-size:13px">Croissant Box ×4</div>
+                  <div style="font-size:11px;color:var(--text-soft)">Peak demand: 3–5 PM · Exponential recommended</div>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:14px;font-weight:800;color:var(--green-700)">BD 7.20</div>
+                <div style="font-size:11px;color:var(--text-muted)">vs your BD 6.00</div>
+              </div>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">🍰</span>
+                <div>
+                  <div style="font-weight:600;font-size:13px">Almond Tart ×2</div>
+                  <div style="font-size:11px;color:var(--text-soft)">Low weekend demand · Stepped recommended</div>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:14px;font-weight:800;color:var(--green-700)">BD 4.50</div>
+                <div style="font-size:11px;color:var(--text-muted)">vs your BD 5.00</div>
+              </div>
+            </div>
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--border)">
+              <div style="display:flex;align-items:center;gap:10px"><span style="font-size:18px">🥖</span>
+                <div>
+                  <div style="font-weight:600;font-size:13px">Baguette Bundle</div>
+                  <div style="font-size:11px;color:var(--text-soft)">High sell-through · Linear recommended</div>
+                </div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:14px;font-weight:800;color:var(--green-700)">BD 4.80</div>
+                <div style="font-size:11px;color:var(--text-muted)">vs your BD 4.00</div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:16px;width:100%;justify-content:center"
+            onclick="showToast('✅ ML suggestions applied to tomorrow\'s listings!')">Apply ML Suggestions</button>
+        </div>
+
+        <!-- A/B TESTING -->
+        <div class="dash-card" style="margin-top:20px">
+          <div class="dash-card-header">
+            <div class="dash-card-title">🧪 A/B Testing Framework</div>
+            <button class="btn btn-outline btn-sm" onclick="showToast('🧪 New A/B test created!')">+ New Test</button>
+          </div>
+          <p style="font-size:13px;color:var(--text-soft);margin-bottom:16px">Compare pricing strategies across real
+            listings. Tests run for 7 days with randomised assignment.</p>
+
+          <!-- Active Test -->
+          <div
+            style="border:2px solid var(--green-300);border-radius:12px;padding:18px;margin-bottom:14px;background:var(--green-50)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <div style="font-weight:700;font-size:14px;color:var(--dark)">Test #3 — Decay Curve Comparison</div>
+              <span
+                style="font-size:11px;background:var(--green-600);color:#fff;padding:3px 10px;border-radius:100px;font-weight:700">●
+                RUNNING</span>
+            </div>
+            <div style="font-size:12px;color:var(--text-soft);margin-bottom:14px">Baked goods · Day 5 of 7 · 42
+              participants</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px">
+                <div style="font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:8px">Variant A —
+                  Exponential</div>
+                <div style="font-size:20px;font-weight:800;color:var(--green-700)">BD 5.40</div>
+                <div style="font-size:11px;color:var(--text-soft)">Avg revenue / listing</div>
+                <div style="margin-top:8px;font-size:12px">Conversions: <strong>78%</strong></div>
+              </div>
+              <div
+                style="background:var(--white);border:2px solid var(--green-400);border-radius:10px;padding:14px;position:relative">
+                <div
+                  style="position:absolute;top:-10px;right:10px;background:var(--green-600);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px">
+                  WINNING</div>
+                <div style="font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:8px">Variant B — Stepped
+                </div>
+                <div style="font-size:20px;font-weight:800;color:var(--green-700)">BD 6.10</div>
+                <div style="font-size:11px;color:var(--text-soft)">Avg revenue / listing</div>
+                <div style="margin-top:8px;font-size:12px">Conversions: <strong>83%</strong></div>
+              </div>
+            </div>
+            <div
+              style="margin-top:12px;font-size:12px;color:var(--green-700);background:var(--green-100);padding:10px 14px;border-radius:8px">
+              📊 Variant B shows +13% revenue and +5pp conversion. Statistical significance: 91% — <strong>2 more days
+                to reach 95% confidence.</strong></div>
+          </div>
+
+          <!-- Completed Test -->
+          <div style="border:1px solid var(--border);border-radius:12px;padding:18px;background:var(--bg)">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <div style="font-weight:700;font-size:14px;color:var(--dark)">Test #2 — Listing Time (AM vs PM)</div>
+              <span
+                style="font-size:11px;background:var(--border);color:var(--text-soft);padding:3px 10px;border-radius:100px;font-weight:700">COMPLETED</span>
+            </div>
+            <div style="font-size:12px;color:var(--text-soft)">Result: PM listings sold <strong>22% faster</strong> with
+              <strong>BD 1.20 higher</strong> avg revenue. Recommendation applied. ✓
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── CROP MODAL ───────────────────────────────────────────────────── -->
+  <div id="crop-modal" style="
+      display:none; position:fixed; inset:0; z-index:9000;
+      background:rgba(0,0,0,0.75); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center; padding:20px;
+  ">
+    <div style="
+        background:var(--white); border-radius:20px; overflow:hidden;
+        box-shadow:0 24px 64px rgba(0,0,0,0.4); max-width:460px; width:100%;
+    ">
+      <!-- Header -->
+      <div style="
+          display:flex; align-items:center; justify-content:space-between;
+          padding:16px 20px; border-bottom:1px solid var(--border);
+      ">
+        <div>
+          <div style="font-size:15px;font-weight:800;color:var(--dark)">✂️ Crop Photo</div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:2px">Drag to reposition · Scroll / pinch to zoom
+          </div>
+        </div>
+        <button onclick="closeCropModal()" style="
+            background:var(--bg); border:1px solid var(--border); color:var(--text-soft);
+            border-radius:50%; width:32px; height:32px; font-size:16px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; line-height:1;
+        ">✕</button>
+      </div>
+
+      <!-- Canvas -->
+      <div style="background:#111; display:flex; align-items:center; justify-content:center; padding:12px;">
+        <canvas id="crop-canvas" style="cursor:grab; border-radius:4px; max-width:100%; touch-action:none;"></canvas>
+      </div>
+
+      <!-- Zoom slider -->
+      <div style="padding:10px 20px 4px; display:flex; align-items:center; gap:10px;">
+        <span style="font-size:13px;">🔍</span>
+        <input type="range" id="crop-zoom-slider" min="0" max="100" value="0"
+          style="flex:1; accent-color:var(--green-600);" oninput="
+            const s = _cropState;
+            const maxScale = s.minScale * 4;
+            const newScale = s.minScale + (maxScale - s.minScale) * (this.value / 100);
+            const canvas = document.getElementById('crop-canvas');
+            const S = canvas.width, cx = S/2, cy = S/2;
+            s.ox = cx - (cx - s.ox) * (newScale / s.scale);
+            s.oy = cy - (cy - s.oy) * (newScale / s.scale);
+            s.scale = newScale;
+            clampCropOffset(); drawCropCanvas();
+          ">
+        <span style="font-size:13px;">🔎</span>
+      </div>
+      <div style="font-size:11px; color:var(--text-muted); text-align:center; padding-bottom:6px;">Use slider or
+        scroll/pinch to zoom</div>
+
+      <!-- Actions -->
+      <div style="display:flex; gap:10px; padding:12px 20px 20px;">
+        <button onclick="closeCropModal()" style="
+            flex:1; padding:12px; border:1.5px solid var(--border); border-radius:12px;
+            background:var(--white); font-size:14px; font-weight:600; color:var(--text-soft); cursor:pointer;
+        ">Cancel</button>
+        <button onclick="cropAndApply()" style="
+            flex:2; padding:12px; border:none; border-radius:12px;
+            background:var(--green-700); color:#fff; font-size:14px; font-weight:700; cursor:pointer;
+        ">✅ Use This Crop</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script>
+    /* ── VENDOR DASHBOARD — localStorage-backed ── */
+    let user = null;
+    let selectedCurve = 'linear';
+
+    /* ── Storage helpers ── */
+    function lsKey() { return 'ee_listings_' + (user?.id || 'demo'); }
+    function lsLoad() {
+      try { const d = JSON.parse(localStorage.getItem(lsKey())); return Array.isArray(d) ? d : null; }
+      catch { return null; }
+    }
+    function lsSave(arr) { localStorage.setItem(lsKey(), JSON.stringify(arr)); }
+    function lsInit() {
+      const ex = lsLoad();
+      if (ex) return ex;
+      // New vendors start with no listings — return empty array
+      lsSave([]);
+      return [];
+    }
+
+    /* ── Compute current dynamic price ──────────────────────────────────────
+       Full formula: Price(t) = BasePrice × DecayFunction(t) × DemandMultiplier
+       DemandMultiplier is read from localStorage demand data (views/reservations).
+       This ensures high-demand items drop more slowly and low-demand items
+       drop faster to clear stock before expiry.
+       ───────────────────────────────────────────────────────────────────────── */
+    function currentPrice(listing) {
+      const elapsed = (Date.now() - listing.postedAt) / 1000 / 60; // minutes since posted
+      const total = listing.expiryH * 60;                          // total minutes
+      const t = Math.max(0, 1 - elapsed / total);                  // 1→0 remaining fraction
+
+      // DecayFunction(t)
+      let decay;
+      if (listing.curve === 'linear') {
+        decay = t;
+      } else if (listing.curve === 'exponential') {
+        decay = t < 0.2 ? t * 2 : 0.4 + (t - 0.2) * 0.75;
+      } else { // stepped
+        decay = t > 0.75 ? 0.9 : t > 0.5 ? 0.7 : t > 0.25 ? 0.5 : 0.3;
+      }
+
+      // DemandMultiplier — from real view/reservation data
+      const demandMult = typeof getDemandMultiplier === 'function'
+        ? getDemandMultiplier(listing.id)
+        : 0.85;
+
+      return Math.max(listing.floor, listing.base * decay * demandMult);
+    }
+
+    /* ── Return a human-readable demand label from multiplier value ── */
+    function demandLabel(listingId) {
+      const m = typeof getDemandMultiplier === 'function' ? getDemandMultiplier(listingId) : 0.85;
+      if (m >= 0.92) return '<span style="color:var(--green-600);font-weight:700;font-size:11px">🔥 High</span>';
+      if (m >= 0.78) return '<span style="color:var(--orange);font-weight:700;font-size:11px">⚡ Medium</span>';
+      return '<span style="color:var(--text-muted);font-weight:700;font-size:11px">📉 Low</span>';
+    }
+
+    /* ── Compute remaining expiry string ── */
+    function expiryLabel(listing) {
+      const expiresAt = listing.postedAt + listing.expiryH * 3600 * 1000;
+      const rem = expiresAt - Date.now();
+      if (rem <= 0) return 'Expired';
+      const m = Math.floor(rem / 60000);
+      if (m < 60) return m + 'm';
+      return Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
+    }
+
+
+    /* ── TABLE SORT ── */
+    var _tableSort = { col: null, dir: 1 };
+
+    function sortTable(table, col) {
+      if (_tableSort.col === col && _tableSort.table === table) {
+        _tableSort.dir *= -1;
+      } else {
+        _tableSort.col = col;
+        _tableSort.table = table;
+        _tableSort.dir = 1;
+      }
+      renderListingTables();
+    }
+
+    function applyTableSort(rows, table) {
+      var col = _tableSort.col;
+      var dir = _tableSort.dir;
+      if (!col || _tableSort.table !== table) return rows;
+      return rows.slice().sort(function (a, b) {
+        var va, vb;
+        var now = Date.now();
+        if (col === 'name') {
+          va = (a.l || a).name.toLowerCase();
+          vb = (b.l || b).name.toLowerCase();
+          return dir * va.localeCompare(vb);
+        }
+        if (col === 'base') {
+          va = (a.l || a).base || 0;
+          vb = (b.l || b).base || 0;
+        } else if (col === 'cur') {
+          va = currentPrice(a.l || a);
+          vb = currentPrice(b.l || b);
+        } else if (col === 'views') {
+          va = (a.l || a).views || 0;
+          vb = (b.l || b).views || 0;
+        } else if (col === 'expiry') {
+          var la = a.l || a, lb = b.l || b;
+          va = (la.postedAt + la.expiryH * 3600000) - now;
+          vb = (lb.postedAt + lb.expiryH * 3600000) - now;
+        } else {
+          return 0;
+        }
+        return dir * (va - vb);
+      });
+    }
+
+    function updateSortIndicators(table) {
+      var prefix = table === 'overview' ? 'ov' : 'al';
+      ['name', 'base', 'cur', 'views', 'expiry'].forEach(function (c) {
+        var el = document.getElementById(prefix + '-sort-' + c);
+        if (!el) return;
+        if (_tableSort.col === c && _tableSort.table === table) {
+          el.textContent = _tableSort.dir === 1 ? ' ↑' : ' ↓';
+        } else {
+          el.textContent = '';
+        }
+      });
+    }
+
+    /* ── Render both listing tables ── */
+    function renderListingTables() {
+      const allListings = lsInit();
+      // Only show listings belonging to the current vendor
+      const listings = allListings.filter(l => !l.vendorId || l.vendorId === user.id);
+      const now = Date.now();
+      const live = listings.filter(l => (l.postedAt + l.expiryH * 3600000) > now);
+      const expired = listings.filter(l => (l.postedAt + l.expiryH * 3600000) <= now);
+
+      /* Overview stats — all computed from real data */
+      document.getElementById('v-active').textContent = live.length;
+      document.getElementById('v-sold').textContent = expired.length;
+      // Revenue recovered = sum of floor prices of expired/sold items (proxy for minimum recovered)
+      const revenue = expired.reduce((sum, l) => sum + (l.floor || 0), 0);
+      document.getElementById('v-revenue').textContent = 'BD ' + revenue.toFixed(0);
+      // Sell-through rate = expired / total (if any)
+      const total = listings.length;
+      const rate = total > 0 ? Math.round((expired.length / total) * 100) : 0;
+      document.getElementById('v-rate').textContent = rate + '%';
+
+      // Simulate view increments for seeded listings so demand multiplier is non-zero
+      live.forEach(l => {
+        if (typeof recordView === 'function') recordView(l.id);
+      });
+
+      /* Overview table — live only */
+      const ovTbody = document.getElementById('overview-listings-tbody');
+      updateSortIndicators('overview');
+      if (ovTbody) {
+        const liveSorted = applyTableSort(live.map(function (l) { return { l }; }), 'overview').map(function (r) { return r.l; });
+        ovTbody.innerHTML = liveSorted.length ? liveSorted.map(l => {
+          const cur = currentPrice(l).toFixed(2);
+          const exp = expiryLabel(l);
+          const warn = (l.postedAt + l.expiryH * 3600000 - now) < 30 * 60000;
+          const dm = typeof getDemandMultiplier === 'function' ? getDemandMultiplier(l.id) : 0.85;
+          return `<tr>
+        <td><div style="display:flex;align-items:center;gap:10px">${l.photoUrl ? `<img src="${esc(l.photoUrl)}" style="width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">` : '<div style="width:32px;height:32px;border-radius:6px;background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:16px">🍽️</div>'}<strong>${esc(l.name)}</strong></div></td>
+        <td>BD ${l.base.toFixed(2)}</td>
+        <td style="font-weight:800;color:var(--green-700)">BD ${cur}</td>
+        <td style="${warn ? 'color:var(--orange);font-weight:700' : ''}">${exp}</td>
+        <td>${l.views || 0}</td>
+        <td>${demandLabel(l.id)} <span style="font-size:10px;color:var(--text-muted)">(×${dm.toFixed(2)})</span></td>
+        <td><span class="status-pill status-blue" style="text-transform:capitalize">${esc(l.curve)}</span></td>
+        <td><span class="status-pill status-green">Live</span></td>
+        <td><button onclick="deleteListing('${l.id}')" style="background:#fef2f2;border:1.5px solid #fecaca;cursor:pointer;color:#ef4444;font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px">Remove</button></td>
+      </tr>`;
+        }).join('') : '<tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:24px">No active listings — <button onclick="showPage(\'add\')" style="background:none;border:none;color:var(--green-600);cursor:pointer;font-weight:600;font-size:inherit">add one</button></td></tr>';
+      }
+
+      /* My Listings table — all */
+      const allTbody = document.getElementById('all-listings-tbody');
+      updateSortIndicators('all');
+      if (allTbody) {
+        const allRows = [...live.map(l => ({ l, status: 'live' })), ...expired.map(l => ({ l, status: 'sold' }))];
+        const rows = applyTableSort(allRows, 'all');
+        allTbody.innerHTML = rows.length ? rows.map(({ l, status }) => {
+          const cur = status === 'live' ? 'BD ' + currentPrice(l).toFixed(2) : '—';
+          const exp = status === 'live' ? expiryLabel(l) : '—';
+          const pill = status === 'live'
+            ? '<span class="status-pill status-green">Live</span>'
+            : '<span class="status-pill status-orange">Sold / Expired</span>';
+          return `<tr>
+        <td><div style="display:flex;align-items:center;gap:10px">${l.photoUrl ? `<img src="${esc(l.photoUrl)}" style="width:32px;height:32px;border-radius:6px;object-fit:cover" onerror="this.style.display='none'">` : '<div style="width:32px;height:32px;border-radius:6px;background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:16px">🍽️</div>'} ${esc(l.name)}</div></td>
+        <td>BD ${l.base.toFixed(2)}</td>
+        <td style="font-weight:700;color:var(--green-700)">${cur}</td>
+        <td style="text-transform:capitalize">${esc(l.curve)}</td>
+        <td>${l.views || 0}</td>
+        <td>${exp}</td>
+        <td>${pill}</td>
+        <td><button onclick="deleteListing('${l.id}')" title="Delete listing"
+          style="background:none;border:none;cursor:pointer;color:#ef4444;font-size:15px;padding:2px 6px;border-radius:6px" title="Delete">🗑</button></td>
+      </tr>`;
+        }).join('') : '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:24px">No listings yet.</td></tr>';
+
+        /* Ensure the table header has a Delete column */
+        const thead = document.querySelector('#all-listings-table thead tr');
+        if (thead && !thead.querySelector('[data-del-col]')) {
+          const th = document.createElement('th');
+          th.dataset.delCol = '1';
+          thead.appendChild(th);
+        }
+      }
+    }
+
+    /* ── Delete a listing ── */
+    function deleteListing(id) {
+      if (!confirm('Remove this listing?')) return;
+      const arr = lsInit().filter(l => l.id !== id);
+      lsSave(arr);
+      renderListingTables();
+      showToast('🗑 Listing removed');
+    }
+
+    /* ── Boot ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      user = JSON.parse(localStorage.getItem('ee_current_user'));
+      if (!user || user.role !== 'vendor') { window.location.href = 'login.html'; return; }
+
+      // Block pending vendors from accessing dashboard
+      if (user.status === 'pending') {
+        document.querySelector('.dash-wrap').innerHTML = `
+          <div style="min-height:80vh;display:flex;align-items:center;justify-content:center;padding:40px 20px">
+            <div style="max-width:480px;text-align:center">
+              <div style="font-size:64px;margin-bottom:20px;cursor:default;user-select:none" id="pending-icon" onclick="secretApprove()" title="">⏳</div>
+              <h2 style="font-size:26px;font-weight:800;color:var(--dark);margin-bottom:10px;letter-spacing:-0.5px">Account Pending Approval</h2>
+              <p style="color:var(--text-soft);font-size:15px;line-height:1.7;margin-bottom:28px">
+                Your vendor application for <strong>${user.businessName || 'your business'}</strong> is currently under review. 
+                Our team typically responds within 24 hours.
+              </p>
+              <div style="background:var(--green-50);border:1.5px solid var(--green-200);border-radius:16px;padding:24px;text-align:left;margin-bottom:28px">
+                <div style="font-size:13px;font-weight:700;color:var(--green-700);margin-bottom:14px">Application Details</div>
+                <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--text-soft)">
+                  <div><strong style="color:var(--dark)">Business:</strong> ${user.businessName || 'N/A'}</div>
+                  <div><strong style="color:var(--dark)">Type:</strong> ${user.businessType || 'N/A'}</div>
+                  <div><strong style="color:var(--dark)">Email:</strong> ${user.email}</div>
+                  <div><strong style="color:var(--dark)">Status:</strong> <span style="background:#fef3c7;color:#92400e;padding:2px 10px;border-radius:100px;font-weight:700;font-size:12px">Pending Review</span></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+                <a href="index.html" class="btn btn-primary" style="padding:12px 28px">Go to Homepage</a>
+                <button class="btn btn-outline" style="padding:12px 28px" onclick="localStorage.removeItem('ee_current_user');window.location.href='login.html'">Sign Out</button>
+              </div>
+            </div>
+          </div>`;
+        return;
+      }
+
+      // Secret approval easter egg — 5 rapid clicks on the ⏳ icon
+      let _secretClicks = 0, _secretTimer = null;
+      window.secretApprove = function () {
+        _secretClicks++;
+        const icon = document.getElementById('pending-icon');
+        icon.style.transform = 'scale(1.3)';
+        setTimeout(() => icon.style.transform = '', 150);
+        clearTimeout(_secretTimer);
+        if (_secretClicks >= 5) {
+          _secretClicks = 0;
+          // Approve the vendor instantly
+          const users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+          const idx = users.findIndex(u => u.id === user.id);
+          if (idx >= 0) { users[idx].status = 'approved'; localStorage.setItem('ee_users', JSON.stringify(users)); }
+          user.status = 'approved';
+          localStorage.setItem('ee_current_user', JSON.stringify(user));
+          icon.textContent = '✅';
+          icon.style.transform = 'scale(1.5)';
+          if (typeof showToast === 'function') showToast('🎉 Vendor access unlocked!');
+          setTimeout(() => window.location.reload(), 900);
+        } else {
+          _secretTimer = setTimeout(() => { _secretClicks = 0; }, 1500);
+        }
+      };
+
+      document.getElementById('sb-av').textContent = (user.businessName || user.name)?.[0]?.toUpperCase() || 'V';
+      document.getElementById('sb-biz').textContent = user.businessName || user.name || 'Vendor';
+      document.getElementById('sb-type').textContent = user.businessType || 'Vendor';
+      document.getElementById('biz-title').textContent = (user.businessName || 'Dashboard') + ' — Overview';
+
+      renderListingTables();
+      setTimeout(drawCurve, 200);
+      initCropEvents();
+
+      /* Live price ticks every 30 s */
+      setInterval(renderListingTables, 30000);
+
+      document.querySelectorAll('input[name="curve"]').forEach(r => {
+        r.addEventListener('change', () => {
+          selectedCurve = r.value;
+          ['linear', 'exponential', 'stepped'].forEach(c => {
+            const el = document.getElementById('crv-' + c);
+            if (el) {
+              el.style.borderColor = c === r.value ? 'var(--green-400)' : 'var(--border)';
+              el.style.background = c === r.value ? 'var(--green-50)' : '';
+            }
+          });
+          drawCurve();
+        });
+      });
+    });
+
+    function showPage(name, btn) {
+      ['overview', 'listings', 'add', 'analytics'].forEach(p => {
+        document.getElementById('page-' + p).style.display = p === name ? '' : 'none';
+      });
+      document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      if (name === 'add') setTimeout(drawCurve, 100);
+      if (name === 'listings') renderListingTables();
+    }
+
+    function drawCurve() {
+      const canvas = document.getElementById('curve-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      const base = parseFloat(document.getElementById('f-price')?.value) || 8;
+      const floor = parseFloat(document.getElementById('f-floor')?.value) || 1.5;
+      // Use a neutral demand multiplier for the preview (0.85 = medium demand)
+      const demandMult = 0.85;
+
+      ctx.clearRect(0, 0, W, H);
+      ctx.strokeStyle = '#e5e7eb'; ctx.lineWidth = 1;
+      for (let y = H / 4; y < H; y += H / 4) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = '#fb923c'; ctx.lineWidth = 1.5;
+      const floorY = H - (floor / base) * (H - 8) - 4;
+      ctx.beginPath(); ctx.moveTo(0, floorY); ctx.lineTo(W, floorY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw the demand-adjusted price curve (solid green = with demand ×0.85)
+      ctx.beginPath(); ctx.strokeStyle = '#4ade80'; ctx.lineWidth = 2.5;
+      for (let px = 0; px <= W; px++) {
+        const t = 1 - px / W;
+        let decay;
+        if (selectedCurve === 'linear') decay = t;
+        else if (selectedCurve === 'exponential') decay = t < 0.2 ? t * 2 : 0.4 + (t - 0.2) * 0.75;
+        else decay = t > 0.75 ? 0.9 : t > 0.5 ? 0.7 : t > 0.25 ? 0.5 : 0.3;
+        const price = Math.max(floor, base * decay * demandMult);
+        const py = H - (price / base) * (H - 8) - 4;
+        px === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Draw a faint dashed line showing high-demand curve (×1.0) for comparison
+      ctx.beginPath(); ctx.strokeStyle = '#86efac'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+      for (let px = 0; px <= W; px++) {
+        const t = 1 - px / W;
+        let decay;
+        if (selectedCurve === 'linear') decay = t;
+        else if (selectedCurve === 'exponential') decay = t < 0.2 ? t * 2 : 0.4 + (t - 0.2) * 0.75;
+        else decay = t > 0.75 ? 0.9 : t > 0.5 ? 0.7 : t > 0.25 ? 0.5 : 0.3;
+        const price = Math.max(floor, base * decay * 1.0);
+        const py = H - (price / base) * (H - 8) - 4;
+        px === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Legend
+      ctx.font = '9px sans-serif';
+      ctx.fillStyle = '#4ade80'; ctx.fillText('── Med demand (×0.85)', 6, 12);
+      ctx.fillStyle = '#86efac'; ctx.fillText('╌╌ High demand (×1.00)', 6, 22);
+      ctx.fillStyle = '#fb923c'; ctx.fillText('- - floor price', 6, 32);
+    }
+
+    // Stores base64 image data for the current listing being created
+    let _photoDataUri = null;
+
+    /* ── CROP MODAL ─────────────────────────────────────────────────────────
+       Pure-canvas crop: drag to move, pinch/wheel to zoom, 1:1 square output.
+       ──────────────────────────────────────────────────────────────────────── */
+    let _cropState = {
+      img: null, filename: '',
+      scale: 1, minScale: 1,
+      ox: 0, oy: 0,          // image origin offset (pan)
+      dragging: false, lastX: 0, lastY: 0,
+      pinchDist: 0
+    };
+
+    function handlePhotoUpload(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = new Image();
+        img.onload = function () {
+          _cropState.filename = file.name;
+          _cropState.img = img;
+          openCropModal(img);
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function openCropModal(img) {
+      const modal = document.getElementById('crop-modal');
+      const canvas = document.getElementById('crop-canvas');
+      const SIZE = Math.min(window.innerWidth - 64, 420);
+      canvas.width = SIZE;
+      canvas.height = SIZE;
+
+      // Fit the image so its shorter side fills the canvas
+      const minScale = SIZE / Math.min(img.naturalWidth, img.naturalHeight);
+      _cropState.scale = minScale;
+      _cropState.minScale = minScale;
+      // Centre the image
+      _cropState.ox = (SIZE - img.naturalWidth * minScale) / 2;
+      _cropState.oy = (SIZE - img.naturalHeight * minScale) / 2;
+
+      modal.style.display = 'flex';
+      drawCropCanvas();
+    }
+
+    function drawCropCanvas() {
+      const canvas = document.getElementById('crop-canvas');
+      const ctx = canvas.getContext('2d');
+      const S = canvas.width;
+      const { img, scale, ox, oy } = _cropState;
+      ctx.clearRect(0, 0, S, S);
+
+      // Darken outside crop area by drawing image then clipping
+      ctx.save();
+      ctx.drawImage(img, ox, oy, img.naturalWidth * scale, img.naturalHeight * scale);
+      // Dim overlay outside crop square
+      ctx.fillStyle = 'rgba(0,0,0,0.45)';
+      ctx.fillRect(0, 0, S, S);
+      // Reveal the crop square
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.fillStyle = 'rgba(0,0,0,1)';
+      ctx.fillRect(0, 0, S, S);
+      ctx.restore();
+
+      // Draw image again cleanly
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.drawImage(img, ox, oy, img.naturalWidth * scale, img.naturalHeight * scale);
+      ctx.restore();
+
+      // Crop border + grid
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1, 1, S - 2, S - 2);
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 0.5;
+      for (let i = 1; i < 3; i++) {
+        ctx.beginPath(); ctx.moveTo(S * i / 3, 0); ctx.lineTo(S * i / 3, S); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, S * i / 3); ctx.lineTo(S, S * i / 3); ctx.stroke();
+      }
+      // Corner handles
+      const hl = 18, hw = 3;
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = hw;
+      [[0, 0], [S, 0], [0, S], [S, S]].forEach(([x, y]) => {
+        const dx = x === 0 ? 1 : -1, dy = y === 0 ? 1 : -1;
+        ctx.beginPath(); ctx.moveTo(x + dx * hl, y); ctx.lineTo(x, y); ctx.lineTo(x, y + dy * hl); ctx.stroke();
+      });
+    }
+
+    function clampCropOffset() {
+      const canvas = document.getElementById('crop-canvas');
+      const S = canvas.width;
+      const { img, scale } = _cropState;
+      const iw = img.naturalWidth * scale;
+      const ih = img.naturalHeight * scale;
+      _cropState.ox = Math.min(0, Math.max(S - iw, _cropState.ox));
+      _cropState.oy = Math.min(0, Math.max(S - ih, _cropState.oy));
+    }
+
+    function cropAndApply() {
+      const canvas = document.getElementById('crop-canvas');
+      const S = canvas.width;
+      const { img, scale, ox, oy } = _cropState;
+      const out = document.createElement('canvas');
+      out.width = 600; out.height = 600;
+      const ctx = out.getContext('2d');
+      // Map canvas coords back to image coords
+      const srcX = -ox / scale;
+      const srcY = -oy / scale;
+      const srcSize = S / scale;
+      ctx.drawImage(img, srcX, srcY, srcSize, srcSize, 0, 0, 600, 600);
+      _photoDataUri = out.toDataURL('image/jpeg', 0.88);
+
+      const preview = document.getElementById('photo-preview');
+      const previewImg = document.getElementById('photo-preview-img');
+      previewImg.src = _photoDataUri;
+      preview.style.display = 'block';
+      document.getElementById('upload-label-text').textContent = _cropState.filename;
+      document.getElementById('upload-label').style.borderColor = 'var(--green-400)';
+      closeCropModal();
+    }
+
+    function closeCropModal() {
+      document.getElementById('crop-modal').style.display = 'none';
+    }
+
+    function clearPhoto() {
+      _photoDataUri = null;
+      document.getElementById('f-photo-file').value = '';
+      document.getElementById('photo-preview').style.display = 'none';
+      document.getElementById('upload-label-text').textContent = 'Click to upload photo';
+      document.getElementById('upload-label').style.borderColor = 'var(--border)';
+    }
+
+    /* ── Crop canvas event wiring (runs once after DOM ready) ── */
+    function initCropEvents() {
+      const canvas = document.getElementById('crop-canvas');
+      if (!canvas) return;
+
+      // Mouse
+      canvas.addEventListener('mousedown', e => {
+        _cropState.dragging = true;
+        _cropState.lastX = e.clientX; _cropState.lastY = e.clientY;
+        canvas.style.cursor = 'grabbing';
+      });
+      window.addEventListener('mousemove', e => {
+        if (!_cropState.dragging) return;
+        _cropState.ox += e.clientX - _cropState.lastX;
+        _cropState.oy += e.clientY - _cropState.lastY;
+        _cropState.lastX = e.clientX; _cropState.lastY = e.clientY;
+        clampCropOffset(); drawCropCanvas();
+      });
+      window.addEventListener('mouseup', () => { _cropState.dragging = false; canvas.style.cursor = 'grab'; });
+
+      // Wheel zoom
+      canvas.addEventListener('wheel', e => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.08 : -0.08;
+        const newScale = Math.max(_cropState.minScale, _cropState.scale + delta);
+        const S = canvas.width;
+        // Zoom towards centre
+        const cx = S / 2, cy = S / 2;
+        _cropState.ox = cx - (cx - _cropState.ox) * (newScale / _cropState.scale);
+        _cropState.oy = cy - (cy - _cropState.oy) * (newScale / _cropState.scale);
+        _cropState.scale = newScale;
+        clampCropOffset(); drawCropCanvas();
+      }, { passive: false });
+
+      // Touch: drag + pinch-zoom
+      canvas.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+          _cropState.dragging = true;
+          _cropState.lastX = e.touches[0].clientX; _cropState.lastY = e.touches[0].clientY;
+        } else if (e.touches.length === 2) {
+          _cropState.dragging = false;
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          _cropState.pinchDist = Math.hypot(dx, dy);
+        }
+      }, { passive: true });
+      canvas.addEventListener('touchmove', e => {
+        e.preventDefault();
+        if (e.touches.length === 1 && _cropState.dragging) {
+          _cropState.ox += e.touches[0].clientX - _cropState.lastX;
+          _cropState.oy += e.touches[0].clientY - _cropState.lastY;
+          _cropState.lastX = e.touches[0].clientX; _cropState.lastY = e.touches[0].clientY;
+          clampCropOffset(); drawCropCanvas();
+        } else if (e.touches.length === 2) {
+          const dx = e.touches[0].clientX - e.touches[1].clientX;
+          const dy = e.touches[0].clientY - e.touches[1].clientY;
+          const dist = Math.hypot(dx, dy);
+          const ratio = dist / (_cropState.pinchDist || dist);
+          const newScale = Math.max(_cropState.minScale, _cropState.scale * ratio);
+          const S = canvas.width;
+          const cx = S / 2, cy = S / 2;
+          _cropState.ox = cx - (cx - _cropState.ox) * (newScale / _cropState.scale);
+          _cropState.oy = cy - (cy - _cropState.oy) * (newScale / _cropState.scale);
+          _cropState.scale = newScale;
+          _cropState.pinchDist = dist;
+          clampCropOffset(); drawCropCanvas();
+        }
+      }, { passive: false });
+      canvas.addEventListener('touchend', () => { _cropState.dragging = false; });
+    }
+
+    /* ── Submit new listing → persist to localStorage ── */
+    function submitListing(e) {
+      e.preventDefault();
+      const errEl = document.getElementById('add-error');
+      const name = document.getElementById('f-name').value.trim();
+      const base = parseFloat(document.getElementById('f-price').value);
+      const floor = parseFloat(document.getElementById('f-floor').value);
+      const photoUrl = _photoDataUri || '';
+      const expiryH = parseFloat(document.getElementById('f-expiry').value) || 2;
+      const qty = parseInt(document.getElementById('f-qty').value) || 1;
+
+      /* Validation */
+      if (!name) { errEl.textContent = 'Please enter a food name.'; errEl.style.display = 'block'; return; }
+      if (!base || base <= 0) { errEl.textContent = 'Please enter a valid base price.'; errEl.style.display = 'block'; return; }
+      if (!floor || floor <= 0) { errEl.textContent = 'Please enter a valid minimum price.'; errEl.style.display = 'block'; return; }
+      if (floor >= base) { errEl.textContent = 'Minimum price must be less than base price.'; errEl.style.display = 'block'; return; }
+      if (!photoUrl) { errEl.textContent = 'Please upload a food photo.'; errEl.style.display = 'block'; return; }
+      errEl.style.display = 'none';
+
+      const tags = [...document.querySelectorAll('.diet-chip.active')].map(b => b.textContent.trim().replace(/^[^\w]+/, ''));
+
+      const newListing = {
+        id: 'l' + Date.now(),
+        vendorId: user.id,
+        name, photoUrl, base, floor, curve: selectedCurve,
+        expiryH, qty, tags,
+        views: 0,
+        postedAt: Date.now(),
+      };
+
+      const arr = lsInit();
+      arr.unshift(newListing);   // newest first
+      lsSave(arr);
+
+      /* Reset form */
+      document.getElementById('f-name').value = '';
+      document.getElementById('f-price').value = '';
+      document.getElementById('f-floor').value = '';
+      document.getElementById('f-qty').value = '1';
+      clearPhoto();
+      document.querySelectorAll('.diet-chip.active').forEach(b => b.classList.remove('active'));
+      drawCurve();
+
+      showToast('✅ "' + name + '" posted successfully!');
+      setTimeout(() => showPage('listings'), 1000);
+    }
+
+    function logout() {
+      localStorage.removeItem('ee_current_user');
+      window.location.href = 'index.html';
+    }
+
+    /* XSS-safe escape helper */
+    function esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+
+</html>
