@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — EchoEats</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+
+<body class="auth-page" style="padding-top:0">
+
+  <!-- Full Navbar -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin active">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Body -->
+  <div class="auth-body" style="padding-top: calc(var(--nav-h, 72px) + 40px)">
+    <div class="auth-card">
+
+      <!-- ============ LOGIN PANEL ============ -->
+      <div id="panel-login">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:44px;margin-bottom:12px">👋</div>
+          <div class="auth-title">Welcome back</div>
+          <div class="auth-subtitle">Sign in to your EchoEats account</div>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+          <div style="margin-bottom:16px">
+            <label class="form-label"
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Email
+              Address</label>
+            <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s;background:var(--white);color:var(--dark)">
+          </div>
+          <div style="margin-bottom:8px">
+            <label class="form-label"
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Password</label>
+            <input type="password" id="login-password" class="form-input" placeholder="Your password" required
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s;background:var(--white);color:var(--dark)">
+          </div>
+          <div style="text-align:right;margin-bottom:16px">
+            <a href="#" onclick="showForgotPassword(event)"
+              style="font-size:12.5px;color:var(--green-700);font-weight:600">Forgot password?</a>
+          </div>
+          <div id="login-error" class="auth-error"></div>
+          <button type="submit" class="btn btn-primary"
+            style="width:100%;justify-content:center;padding:13px;font-size:15px">
+            Sign In
+          </button>
+        </form>
+
+        <div style="display:flex;align-items:center;gap:12px;margin:16px 0">
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+          <span style="font-size:12px;color:var(--text-muted);font-weight:600">OR</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+        <button type="button" id="google-btn" onclick="openGoogleSignIn()"
+          style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border:1.5px solid var(--border);border-radius:12px;background:var(--white);font-size:15px;font-weight:600;color:var(--dark);cursor:pointer;transition:box-shadow 0.2s"
+          onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow=''">
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+            <path fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+            <path fill="#FBBC05"
+              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+            <path fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          </svg>
+          Continue with Google
+        </button>
+        <p style="margin-top:16px;text-align:center;font-size:13px;color:var(--text-muted)">
+          Don't have an account? <a href="register.html" style="color:var(--green-700);font-weight:600">Sign up free</a>
+        </p>
+      </div>
+
+      <!-- ============ FORGOT PASSWORD — STEP 1: EMAIL ============ -->
+      <div id="panel-forgot-email" style="display:none">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:44px;margin-bottom:12px">🔑</div>
+          <div class="auth-title">Reset your password</div>
+          <div class="auth-subtitle">Enter your account email and we'll send a verification code</div>
+        </div>
+        <div style="margin-bottom:16px">
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Email
+            Address</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="you@example.com"
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+        </div>
+        <div id="forgot-email-error" class="auth-error"></div>
+        <button type="button" class="btn btn-primary" onclick="sendResetCode()"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-bottom:12px">
+          Send Reset Code
+        </button>
+        <p style="text-align:center">
+          <a href="#" onclick="showLoginPanel(event)" style="font-size:12.5px;color:var(--text-muted)">← Back to sign
+            in</a>
+        </p>
+      </div>
+
+      <!-- ============ FORGOT PASSWORD — STEP 2: OTP + NEW PASSWORD ============ -->
+      <div id="panel-forgot-verify" style="display:none;text-align:center">
+        <div style="font-size:44px;margin-bottom:12px">📩</div>
+        <div class="auth-title" style="margin-bottom:6px">Enter your code</div>
+        <div class="auth-subtitle" id="forgot-otp-subtitle" style="margin-bottom:16px">
+          Enter the 8-digit code we sent you.
+        </div>
+
+        <input type="text" id="forgot-otp-input" maxlength="8" inputmode="numeric" placeholder="• • • • • • • •"
+          style="width:100%;padding:14px;border:1.5px solid var(--border);border-radius:12px;font-size:22px;letter-spacing:8px;text-align:center;outline:none;background:var(--white);color:var(--dark);margin-bottom:16px">
+
+        <div style="text-align:left;margin-bottom:16px">
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">New
+            Password</label>
+          <input type="password" id="forgot-new-password" placeholder="At least 5 characters" minlength="5"
+            oninput="validateForgotPasswordField()"
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);margin-bottom:8px">
+          <div id="forgot-pass-requirements"
+            style="display:flex;flex-direction:column;gap:3px;margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:10px">
+            <div class="pw-req" data-req="len" style="font-size:11.5px;color:var(--text-muted)">○ At least 5 characters
+            </div>
+            <div class="pw-req" data-req="letter" style="font-size:11.5px;color:var(--text-muted)">○ At least 1 letter
+            </div>
+            <div class="pw-req" data-req="number" style="font-size:11.5px;color:var(--text-muted)">○ At least 1 number
+            </div>
+          </div>
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Confirm New
+            Password</label>
+          <input type="password" id="forgot-confirm-password" placeholder="Re-enter password"
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+        </div>
+
+        <div id="forgot-otp-error" style="display:none;color:red;font-size:12px;margin-bottom:10px;text-align:left">
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="verifyResetCode()"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-bottom:14px">
+          Reset Password
+        </button>
+
+        <p style="font-size:12.5px;color:var(--text-muted)">
+          Didn't get a code?
+          <a href="#" id="forgot-otp-resend" onclick="resendResetCode(event)"
+            style="color:var(--green-700);font-weight:600">Resend OTP Code</a>
+          <span id="forgot-otp-resend-timer" style="color:var(--text-muted);font-weight:600"></span>
+        </p>
+        <p style="margin-top:10px">
+          <a href="#" onclick="showLoginPanel(event)" style="font-size:12.5px;color:var(--text-muted)">← Back to sign
+            in</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="main.js"></script>
+  <script>
+    // @ts-nocheck
+
+    /* ── Supabase (real email OTP delivery for password reset) ── */
+    var SUPABASE_URL = 'https://ytppwkvtzftmgjghbvzt.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_pyB2FiWjhCRJgpHsm9aojQ_wmjA7wSX';
+    var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    var forgotEmail = '';
+    var forgotResendTimerHandle = null;
+
+    (function () {
+      if (!localStorage.getItem('ee_users')) {
+        var users = [
+          { id: 'u1', name: 'Demo Consumer', email: 'consumer@test.com', password: '123456', role: 'consumer', status: 'approved', mealsSaved: 47, co2Saved: 22.6, streak: 7, badges: ['🌱', '💚', '🔥'] },
+          { id: 'v1', name: 'Nadia Mahmoud', email: 'vendor@test.com', password: '123456', role: 'vendor', status: 'approved', businessName: 'Patisserie Nour', businessType: 'Bakery', mealsSaved: 0, co2Saved: 0, streak: 0, badges: [] },
+          { id: 'a1', name: 'EchoEats Admin', email: 'admin@echoeats.com', password: 'admin123', role: 'admin', status: 'approved', mealsSaved: 0, co2Saved: 0, streak: 0, badges: [] }
+        ];
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      }
+    })();
+
+    function openGoogleSignIn() {
+      var w = 420, h = 500;
+      var left = Math.round(screen.width / 2 - w / 2);
+      var top = Math.round(screen.height / 2 - h / 2);
+      window.open(
+        'google-oauth.html?mode=signin',
+        'GoogleSignIn',
+        'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+      );
+    }
+
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.type !== 'GOOGLE_AUTH_SUCCESS') return;
+      var data = e.data;
+
+      // Find existing user by Google email, or create one
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = users.find(function (u) { return u.email === data.email; });
+
+      if (!user) {
+        // Auto-create a consumer account for new Google users
+        user = {
+          id: 'g' + Date.now(),
+          name: data.name,
+          email: data.email,
+          password: '',
+          role: 'consumer',
+          status: 'approved',
+          googleAuth: true,
+          avatarColor: data.avatarColor,
+          mealsSaved: 0, co2Saved: 0, streak: 0, badges: [],
+          joinDate: new Date().toISOString()
+        };
+        users.push(user);
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      }
+
+      localStorage.setItem('ee_current_user', JSON.stringify(user));
+      localStorage.setItem('ee_has_logged_in', '1');
+      showToast('👋 Welcome, ' + user.name.split(' ')[0] + '!');
+      setTimeout(function () {
+        if (user.role === 'admin') window.location.href = 'admin.html';
+        else if (user.role === 'vendor') window.location.href = 'vendor-dashboard.html';
+        else window.location.href = 'consumer-dashboard.html';
+      }, 700);
+    });
+
+    function handleLogin(e) {
+      e.preventDefault();
+      var email = document.getElementById('login-email').value.trim();
+      var pass = document.getElementById('login-password').value;
+      var errEl = document.getElementById('login-error');
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = null;
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].email === email && users[i].password === pass) {
+          user = users[i];
+          break;
+        }
+      }
+      errEl.style.display = 'none';
+      if (!user) {
+        errEl.textContent = 'Invalid email or password. Try the demo buttons below.';
+        errEl.style.display = 'block';
+        return;
+      }
+      localStorage.setItem('ee_current_user', JSON.stringify(user));
+      localStorage.setItem('ee_has_logged_in', '1');
+
+      // Block pending vendors from logging in
+      if (user.role === 'vendor' && user.status === 'pending') {
+        errEl.innerHTML = '⏳ Your vendor account is <strong>pending approval</strong>. You\'ll be notified within 24 hours. <a href="index.html" style="color:var(--green-700)">Go home</a>';
+        errEl.style.display = 'block';
+        localStorage.removeItem('ee_current_user');
+        return;
+      }
+
+      showToast('Welcome back, ' + user.name.split(' ')[0] + '!');
+      setTimeout(function () {
+        if (user.role === 'admin') {
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = user.role === 'vendor' ? 'vendor-dashboard.html' : 'consumer-dashboard.html';
+        }
+      }, 700);
+    }
+
+    /* ── Forgot Password Flow ── */
+
+    function checkPasswordRules(pass) {
+      return {
+        len: pass.length >= 5,
+        letter: /[a-zA-Z]/.test(pass),
+        number: /[0-9]/.test(pass)
+      };
+    }
+
+    function validateForgotPasswordField() {
+      var pass = document.getElementById('forgot-new-password').value;
+      var rules = checkPasswordRules(pass);
+      document.querySelectorAll('#forgot-pass-requirements .pw-req').forEach(function (el) {
+        var ok = rules[el.getAttribute('data-req')];
+        el.style.color = ok ? 'var(--green-600)' : 'var(--text-muted)';
+        el.textContent = (ok ? '✓ ' : '○ ') + el.textContent.replace(/^[✓○]\s*/, '');
+      });
+    }
+
+    function showLoginPanel(e) {
+      if (e) e.preventDefault();
+      document.getElementById('panel-login').style.display = 'block';
+      document.getElementById('panel-forgot-email').style.display = 'none';
+      document.getElementById('panel-forgot-verify').style.display = 'none';
+    }
+
+    function showForgotPassword(e) {
+      e.preventDefault();
+      document.getElementById('panel-login').style.display = 'none';
+      document.getElementById('panel-forgot-email').style.display = 'block';
+      document.getElementById('panel-forgot-verify').style.display = 'none';
+      document.getElementById('forgot-email').value = document.getElementById('login-email').value.trim();
+      document.getElementById('forgot-email-error').style.display = 'none';
+    }
+
+    async function sendResetCode() {
+      var email = document.getElementById('forgot-email').value.trim();
+      var errEl = document.getElementById('forgot-email-error');
+      errEl.style.display = 'none';
+
+      if (!email) {
+        errEl.textContent = 'Please enter your email address.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = users.find(function (u) { return u.email === email; });
+      if (!user) {
+        errEl.textContent = 'No EchoEats account found with that email.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      forgotEmail = email;
+      var result = await supabaseClient.auth.signInWithOtp({
+        email: email,
+        options: { shouldCreateUser: true }
+      });
+
+      if (result.error) {
+        errEl.textContent = 'Could not send code: ' + result.error.message;
+        errEl.style.display = 'block';
+        return;
+      }
+
+      showToast('📩 Verification code emailed to ' + email);
+      document.getElementById('forgot-otp-subtitle').innerHTML =
+        'Enter the 8-digit code we sent via email to ' + email + '.';
+      document.getElementById('panel-forgot-email').style.display = 'none';
+      document.getElementById('panel-forgot-verify').style.display = 'block';
+      document.getElementById('forgot-otp-input').value = '';
+      document.getElementById('forgot-new-password').value = '';
+      document.getElementById('forgot-confirm-password').value = '';
+      document.getElementById('forgot-otp-error').style.display = 'none';
+      document.querySelectorAll('#forgot-pass-requirements .pw-req').forEach(function (el) {
+        el.style.color = 'var(--text-muted)';
+        el.textContent = '○ ' + el.textContent.replace(/^[✓○]\s*/, '');
+      });
+      startForgotResendCooldown();
+      document.getElementById('forgot-otp-input').focus();
+    }
+
+    function startForgotResendCooldown() {
+      var link = document.getElementById('forgot-otp-resend');
+      var timerEl = document.getElementById('forgot-otp-resend-timer');
+      var secondsLeft = 30;
+      link.style.pointerEvents = 'none';
+      link.style.opacity = '0.5';
+      timerEl.textContent = ' (' + secondsLeft + 's)';
+
+      if (forgotResendTimerHandle) clearInterval(forgotResendTimerHandle);
+      forgotResendTimerHandle = setInterval(function () {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(forgotResendTimerHandle);
+          link.style.pointerEvents = '';
+          link.style.opacity = '';
+          timerEl.textContent = '';
+        } else {
+          timerEl.textContent = ' (' + secondsLeft + 's)';
+        }
+      }, 1000);
+    }
+
+    function resendResetCode(e) {
+      e.preventDefault();
+      if (document.getElementById('forgot-otp-resend').style.pointerEvents === 'none') return;
+      sendResetCode();
+    }
+
+    async function verifyResetCode() {
+      var code = document.getElementById('forgot-otp-input').value.trim();
+      var newPass = document.getElementById('forgot-new-password').value;
+      var confirmPass = document.getElementById('forgot-confirm-password').value;
+      var errEl = document.getElementById('forgot-otp-error');
+      errEl.style.display = 'none';
+
+      if (!newPass) {
+        errEl.textContent = 'Please enter a new password.';
+        errEl.style.display = 'block';
+        return;
+      }
+      var rules = checkPasswordRules(newPass);
+      if (!rules.len || !rules.letter || !rules.number) {
+        errEl.textContent = 'Password must be at least 5 characters and include a letter and a number.';
+        errEl.style.display = 'block';
+        return;
+      }
+      if (newPass !== confirmPass) {
+        errEl.textContent = 'Passwords do not match.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      var result = await supabaseClient.auth.verifyOtp({
+        email: forgotEmail,
+        token: code,
+        type: 'email'
+      });
+
+      if (result.error) {
+        errEl.textContent = 'Incorrect or expired code. Please try again.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      // Code verified for real — now actually update the password in the app's user store.
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = users.find(function (u) { return u.email === forgotEmail; });
+      if (user) {
+        user.password = newPass;
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      }
+
+      showToast('✅ Password reset! You can now sign in.');
+      showLoginPanel();
+      document.getElementById('login-email').value = forgotEmail;
+      document.getElementById('login-password').value = '';
+    }
+
+  </script>
+
+</body>
+
+</html>
