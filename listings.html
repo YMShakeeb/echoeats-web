@@ -228,25 +228,12 @@
       border: 1px solid rgba(74, 222, 128, 0.3);
     }
 
-    /* ── Leaflet z-index fixes: keep map tiles below navbar & filter bar ── */
-    .leaflet-pane {
-      z-index: 400 !important;
-    }
-
-    .leaflet-control {
-      z-index: 800 !important;
-    }
-
-    .leaflet-top,
-    .leaflet-bottom {
-      z-index: 800 !important;
-    }
-
     #map-section {
       position: relative;
       z-index: 0;
     }
   </style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 
 <body>
@@ -333,6 +320,8 @@
         <button class="filter-chip active view-btn" onclick="setView('list',this)"
           style="padding:8px 14px">List</button>
         <button class="filter-chip view-btn" onclick="setView('map',this)" style="padding:8px 14px">Map</button>
+        <button class="filter-chip" id="fullscreen-toggle-btn" onclick="toggleFullscreenMap()"
+          style="padding:8px 14px;display:none">⛶ Fullscreen</button>
       </div>
     </div>
   </div>
@@ -1032,31 +1021,30 @@
     </section>
   </div>
 
-  <!-- MAP VIEW -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <!-- MAP VIEW — Leaflet + OpenStreetMap (free, no API key required) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <div id="map-section" style="display:none;padding:0 0 72px;background:var(--bg)">
     <div class="container" style="padding-top:28px">
       <div style="position:relative">
         <div id="leaflet-map"
           style="border-radius:20px;overflow:hidden;border:1px solid var(--green-300);box-shadow:var(--shadow);height:460px">
         </div>
-        <button onclick="toggleFullscreenMap()" id="fullscreen-btn" title="Toggle fullscreen"
-          style="position:absolute;top:12px;right:12px;z-index:1000;background:var(--green-800);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;gap:6px">
-          ⛶ Fullscreen
-        </button>
-      </div>
-      <div id="map-fullscreen-overlay"
-        style="display:none;position:fixed;inset:0;z-index:9998;background:#111;flex-direction:column">
-        <div style="position:absolute;top:16px;right:16px;z-index:9999">
-          <button onclick="toggleFullscreenMap()"
-            style="background:var(--green-800);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.4)">
-            ✕ Exit Fullscreen
-          </button>
-        </div>
-        <div id="leaflet-map-fs" style="width:100%;height:100%"></div>
       </div>
       <div style="margin-top:20px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px" id="map-list-grid"></div>
+    </div>
+  </div>
+
+  <!-- Fullscreen map overlay — kept OUTSIDE #map-section so it isn't trapped inside
+       that element's stacking context (position:relative + z-index:0), which was
+       causing the sticky filter bar / navbar to render on top of it. -->
+  <div id="map-fullscreen-overlay"
+    style="display:none;position:fixed;inset:0;z-index:99999;background:#111;flex-direction:column">
+    <div id="leaflet-map-fs" style="width:100%;height:100%"></div>
+    <div style="position:absolute;top:16px;right:16px;z-index:100000">
+      <button onclick="toggleFullscreenMap()"
+        style="background:var(--green-800);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,0.4)">
+        ✕ Exit Fullscreen
+      </button>
     </div>
   </div>
 
@@ -1202,9 +1190,7 @@
     function authReserve(btn, name) {
       const user = localStorage.getItem('ee_current_user');
       if (!user) {
-        showToast('Sign in to reserve items', 'warning');
-        var dest = localStorage.getItem('ee_has_logged_in') ? 'login.html' : 'register.html';
-        setTimeout(() => window.location.href = dest, 1300);
+        showAuthPrompt();
         return;
       }
 
@@ -1242,6 +1228,13 @@
       document.getElementById('pay-item-price').textContent = pendingPrice;
       document.getElementById('pay-hold-note').textContent = 'Item held for 15 minutes after payment.';
       document.getElementById('payment-modal').style.display = 'flex';
+    }
+
+    function showAuthPrompt() {
+      document.getElementById('auth-prompt-modal').style.display = 'flex';
+    }
+    function closeAuthPrompt() {
+      document.getElementById('auth-prompt-modal').style.display = 'none';
     }
 
     function closePayModal() {
@@ -1406,7 +1399,7 @@
     const ITEM_COORDS = {};
     // populated after ALL_MAP_PINS is defined — see bottom of script
 
-    function flyToPin(lat, lng, itemId) {
+    async function flyToPin(lat, lng, itemId) {
       // Switch to map view if not already visible
       const mapSection = document.getElementById('map-section');
       const mapBtn = document.querySelector('.view-btn[onclick*="map"]');
@@ -1417,16 +1410,21 @@
       }
       // Scroll to map immediately
       if (mapSection) mapSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Wait for map to render then fly
-      setTimeout(() => {
-        if (leafletMap) {
-          leafletMap.invalidateSize();
-          leafletMap.flyTo([lat, lng], 16, { animate: true, duration: 1.0 });
-          leafletMarkers.forEach(m => {
-            if (m._itemId === itemId) setTimeout(() => m.openPopup(), 1100);
-          });
-        }
-      }, alreadyVisible ? 50 : 450);
+      // Wait for the leafletMap instance to be ready
+      // (setView's renderMap() call may still be initializing)
+      let tries = 0;
+      while (!leafletMap && tries < 50) {
+        await new Promise(r => setTimeout(r, 100));
+        tries++;
+      }
+      if (leafletMap) {
+        leafletMap.panTo([lat, lng]);
+        leafletMap.setZoom(16);
+        setTimeout(() => {
+          const marker = leafletMarkers.find(m => m._itemId === itemId);
+          if (marker) marker.openPopup();
+        }, 400);
+      }
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1489,6 +1487,9 @@
       btn.classList.add('active');
       document.getElementById('list-section').style.display = view === 'list' ? '' : 'none';
       document.getElementById('map-section').style.display = view === 'map' ? '' : 'none';
+      // Fullscreen toggle only makes sense while the map is showing
+      var fsBtn = document.getElementById('fullscreen-toggle-btn');
+      if (fsBtn) fsBtn.style.display = view === 'map' ? '' : 'none';
       // Sort only makes sense in list view
       var sortSel = document.getElementById('sort-select');
       if (sortSel) sortSel.style.display = view === 'map' ? 'none' : '';
@@ -1501,7 +1502,6 @@
           window.scrollTo({ top: filtersBar.offsetTop - 72, behavior: 'smooth' });
         }
         renderMap();
-        setTimeout(() => { if (leafletMap) leafletMap.invalidateSize(); }, 400);
       }
     }
 
@@ -1650,39 +1650,70 @@
     let leafletMap = null;
     let leafletMapFS = null;
     let leafletMarkers = [];
+    let leafletMarkersFS = [];
+
+    function buildPinIcon(color, label) {
+      return L.divIcon({
+        className: '',
+        html: `
+          <div style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer">
+            <div style="background:${color};color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:100px;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.35);line-height:1.2">${label}</div>
+            <div style="width:8px;height:8px;background:${color};border-radius:50%;margin-top:3px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>
+          </div>`,
+        iconSize: null,
+        iconAnchor: [0, 0],
+        popupAnchor: [10, -38]
+      });
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const overlay = document.getElementById('map-fullscreen-overlay');
+        if (overlay && overlay.style.display === 'flex') toggleFullscreenMap();
+        const authModal = document.getElementById('auth-prompt-modal');
+        if (authModal && authModal.style.display === 'flex') closeAuthPrompt();
+      }
+    });
 
     function toggleFullscreenMap() {
       const overlay = document.getElementById('map-fullscreen-overlay');
+      const fsBtn = document.getElementById('fullscreen-toggle-btn');
       const isOpen = overlay.style.display === 'flex';
       if (isOpen) {
         overlay.style.display = 'none';
         document.body.style.overflow = '';
-        if (leafletMapFS) { leafletMapFS.remove(); leafletMapFS = null; }
+        if (fsBtn) fsBtn.innerHTML = '⛶ Fullscreen';
       } else {
         overlay.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        if (fsBtn) fsBtn.innerHTML = '✕ Exit Fullscreen';
         setTimeout(() => {
-          leafletMapFS = L.map('leaflet-map-fs', { zoomControl: true }).setView([26.1900, 50.5700], 11);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap', maxZoom: 19
-          }).addTo(leafletMapFS);
+          if (!leafletMapFS) {
+            leafletMapFS = L.map('leaflet-map-fs', { zoomControl: true }).setView([26.1900, 50.5700], 11);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+              maxZoom: 19
+            }).addTo(leafletMapFS);
+          }
+          leafletMarkersFS.forEach(m => leafletMapFS.removeLayer(m));
+          leafletMarkersFS = [];
           ALL_MAP_PINS.forEach(p => {
-            const icon = L.divIcon({
-              className: '',
-              html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-100%);pointer-events:auto">
-                <div style="background:var(--green-800,#1a4a26);color:#fff;padding:6px 10px;border-radius:20px;font-size:13px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.3);border:2px solid rgba(255,255,255,.2)">${p.price} ${p.emoji}</div>
-                <div style="width:2px;height:8px;background:var(--green-800,#1a4a26)"></div>
-                <div style="width:6px;height:6px;border-radius:50%;background:var(--green-800,#1a4a26)"></div></div>`,
-              iconSize: [0, 0]
+            const marker = L.marker([p.lat, p.lng], {
+              icon: buildPinIcon('var(--green-800,#1a4a26)', `${p.price} ${p.emoji}`)
+            }).addTo(leafletMapFS);
+            marker.bindPopup(`<strong>${p.name}</strong><br>${p.vendor}<br>${p.price}`, { autoPan: false });
+            marker.on('click', () => {
+              leafletMapFS.setView([p.lat, p.lng], 16, { animate: true });
+              setTimeout(() => marker.openPopup(), 250);
             });
-            L.marker([p.lat, p.lng], { icon }).addTo(leafletMapFS)
-              .bindPopup(`<strong>${p.name}</strong><br>${p.vendor}<br>${p.price}`);
+            leafletMarkersFS.push(marker);
           });
+          leafletMapFS.invalidateSize();
         }, 50);
       }
     }
 
-    /* ── MAP RENDER — real Leaflet map of Manama ── */
+    /* ── MAP RENDER — Leaflet + OpenStreetMap, free & no API key ── */
     function renderMap(textQ) {
       var _tq = typeof textQ === 'string' ? textQ : (document.querySelector('.filter-search') ? document.querySelector('.filter-search').value : '');
       var pins = ALL_MAP_PINS.filter(function (p) {
@@ -1694,11 +1725,12 @@
 
       if (!leafletMap) {
         leafletMap = L.map('leaflet-map', { zoomControl: true }).setView([26.1900, 50.5700], 11);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           maxZoom: 19
         }).addTo(leafletMap);
       }
+      leafletMap.invalidateSize();
 
       leafletMarkers.forEach(m => leafletMap.removeLayer(m));
       leafletMarkers = [];
@@ -1708,28 +1740,22 @@
         const color = reserved ? '#6b7280' : '#1a4731';
         const label = reserved ? `✓ Reserved` : `${p.price} ${p.emoji}`;
 
-        // iconSize [0,0] + iconAnchor [0,0] means the marker origin is the pin dot.
-        // The visible pill is pushed up via CSS transform inside the html string.
-        const icon = L.divIcon({
-          className: '',
-          iconSize: [0, 0],
-          iconAnchor: [0, 0],
-          popupAnchor: [0, -8],
-          html: `<div style="position:relative;display:flex;flex-direction:column;align-items:center;transform:translate(-50%,-100%);pointer-events:auto">
-                 <div style="background:${color};color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:100px;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.35);line-height:1.2">${label}</div>
-                 <div style="width:8px;height:8px;background:${color};border-radius:50%;margin-top:3px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>
-               </div>`
-        });
+        const marker = L.marker([p.lat, p.lng], {
+          icon: buildPinIcon(color, label)
+        }).addTo(leafletMap);
 
-        const marker = L.marker([p.lat, p.lng], { icon })
-          .addTo(leafletMap)
-          .bindPopup(`<div style="font-family:sans-serif;min-width:150px;padding:4px">
+        marker.bindPopup(`<div style="font-family:sans-serif;min-width:150px;padding:4px">
           <div style="font-size:26px;text-align:center;margin-bottom:6px">${p.emoji}</div>
           <div style="font-weight:800;font-size:14px;color:#1a4731">${p.name}</div>
           <div style="font-size:12px;color:#6b7280;margin:2px 0">${p.vendor} · ${p.distance}km away</div>
           <div style="font-size:18px;font-weight:800;color:${reserved ? '#9ca3af' : '#1a4731'};margin-top:6px">${p.price}</div>
           ${reserved ? '<div style="font-size:11px;color:#6b7280;margin-top:4px">✓ Already reserved</div>' : ''}
-        </div>`);
+        </div>`, { autoPan: false });
+
+        marker.on('click', () => {
+          leafletMap.setView([p.lat, p.lng], 16, { animate: true });
+          setTimeout(() => marker.openPopup(), 250);
+        });
 
         marker._itemId = p.itemId;
         leafletMarkers.push(marker);
@@ -1740,12 +1766,11 @@
         leafletMap.fitBounds(bounds, { padding: [48, 48] });
       }
 
-      setTimeout(() => leafletMap.invalidateSize(), 50);
-
       document.getElementById('map-list-grid').innerHTML = pins.map(p => {
         const reserved = isReserved(p.itemId);
         return `
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--white);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:box-shadow .2s;position:relative;${reserved ? 'opacity:.6' : ''}"
+             onclick="zoomToMapPin('${p.itemId}')"
              onmouseover="this.style.boxShadow='var(--shadow)';this.querySelector('.vim-btn').style.opacity='1';this.querySelector('.vim-btn').style.transform='translateY(0)'"
              onmouseout="this.style.boxShadow='';this.querySelector('.vim-btn').style.opacity='0';this.querySelector('.vim-btn').style.transform='translateY(4px)'">
           <div style="width:44px;height:44px;background:var(--green-50);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${p.emoji}</div>
@@ -1757,7 +1782,7 @@
           </div>
           <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px">
             <div style="font-size:15px;font-weight:800;color:${reserved ? '#9ca3af' : 'var(--green-700)'}">${p.price}</div>
-            <button class="vim-btn" onclick="flyToPin(${p.lat},${p.lng},'${p.itemId}')"
+            <button class="vim-btn" onclick="event.stopPropagation();zoomToMapPin('${p.itemId}')"
               style="opacity:0;transform:translateY(4px);transition:opacity .18s,transform .18s;background:var(--green-800);color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap">
               📍 View on map
             </button>
@@ -1765,7 +1790,46 @@
         </div>`;
       }).join('');
     }
+
+    /* Pan/zoom the (already-visible) map straight to a pin and pop its popup —
+       used by the map-list-grid cards, since the map is already on-screen there. */
+    function zoomToMapPin(itemId) {
+      if (!leafletMap) return;
+      const marker = leafletMarkers.find(m => m._itemId === itemId);
+      if (!marker) return;
+      leafletMap.setView(marker.getLatLng(), 16, { animate: true });
+      setTimeout(() => marker.openPopup(), 250);
+    }
   </script>
+
+  <!-- Sign-in-required prompt: shown instead of auto-redirecting when an
+       unauthenticated user taps Reserve. Defaults to Sign Up, with a
+       secondary "Already have an account? Sign in" option, and the user
+       stays on the listings page unless they choose to navigate. -->
+  <div id="auth-prompt-modal" onclick="if(event.target===this) closeAuthPrompt()"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;align-items:center;justify-content:center;padding:20px">
+    <div
+      style="background:var(--white);border-radius:24px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);text-align:center">
+      <div style="display:flex;justify-content:flex-end">
+        <button onclick="closeAuthPrompt()"
+          style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);margin:-12px -8px 0 0">✕</button>
+      </div>
+      <div style="font-size:44px;margin-bottom:12px">🔒</div>
+      <div style="font-size:18px;font-weight:800;color:var(--dark);margin-bottom:8px">Sign up to reserve this deal</div>
+      <div style="font-size:13px;color:var(--text-soft);margin-bottom:24px;line-height:1.6">
+        Create a free account to reserve meals, track your savings, and unlock streak rewards.
+      </div>
+      <a href="register.html"
+        style="display:block;width:100%;background:var(--green-700);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box">
+        Create Free Account
+      </a>
+      <div style="font-size:13px;color:var(--text-soft);margin-top:18px">
+        Already have an account?
+        <a href="login.html" style="color:var(--green-700);font-weight:700;text-decoration:none">Sign in</a>
+      </div>
+    </div>
+  </div>
+
   <div id="payment-modal"
     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;align-items:center;justify-content:center;padding:20px">
     <div
