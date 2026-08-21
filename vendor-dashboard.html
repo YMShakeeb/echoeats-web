@@ -12,15 +12,22 @@
 
 <body>
 
-  <nav class="navbar scrolled" id="navbar" style="position:relative">
-    <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
       <a href="index.html" class="nav-logo">
         <div class="nav-logo-icon">🌿</div>EchoEats
       </a>
-      <div style="display:flex;align-items:center;gap:10px">
-        <a href="listings.html" class="btn btn-outline btn-sm">View Marketplace</a>
-        <button class="btn btn-sm" onclick="logout()"
-          style="background:var(--bg);color:var(--text-soft);border:1px solid var(--border)">Sign Out</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
       </div>
     </div>
   </nav>
