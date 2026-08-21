@@ -1843,6 +1843,7 @@ button {
   display: grid;
   grid-template-columns: 240px 1fr;
   min-height: calc(100vh - 72px);
+  padding-top: 72px;
 }
 
 .dash-sidebar {
