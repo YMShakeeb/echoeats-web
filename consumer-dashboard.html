@@ -8,20 +8,46 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+  <style>
+    .browse-deals-arrow {
+      font-size: 22px;
+      color: var(--green-700, #166534);
+      display: inline-block;
+      animation: browseDealsNudge 1.1s ease-in-out infinite;
+    }
+
+    @keyframes browseDealsNudge {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      50% {
+        transform: translateX(6px);
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- Thin top nav -->
-  <nav class="navbar scrolled" id="navbar" style="position:relative">
-    <div class="container" style="display:flex;align-items:center;justify-content:space-between">
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
       <a href="index.html" class="nav-logo">
         <div class="nav-logo-icon">🌿</div>EchoEats
       </a>
-      <div style="display:flex;align-items:center;gap:10px">
-        <a href="listings.html" class="btn btn-outline btn-sm">Browse Deals</a>
-        <button class="btn btn-sm" onclick="logout()"
-          style="background:var(--bg);color:var(--text-soft);border:1px solid var(--border)">Sign Out</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
       </div>
     </div>
   </nav>
@@ -59,7 +85,10 @@
             <div class="dash-page-title">Welcome back, <span id="user-first">there</span>!</div>
             <div style="font-size:13px;color:var(--text-muted);margin-top:2px">Your impact summary</div>
           </div>
-          <a href="listings.html" class="btn btn-primary">Browse Deals</a>
+          <div style="display:flex;align-items:center;gap:6px">
+            <span class="browse-deals-arrow" aria-hidden="true">➜</span>
+            <a href="listings.html" class="btn btn-primary">Browse Deals</a>
+          </div>
         </div>
 
         <div class="dash-stats-grid">
