@@ -1057,8 +1057,100 @@
     </div>
   </footer>
 
+  <script src="https://js.stripe.com/v3/"></script>
   <script src="main.js"></script>
   <script>
+    /* ============================================================
+       REAL APPLE PAY (via Stripe Payment Request Button)
+       ------------------------------------------------------------
+       This talks to Stripe's actual Apple Pay integration. It only
+       activates when ALL of these are true:
+         1. STRIPE_PUBLISHABLE_KEY below is a real key from your
+            Stripe Dashboard (not the placeholder).
+         2. The page is served over HTTPS on a domain you've
+            registered for Apple Pay in the Stripe Dashboard
+            (Settings → Payment methods → Apple Pay → Add domain).
+         3. The visitor is on Safari (macOS) or iOS/iPadOS with a
+            card already added to their Apple Wallet.
+       On every other browser/device (Chrome, Firefox, Android, or
+       any dev preview), canMakePayment() correctly returns false
+       and the code below automatically falls back to the existing
+       simulated Face ID sheet — so the demo still works everywhere,
+       but real devices get a real Apple Pay charge.
+       ============================================================ */
+    const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_KEY_HERE'; // ← replace with your real Stripe publishable key
+    // Your deployed backend endpoint that creates a PaymentIntent (see /netlify/functions/create-payment-intent.js)
+    const CREATE_PAYMENT_INTENT_URL = '/.netlify/functions/create-payment-intent';
+
+    let stripeClient = null;
+    let stripePR = null;          // the current Stripe PaymentRequest object
+    let applePayReady = false;    // true once canMakePayment() confirms real Apple Pay is usable
+
+    if (window.Stripe && STRIPE_PUBLISHABLE_KEY && !STRIPE_PUBLISHABLE_KEY.includes('YOUR_KEY_HERE')) {
+      stripeClient = Stripe(STRIPE_PUBLISHABLE_KEY);
+    }
+
+    /* Parse a displayed price like "$4.35" into integer cents for Stripe */
+    function priceStringToCents(priceStr) {
+      const n = parseFloat(String(priceStr).replace(/[^0-9.]/g, ''));
+      return Math.max(50, Math.round((isNaN(n) ? 5 : n) * 100)); // Stripe minimum charge ~$0.50
+    }
+
+    /* Build a fresh PaymentRequest for the item currently being checked out,
+       and check whether this browser/device can actually show Apple Pay. */
+    function initApplePayForCheckout(name, priceStr) {
+      applePayReady = false;
+      stripePR = null;
+      if (!stripeClient) return; // no real key configured — stay in demo mode
+
+      stripePR = stripeClient.paymentRequest({
+        country: 'BH',
+        currency: 'bhd',
+        total: { label: name || 'EchoEats order', amount: priceStringToCents(priceStr) },
+        requestPayerName: false,
+        requestPayerEmail: false,
+      });
+
+      stripePR.canMakePayment().then(function (result) {
+        applePayReady = !!(result && result.applePay);
+      }).catch(function () { applePayReady = false; });
+
+      // Fires once the shopper authorises the payment in the native Apple Pay sheet
+      stripePR.on('paymentmethod', async function (ev) {
+        try {
+          const res = await fetch(CREATE_PAYMENT_INTENT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: priceStringToCents(pendingPrice),
+              currency: 'bhd',
+              description: pendingName,
+            }),
+          });
+          if (!res.ok) throw new Error('Backend did not return a PaymentIntent');
+          const { clientSecret } = await res.json();
+
+          const { paymentIntent, error } = await stripeClient.confirmCardPayment(
+            clientSecret,
+            { payment_method: ev.paymentMethod.id },
+            { handleActions: false }
+          );
+
+          if (error) {
+            ev.complete('fail');
+            showToast('⚠️ Apple Pay payment failed: ' + error.message, 'warning');
+            return;
+          }
+
+          ev.complete('success'); // dismisses the native Apple Pay sheet
+          finalizeReservation();  // shared success handler (marks reserved, updates UI)
+        } catch (err) {
+          ev.complete('fail');
+          showToast('⚠️ Payment could not be processed. ' + err.message, 'warning');
+        }
+      });
+    }
+
     /* ── RESERVATION STORAGE KEY PREFIX ── */
     const RESERVED_PREFIX = 'ee_reserved_';
 
@@ -1228,6 +1320,31 @@
       document.getElementById('pay-item-price').textContent = pendingPrice;
       document.getElementById('pay-hold-note').textContent = 'Item held for 15 minutes after payment.';
       document.getElementById('payment-modal').style.display = 'flex';
+
+      // Build a real Stripe PaymentRequest sized to this item, so Apple Pay
+      // (when available) shows the correct amount in the native sheet.
+      initApplePayForCheckout(name, pendingPrice);
+    }
+
+    /* ── SHARED SUCCESS HANDLER ──
+       Used by both the real Apple Pay flow (Stripe) and the card-form flow.
+       Marks the reservation as held, bumps the demand engine, and updates
+       the button + modal UI to reflect a confirmed reservation. */
+    function finalizeReservation() {
+      if (pendingItemId) markReserved(pendingItemId);
+      if (pendingItemId && typeof recordReservation === 'function') recordReservation(pendingItemId);
+      if (pendingBtn) {
+        pendingBtn.textContent = '✓ Reserved';
+        pendingBtn.disabled = true;
+        pendingBtn.style.background = 'var(--green-400)';
+        pendingBtn.style.color = 'var(--dark)';
+        pendingBtn.style.cursor = 'not-allowed';
+      }
+      document.getElementById('pay-step-form').style.display = 'none';
+      document.getElementById('pay-step-success').style.display = '';
+      document.getElementById('pay-success-name').textContent = pendingName;
+      document.getElementById('pay-success-price').textContent = pendingPrice;
+      document.getElementById('payment-modal').style.display = 'flex';
     }
 
     function showAuthPrompt() {
@@ -1271,8 +1388,19 @@
     }
 
     function confirmApplePay() {
-      // Hide the checkout modal and show the Apple Pay sheet
       document.getElementById('payment-modal').style.display = 'none';
+
+      if (applePayReady && stripePR) {
+        // REAL Apple Pay: this opens the actual native OS payment sheet.
+        // Success/failure is handled by the 'paymentmethod' listener
+        // registered in initApplePayForCheckout().
+        stripePR.show();
+        return;
+      }
+
+      // Fallback demo sheet — used automatically whenever real Apple Pay
+      // isn't available (no Stripe key configured yet, non-Safari browser,
+      // no card in Apple Wallet, etc.)
       showApplePaySheet();
     }
 
@@ -1334,15 +1462,6 @@
       document.getElementById('aps-step-faceid').style.display = 'none';
       document.getElementById('aps-step-success').style.display = '';
       document.getElementById('aps-success-amount').textContent = pendingPrice + ' · EchoEats';
-      if (pendingItemId) markReserved(pendingItemId);
-      if (pendingItemId && typeof recordReservation === 'function') recordReservation(pendingItemId);
-      if (pendingBtn) {
-        pendingBtn.textContent = '✓ Reserved';
-        pendingBtn.disabled = true;
-        pendingBtn.style.background = 'var(--green-400)';
-        pendingBtn.style.color = 'var(--dark)';
-        pendingBtn.style.cursor = 'not-allowed';
-      }
       // Auto close sheet after 2.2s then show the main success modal
       setTimeout(() => {
         const sheet = document.getElementById('apple-pay-sheet');
@@ -1350,12 +1469,7 @@
         inner.style.transform = 'translateY(100%)';
         setTimeout(() => {
           sheet.style.display = 'none';
-          // Show the confirmation in the main modal
-          document.getElementById('pay-step-form').style.display = 'none';
-          document.getElementById('pay-step-success').style.display = '';
-          document.getElementById('pay-success-name').textContent = pendingName;
-          document.getElementById('pay-success-price').textContent = pendingPrice;
-          document.getElementById('payment-modal').style.display = 'flex';
+          finalizeReservation(); // shared success handler
         }, 350);
       }, 2200);
     }
@@ -1371,24 +1485,7 @@
       document.getElementById('pay-btn').disabled = true;
 
       setTimeout(() => {
-        /* ── PERSIST RESERVATION ──
-           Written BEFORE showing success so that even if the user
-           closes the tab immediately, the hold is already in storage. */
-        if (pendingItemId) markReserved(pendingItemId);
-        // Record in demand engine — this raises the DemandMultiplier for this item
-        if (pendingItemId && typeof recordReservation === 'function') recordReservation(pendingItemId);
-
-        document.getElementById('pay-step-form').style.display = 'none';
-        document.getElementById('pay-step-success').style.display = '';
-        document.getElementById('pay-success-name').textContent = pendingName;
-        document.getElementById('pay-success-price').textContent = pendingPrice;
-        if (pendingBtn) {
-          pendingBtn.textContent = '✓ Reserved';
-          pendingBtn.disabled = true;
-          pendingBtn.style.background = 'var(--green-400)';
-          pendingBtn.style.color = 'var(--dark)';
-          pendingBtn.style.cursor = 'not-allowed';
-        }
+        finalizeReservation(); // shared success handler — persists the hold before showing success
         document.getElementById('pay-btn').textContent = 'Pay Now';
         document.getElementById('pay-btn').disabled = false;
       }, 1800);
