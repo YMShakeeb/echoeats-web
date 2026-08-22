@@ -391,17 +391,7 @@
           also check the <strong>Promotions</strong> and <strong>Spam</strong> tabs. It can take a minute to arrive.
         </div>
 
-        <div id="otp-demo-box"
-          style="display:none;background:var(--green-50);border:1.5px solid var(--green-200);border-radius:12px;padding:14px;margin-bottom:16px;text-align:left">
-          <div
-            style="font-size:11px;font-weight:700;color:var(--green-700);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">
-            🧪 Demo mode — SMS backend not connected yet
-          </div>
-          <div style="font-size:12.5px;color:var(--text-soft);line-height:1.5">
-            SMS delivery needs a paid provider (e.g. Twilio) that isn't connected yet, so this code is shown here
-            instead of being texted. Your code is:
-            <strong id="otp-demo-code" style="color:var(--green-800);font-size:16px;letter-spacing:2px">------</strong>
-          </div>
+        <div id="otp-demo-box" style="display:none">
         </div>
 
         <input type="text" id="otp-input" maxlength="6" inputmode="numeric" placeholder="• • • • • •"
@@ -813,6 +803,7 @@
     var pendingBizName = null;
     var currentOtp = null;
     var otpChannel = null; // 'email' | 'phone'
+    var emailIsDemoFallback = false; // true if real email send failed and we're using an on-screen demo code instead
 
     function generateOtp() {
       return String(Math.floor(100000 + Math.random() * 900000));
@@ -828,13 +819,17 @@
 
       if (channel === 'email') {
         // Real delivery via Supabase Auth — an actual email lands in the inbox.
-        document.getElementById('otp-demo-box').style.display = 'none';
+        emailIsDemoFallback = false;
         var result = await supabaseClient.auth.signInWithOtp({
           email: destination,
           options: { shouldCreateUser: true }
         });
         if (result.error) {
-          showToast('⚠️ Could not send code: ' + result.error.message, 'warning');
+          // Supabase's SMTP send failed (rate limit, misconfigured provider, etc).
+          // Fall back to a demo code shown in the toast so the flow isn't blocked.
+          emailIsDemoFallback = true;
+          currentOtp = generateOtp();
+          showToast('⚠️ Email delivery unavailable — demo code: ' + currentOtp, 'warning');
         } else {
           showToast('📩 Verification code emailed to ' + destination);
         }
@@ -842,9 +837,7 @@
         // SMS still requires a paid provider (e.g. Twilio) connected in Supabase,
         // so this channel stays in demo mode until that's set up.
         currentOtp = generateOtp();
-        document.getElementById('otp-demo-box').style.display = 'block';
-        document.getElementById('otp-demo-code').textContent = currentOtp;
-        showToast('📩 Demo OTP "sent" via ' + via);
+        showToast('📩 Demo OTP via ' + via + ': ' + currentOtp);
       }
     }
 
@@ -1003,7 +996,7 @@
       var entered = document.getElementById('otp-input').value.trim();
       otpErrEl.style.display = 'none';
 
-      if (otpChannel === 'email') {
+      if (otpChannel === 'email' && !emailIsDemoFallback) {
         var result = await supabaseClient.auth.verifyOtp({
           email: pendingUser.email,
           token: entered,
