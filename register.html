@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — EchoEats</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .plan-card {
+      display: block;
+      position: relative;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.18s;
+      background: var(--white);
+    }
+
+    .plan-card:hover {
+      border-color: var(--green-400);
+      background: var(--green-50);
+    }
+
+    .plan-card.selected {
+      border-color: var(--green-700);
+      background: var(--green-50);
+      box-shadow: 0 0 0 3px rgba(22, 101, 52, .1);
+    }
+
+    .plan-popular {
+      border-color: var(--green-300);
+    }
+
+    /* Radio indicator — sits to the LEFT of the plan name, never overlaps price */
+    .plan-radio {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      margin-top: 2px;
+    }
+
+    .plan-card.selected .plan-radio {
+      border-color: var(--green-700);
+      background: var(--green-700);
+    }
+
+    .plan-radio-dot {
+      width: 8px;
+      height: 8px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    .plan-card.selected .plan-radio-dot {
+      opacity: 1;
+    }
+
+    .plan-feat {
+      background: var(--green-100);
+      color: var(--green-800);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 100px;
+    }
+
+    #vendor-fields {
+      display: none;
+    }
+  </style>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+
+<body class="auth-page" style="padding-top:0">
+
+  <!-- Full Navbar -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="notifications.html">Notifications</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="auth-body" style="padding-top: calc(var(--nav-h, 72px) + 40px)">
+    <div class="auth-card" style="max-width:520px">
+      <div style="text-align:center;margin-bottom:22px">
+        <div style="font-size:44px;margin-bottom:12px">🌿</div>
+        <div class="auth-title">Create your account</div>
+        <div class="auth-subtitle">Join thousands saving money and fighting food waste</div>
+      </div>
+
+      <div id="reg-step-form">
+
+        <div class="auth-tabs">
+          <button type="button" class="auth-tab active" id="tab-consumer"
+            onclick="switchRole('consumer')">Consumer</button>
+          <button type="button" class="auth-tab" id="tab-vendor" onclick="switchRole('vendor')">Vendor</button>
+        </div>
+
+        <form onsubmit="handleRegister(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0">
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">First
+                Name</label>
+              <input type="text" id="r-first" placeholder="Yousif" required maxlength="50"
+                style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Last
+                Name</label>
+              <input type="text" id="r-last" placeholder="Shakeeb" required maxlength="50"
+                style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+            </div>
+          </div>
+          <div style="margin-bottom:14px">
+            <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Gmail
+              Address</label>
+            <input type="email" id="r-email" placeholder="you@gmail.com" required maxlength="100"
+              oninput="validateEmailField()"
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+          </div>
+          <div style="margin-bottom:6px">
+            <label
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Password</label>
+            <input type="password" id="r-pass" placeholder="Create a password" required minlength="8"
+              oninput="validatePasswordField()"
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s">
+          </div>
+          <div id="pass-requirements"
+            style="display:flex;flex-direction:column;gap:3px;margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:10px">
+            <div class="pw-req" data-req="len" style="font-size:11.5px;color:var(--text-muted)">○ At least 8 characters
+            </div>
+            <div class="pw-req" data-req="letter" style="font-size:11.5px;color:var(--text-muted)">○ At least 1 letter
+            </div>
+            <div class="pw-req" data-req="number" style="font-size:11.5px;color:var(--text-muted)">○ At least 1 number
+            </div>
+          </div>
+
+          <div id="consumer-fields">
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:7px">
+                Dietary Preferences <span style="color:var(--text-muted);font-weight:400">(optional)</span>
+              </label>
+              <div class="diet-chips">
+                <button type="button" class="diet-chip" onclick="toggleDiet(this,'Vegan')">🌿 Vegan</button>
+                <button type="button" class="diet-chip" onclick="toggleDiet(this,'Gluten-free')">🌾 Gluten-free</button>
+                <button type="button" class="diet-chip" onclick="toggleDiet(this,'Peanut-free')">🥜 Peanut-free</button>
+              </div>
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">City
+                /
+                Area</label>
+              <select id="r-location"
+                style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+                <option value="">Select your city / area in Bahrain...</option>
+              </select>
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Phone
+                Number <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+              <div style="display:flex;gap:8px">
+                <select id="r-phone-code" onchange="validatePhoneField('r-phone')"
+                  style="width:132px;flex-shrink:0;padding:11px 8px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;outline:none;background:var(--white);color:var(--dark)"></select>
+                <input type="tel" id="r-phone" placeholder="3XXXXXXX" maxlength="15"
+                  oninput="validatePhoneField('r-phone')"
+                  style="flex:1;min-width:0;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+              </div>
+            </div>
+          </div>
+
+          <div id="vendor-fields" style="display:none">
+            <div style="margin-bottom:14px">
+              <label
+                style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Business
+                Name</label>
+              <input type="text" id="r-biz" placeholder="e.g. Patisserie Nour" maxlength="80"
+                style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+            </div>
+            <div style="margin-bottom:14px">
+              <label
+                style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Business
+                Type</label>
+              <select id="r-biztype"
+                style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+                <option value="">Select type...</option>
+                <option>Restaurant</option>
+                <option>Cafe / Coffee Shop</option>
+                <option>Bakery</option>
+                <option>Supermarket</option>
+                <option>Home Cook</option>
+              </select>
+            </div>
+            <div style="margin-bottom:14px">
+              <label
+                style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Street /
+                Building Address</label>
+              <input type="text" id="r-address" placeholder="e.g. Building 240, Road 1705, Block 317" maxlength="150"
+                style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">City
+                /
+                Area</label>
+              <select id="r-city-vendor"
+                style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+                <option value="">Select your city / area in Bahrain...</option>
+              </select>
+            </div>
+            <div style="margin-bottom:14px">
+              <label style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Phone
+                Number <span style="color:var(--text-muted);font-weight:400">(optional)</span></label>
+              <div style="display:flex;gap:8px">
+                <select id="r-phone-code-vendor" onchange="validatePhoneField('r-phone-vendor')"
+                  style="width:132px;flex-shrink:0;padding:11px 8px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;outline:none;background:var(--white);color:var(--dark)"></select>
+                <input type="tel" id="r-phone-vendor" placeholder="3XXXXXXX" maxlength="15"
+                  oninput="validatePhoneField('r-phone-vendor')"
+                  style="flex:1;min-width:0;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+              </div>
+            </div>
+
+            <!-- Vendor Plan Picker -->
+            <div style="margin-bottom:6px">
+              <label
+                style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:10px">Choose
+                your plan</label>
+              <div id="plan-cards" style="display:flex;flex-direction:column;gap:10px">
+
+                <!-- Starter -->
+                <label class="plan-card" id="plan-starter" onclick="selectPlan('starter')">
+                  <input type="radio" name="vendor-plan" value="starter" checked style="display:none">
+                  <div style="display:flex;align-items:flex-start;gap:12px">
+                    <div class="plan-radio">
+                      <div class="plan-radio-dot"></div>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                        <div style="font-size:14px;font-weight:800;color:var(--dark)">🌱 Starter</div>
+                        <div style="flex-shrink:0;text-align:right">
+                          <span style="font-size:15px;font-weight:900;color:var(--green-700)">Free</span>
+                          <div style="font-size:10px;color:var(--text-muted)">forever</div>
+                        </div>
+                      </div>
+                      <div style="font-size:12px;color:var(--text-muted);margin-top:2px;margin-bottom:8px">Perfect for
+                        home cooks & small cafes</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:5px">
+                        <span class="plan-feat">5 listings/day</span>
+                        <span class="plan-feat">Linear decay only</span>
+                        <span class="plan-feat">Basic analytics</span>
+                        <span class="plan-feat">Stripe payouts</span>
+                        <span class="plan-feat">Email support</span>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Growth -->
+                <label class="plan-card plan-popular" id="plan-growth" onclick="selectPlan('growth')">
+                  <input type="radio" name="vendor-plan" value="growth" style="display:none">
+                  <div
+                    style="position:absolute;top:-1px;right:14px;background:var(--green-700);color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:0 0 8px 8px;letter-spacing:.5px">
+                    MOST POPULAR</div>
+                  <div style="display:flex;align-items:flex-start;gap:12px;padding-top:6px">
+                    <div class="plan-radio">
+                      <div class="plan-radio-dot"></div>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                        <div style="font-size:14px;font-weight:800;color:var(--dark)">🚀 Growth</div>
+                        <div style="flex-shrink:0;text-align:right">
+                          <span style="font-size:15px;font-weight:900;color:var(--green-700)">BD 15</span><span
+                            style="font-size:11px;color:var(--text-muted)">/mo</span>
+                          <div style="font-size:10px;color:var(--text-muted)">billed monthly</div>
+                        </div>
+                      </div>
+                      <div style="font-size:12px;color:var(--text-muted);margin-top:2px;margin-bottom:8px">For growing
+                        restaurants & bakeries</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:5px">
+                        <span class="plan-feat">Unlimited listings</span>
+                        <span class="plan-feat">All 3 decay curves</span>
+                        <span class="plan-feat">Full analytics</span>
+                        <span class="plan-feat">Demand alerts</span>
+                        <span class="plan-feat">Priority support</span>
+                        <span class="plan-feat">Sustainability badge</span>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+
+                <!-- Enterprise -->
+                <label class="plan-card" id="plan-enterprise" onclick="selectPlan('enterprise')">
+                  <input type="radio" name="vendor-plan" value="enterprise" style="display:none">
+                  <div style="display:flex;align-items:flex-start;gap:12px">
+                    <div class="plan-radio">
+                      <div class="plan-radio-dot"></div>
+                    </div>
+                    <div style="flex:1;min-width:0">
+                      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+                        <div style="font-size:14px;font-weight:800;color:var(--dark)">🏢 Enterprise</div>
+                        <div style="flex-shrink:0;text-align:right">
+                          <span style="font-size:15px;font-weight:900;color:var(--green-700)">Custom</span>
+                          <div style="font-size:10px;color:var(--text-muted)">contact us</div>
+                        </div>
+                      </div>
+                      <div style="font-size:12px;color:var(--text-muted);margin-top:2px;margin-bottom:8px">For chains &
+                        large-scale operations</div>
+                      <div style="display:flex;flex-wrap:wrap;gap:5px">
+                        <span class="plan-feat">Multi-location</span>
+                        <span class="plan-feat">API access</span>
+                        <span class="plan-feat">ML pricing predictions</span>
+                        <span class="plan-feat">A/B testing</span>
+                        <span class="plan-feat">Dedicated manager</span>
+                        <span class="plan-feat">White-label</span>
+                      </div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div id="reg-error" style="display:none;color:red;font-size:12px;margin-bottom:10px;"></div>
+
+          <button type="submit" class="btn btn-primary"
+            style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-top:4px">
+            Create Account
+          </button>
+        </form>
+        <div style="display:flex;align-items:center;gap:12px;margin:16px 0">
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+          <span style="font-size:12px;color:var(--text-muted);font-weight:600">OR</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+        <button type="button" id="google-btn" onclick="openGoogleSignUp()"
+          style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border:1.5px solid var(--border);border-radius:12px;background:var(--white);font-size:15px;font-weight:600;color:var(--dark);cursor:pointer;transition:box-shadow 0.2s"
+          onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow=''">
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+            <path fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+            <path fill="#FBBC05"
+              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+            <path fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          </svg>
+          Continue with Google
+        </button>
+        <p style="margin-top:16px;text-align:center;font-size:13px;color:var(--text-muted)">
+          Already have an account? <a href="login.html" style="color:var(--green-700);font-weight:600">Sign in</a>
+        </p>
+
+      </div>
+
+      <!-- OTP Verification Step (hidden until first step passes validation) -->
+      <div id="reg-step-otp" style="display:none;text-align:center">
+        <div style="font-size:44px;margin-bottom:12px">📩</div>
+        <div class="auth-title" style="margin-bottom:6px">Verify it's you</div>
+        <div class="auth-subtitle" id="otp-subtitle" style="margin-bottom:6px">
+          Enter the 6-digit code we sent you.
+        </div>
+
+        <div id="otp-inbox-hint"
+          style="display:none;font-size:12.5px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:16px;text-align:left">
+          📥 Check your inbox — and your <strong>spam/junk folder</strong> — for the email. If you use the Gmail app,
+          also check the <strong>Promotions</strong> and <strong>Spam</strong> tabs. It can take a minute to arrive.
+        </div>
+
+        <div id="otp-demo-box" style="display:none">
+        </div>
+
+        <input type="text" id="otp-input" maxlength="6" inputmode="numeric" placeholder="• • • • • •"
+          style="width:100%;padding:14px;border:1.5px solid var(--border);border-radius:12px;font-size:22px;letter-spacing:8px;text-align:center;outline:none;background:var(--white);color:var(--dark);margin-bottom:12px">
+
+        <div id="otp-error" style="display:none;color:red;font-size:12px;margin-bottom:10px"></div>
+
+        <button type="button" class="btn btn-primary" onclick="verifyOtp()"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-bottom:14px">
+          Verify &amp; Create Account
+        </button>
+
+        <p style="font-size:12.5px;color:var(--text-muted)">
+          Didn't get a code?
+          <a href="#" id="otp-resend" onclick="resendOtp(event)" style="color:var(--green-700);font-weight:600">Resend
+            OTP Code</a>
+          <span id="otp-resend-timer" style="color:var(--text-muted);font-weight:600"></span>
+        </p>
+        <p style="margin-top:10px">
+          <a href="#" onclick="cancelOtp(event)" style="font-size:12.5px;color:var(--text-muted)">← Back to edit
+            details</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="main.js"></script>
+  <script>
+    // @ts-nocheck
+
+    /* ── Supabase (real email OTP delivery) ── */
+    var SUPABASE_URL = 'https://ytppwkvtzftmgjghbvzt.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_pyB2FiWjhCRJgpHsm9aojQ_wmjA7wSX';
+    var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function openGoogleSignUp() {
+      var w = 420, h = 500;
+      var left = Math.round(screen.width / 2 - w / 2);
+      var top = Math.round(screen.height / 2 - h / 2);
+      window.open(
+        'google-oauth.html?mode=signup',
+        'GoogleSignIn',
+        'width=' + w + ',height=' + h + ',left=' + left + ',top=' + top + ',resizable=no,scrollbars=no,status=no,toolbar=no,menubar=no'
+      );
+    }
+
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.type !== 'GOOGLE_AUTH_SUCCESS') return;
+      var data = e.data;
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var existing = users.find(function (u) { return u.email === data.email; });
+
+      if (existing) {
+        // Already registered — just sign them in
+        localStorage.setItem('ee_current_user', JSON.stringify(existing));
+        localStorage.setItem('ee_has_logged_in', '1');
+        showToast('👋 Welcome back, ' + existing.name.split(' ')[0] + '!');
+        setTimeout(function () {
+          window.location.href = existing.role === 'vendor' ? 'vendor-dashboard.html' : 'consumer-dashboard.html';
+        }, 700);
+        return;
+      }
+
+      // New user — create consumer account
+      var newUser = {
+        id: 'g' + Date.now(),
+        name: data.name,
+        email: data.email,
+        password: '',
+        role: 'consumer',
+        status: 'approved',
+        googleAuth: true,
+        avatarColor: data.avatarColor,
+        mealsSaved: 0, co2Saved: 0, streak: 0, badges: [],
+        joinDate: new Date().toISOString()
+      };
+      users.push(newUser);
+      localStorage.setItem('ee_users', JSON.stringify(users));
+      localStorage.setItem('ee_current_user', JSON.stringify(newUser));
+      localStorage.setItem('ee_has_logged_in', '1');
+      showToast('🎉 Account created! Welcome, ' + newUser.name.split(' ')[0] + '!');
+      setTimeout(function () { window.location.href = 'consumer-dashboard.html'; }, 700);
+    });
+
+    var currentRole = 'consumer';
+    var selectedDiets = [];
+    var selectedPlan = 'starter';
+
+    /* ── Official Bahrain cities / areas ── */
+    var BAHRAIN_CITIES = [
+      'Manama', 'Muharraq', 'Riffa', 'Hamad Town', "A'ali", 'Isa Town', 'Sitra',
+      'Budaiya', 'Jidd Hafs', 'Sanabis', 'Sanad', 'Tubli', 'Zallaq', 'Al Malikiyah',
+      'Janabiya', 'Saar', 'Durrat Al Bahrain', 'Amwaj Islands', 'Diyar Al Muharraq',
+      'Arad', 'Galali', 'Hidd', 'Karranah', 'Barbar', 'Jasra', 'Duraz', 'Dar Kulaib',
+      'Sakhir', 'Awali', 'Zayed Town (Madinat Isa)', 'Nuwaidrat', 'Nabih Saleh', 'Karbabad'
+    ];
+
+    /* ── World country calling codes (name, dial code, flag) ── */
+    var COUNTRY_CODES = [
+      { n: "Afghanistan", c: "93", f: "\ud83c\udde6\ud83c\uddeb" },
+      { n: "Albania", c: "355", f: "\ud83c\udde6\ud83c\uddf1" },
+      { n: "Algeria", c: "213", f: "\ud83c\udde9\ud83c\uddff" },
+      { n: "Andorra", c: "376", f: "\ud83c\udde6\ud83c\udde9" },
+      { n: "Angola", c: "244", f: "\ud83c\udde6\ud83c\uddf4" },
+      { n: "Argentina", c: "54", f: "\ud83c\udde6\ud83c\uddf7" },
+      { n: "Armenia", c: "374", f: "\ud83c\udde6\ud83c\uddf2" },
+      { n: "Australia", c: "61", f: "\ud83c\udde6\ud83c\uddfa" },
+      { n: "Austria", c: "43", f: "\ud83c\udde6\ud83c\uddf9" },
+      { n: "Azerbaijan", c: "994", f: "\ud83c\udde6\ud83c\uddff" },
+      { n: "Bahamas", c: "1242", f: "\ud83c\udde7\ud83c\uddf8" },
+      { n: "Bahrain", c: "973", f: "\ud83c\udde7\ud83c\udded" },
+      { n: "Bangladesh", c: "880", f: "\ud83c\udde7\ud83c\udde9" },
+      { n: "Barbados", c: "1246", f: "\ud83c\udde7\ud83c\udde7" },
+      { n: "Belarus", c: "375", f: "\ud83c\udde7\ud83c\uddfe" },
+      { n: "Belgium", c: "32", f: "\ud83c\udde7\ud83c\uddea" },
+      { n: "Belize", c: "501", f: "\ud83c\udde7\ud83c\uddff" },
+      { n: "Benin", c: "229", f: "\ud83c\udde7\ud83c\uddef" },
+      { n: "Bhutan", c: "975", f: "\ud83c\udde7\ud83c\uddf9" },
+      { n: "Bolivia", c: "591", f: "\ud83c\udde7\ud83c\uddf4" },
+      { n: "Bosnia and Herzegovina", c: "387", f: "\ud83c\udde7\ud83c\udde6" },
+      { n: "Botswana", c: "267", f: "\ud83c\udde7\ud83c\uddfc" },
+      { n: "Brazil", c: "55", f: "\ud83c\udde7\ud83c\uddf7" },
+      { n: "Brunei", c: "673", f: "\ud83c\udde7\ud83c\uddf3" },
+      { n: "Bulgaria", c: "359", f: "\ud83c\udde7\ud83c\uddec" },
+      { n: "Burkina Faso", c: "226", f: "\ud83c\udde7\ud83c\uddeb" },
+      { n: "Burundi", c: "257", f: "\ud83c\udde7\ud83c\uddee" },
+      { n: "Cambodia", c: "855", f: "\ud83c\uddf0\ud83c\udded" },
+      { n: "Cameroon", c: "237", f: "\ud83c\udde8\ud83c\uddf2" },
+      { n: "Canada", c: "1", f: "\ud83c\udde8\ud83c\udde6" },
+      { n: "Cape Verde", c: "238", f: "\ud83c\udde8\ud83c\uddfb" },
+      { n: "Central African Republic", c: "236", f: "\ud83c\udde8\ud83c\uddeb" },
+      { n: "Chad", c: "235", f: "\ud83c\uddf9\ud83c\udde9" },
+      { n: "Chile", c: "56", f: "\ud83c\udde8\ud83c\uddf1" },
+      { n: "China", c: "86", f: "\ud83c\udde8\ud83c\uddf3" },
+      { n: "Colombia", c: "57", f: "\ud83c\udde8\ud83c\uddf4" },
+      { n: "Comoros", c: "269", f: "\ud83c\uddf0\ud83c\uddf2" },
+      { n: "Congo (DRC)", c: "243", f: "\ud83c\udde8\ud83c\udde9" },
+      { n: "Congo (Republic)", c: "242", f: "\ud83c\udde8\ud83c\uddec" },
+      { n: "Costa Rica", c: "506", f: "\ud83c\udde8\ud83c\uddf7" },
+      { n: "Croatia", c: "385", f: "\ud83c\udded\ud83c\uddf7" },
+      { n: "Cuba", c: "53", f: "\ud83c\udde8\ud83c\uddfa" },
+      { n: "Cyprus", c: "357", f: "\ud83c\udde8\ud83c\uddfe" },
+      { n: "Czech Republic", c: "420", f: "\ud83c\udde8\ud83c\uddff" },
+      { n: "Denmark", c: "45", f: "\ud83c\udde9\ud83c\uddf0" },
+      { n: "Djibouti", c: "253", f: "\ud83c\udde9\ud83c\uddef" },
+      { n: "Dominica", c: "1767", f: "\ud83c\udde9\ud83c\uddf2" },
+      { n: "Dominican Republic", c: "1809", f: "\ud83c\udde9\ud83c\uddf4" },
+      { n: "Ecuador", c: "593", f: "\ud83c\uddea\ud83c\udde8" },
+      { n: "Egypt", c: "20", f: "\ud83c\uddea\ud83c\uddec" },
+      { n: "El Salvador", c: "503", f: "\ud83c\uddf8\ud83c\uddfb" },
+      { n: "Equatorial Guinea", c: "240", f: "\ud83c\uddec\ud83c\uddf6" },
+      { n: "Eritrea", c: "291", f: "\ud83c\uddea\ud83c\uddf7" },
+      { n: "Estonia", c: "372", f: "\ud83c\uddea\ud83c\uddea" },
+      { n: "Eswatini", c: "268", f: "\ud83c\uddf8\ud83c\uddff" },
+      { n: "Ethiopia", c: "251", f: "\ud83c\uddea\ud83c\uddf9" },
+      { n: "Fiji", c: "679", f: "\ud83c\uddeb\ud83c\uddef" },
+      { n: "Finland", c: "358", f: "\ud83c\uddeb\ud83c\uddee" },
+      { n: "France", c: "33", f: "\ud83c\uddeb\ud83c\uddf7" },
+      { n: "Gabon", c: "241", f: "\ud83c\uddec\ud83c\udde6" },
+      { n: "Gambia", c: "220", f: "\ud83c\uddec\ud83c\uddf2" },
+      { n: "Georgia", c: "995", f: "\ud83c\uddec\ud83c\uddea" },
+      { n: "Germany", c: "49", f: "\ud83c\udde9\ud83c\uddea" },
+      { n: "Ghana", c: "233", f: "\ud83c\uddec\ud83c\udded" },
+      { n: "Greece", c: "30", f: "\ud83c\uddec\ud83c\uddf7" },
+      { n: "Grenada", c: "1473", f: "\ud83c\uddec\ud83c\udde9" },
+      { n: "Guatemala", c: "502", f: "\ud83c\uddec\ud83c\uddf9" },
+      { n: "Guinea", c: "224", f: "\ud83c\uddec\ud83c\uddf3" },
+      { n: "Guinea-Bissau", c: "245", f: "\ud83c\uddec\ud83c\uddfc" },
+      { n: "Guyana", c: "592", f: "\ud83c\uddec\ud83c\uddfe" },
+      { n: "Haiti", c: "509", f: "\ud83c\udded\ud83c\uddf9" },
+      { n: "Honduras", c: "504", f: "\ud83c\udded\ud83c\uddf3" },
+      { n: "Hong Kong", c: "852", f: "\ud83c\udded\ud83c\uddf0" },
+      { n: "Hungary", c: "36", f: "\ud83c\udded\ud83c\uddfa" },
+      { n: "Iceland", c: "354", f: "\ud83c\uddee\ud83c\uddf8" },
+      { n: "India", c: "91", f: "\ud83c\uddee\ud83c\uddf3" },
+      { n: "Indonesia", c: "62", f: "\ud83c\uddee\ud83c\udde9" },
+      { n: "Iran", c: "98", f: "\ud83c\uddee\ud83c\uddf7" },
+      { n: "Iraq", c: "964", f: "\ud83c\uddee\ud83c\uddf6" },
+      { n: "Ireland", c: "353", f: "\ud83c\uddee\ud83c\uddea" },
+      { n: "Israel", c: "972", f: "\ud83c\uddee\ud83c\uddf1" },
+      { n: "Italy", c: "39", f: "\ud83c\uddee\ud83c\uddf9" },
+      { n: "Ivory Coast", c: "225", f: "\ud83c\udde8\ud83c\uddee" },
+      { n: "Jamaica", c: "1876", f: "\ud83c\uddef\ud83c\uddf2" },
+      { n: "Japan", c: "81", f: "\ud83c\uddef\ud83c\uddf5" },
+      { n: "Jordan", c: "962", f: "\ud83c\uddef\ud83c\uddf4" },
+      { n: "Kazakhstan", c: "7", f: "\ud83c\uddf0\ud83c\uddff" },
+      { n: "Kenya", c: "254", f: "\ud83c\uddf0\ud83c\uddea" },
+      { n: "Kiribati", c: "686", f: "\ud83c\uddf0\ud83c\uddee" },
+      { n: "Kosovo", c: "383", f: "\ud83c\uddfd\ud83c\uddf0" },
+      { n: "Kuwait", c: "965", f: "\ud83c\uddf0\ud83c\uddfc" },
+      { n: "Kyrgyzstan", c: "996", f: "\ud83c\uddf0\ud83c\uddec" },
+      { n: "Laos", c: "856", f: "\ud83c\uddf1\ud83c\udde6" },
+      { n: "Latvia", c: "371", f: "\ud83c\uddf1\ud83c\uddfb" },
+      { n: "Lebanon", c: "961", f: "\ud83c\uddf1\ud83c\udde7" },
+      { n: "Lesotho", c: "266", f: "\ud83c\uddf1\ud83c\uddf8" },
+      { n: "Liberia", c: "231", f: "\ud83c\uddf1\ud83c\uddf7" },
+      { n: "Libya", c: "218", f: "\ud83c\uddf1\ud83c\uddfe" },
+      { n: "Liechtenstein", c: "423", f: "\ud83c\uddf1\ud83c\uddee" },
+      { n: "Lithuania", c: "370", f: "\ud83c\uddf1\ud83c\uddf9" },
+      { n: "Luxembourg", c: "352", f: "\ud83c\uddf1\ud83c\uddfa" },
+      { n: "Macau", c: "853", f: "\ud83c\uddf2\ud83c\uddf4" },
+      { n: "Madagascar", c: "261", f: "\ud83c\uddf2\ud83c\uddec" },
+      { n: "Malawi", c: "265", f: "\ud83c\uddf2\ud83c\uddfc" },
+      { n: "Malaysia", c: "60", f: "\ud83c\uddf2\ud83c\uddfe" },
+      { n: "Maldives", c: "960", f: "\ud83c\uddf2\ud83c\uddfb" },
+      { n: "Mali", c: "223", f: "\ud83c\uddf2\ud83c\uddf1" },
+      { n: "Malta", c: "356", f: "\ud83c\uddf2\ud83c\uddf9" },
+      { n: "Marshall Islands", c: "692", f: "\ud83c\uddf2\ud83c\udded" },
+      { n: "Mauritania", c: "222", f: "\ud83c\uddf2\ud83c\uddf7" },
+      { n: "Mauritius", c: "230", f: "\ud83c\uddf2\ud83c\uddfa" },
+      { n: "Mexico", c: "52", f: "\ud83c\uddf2\ud83c\uddfd" },
+      { n: "Micronesia", c: "691", f: "\ud83c\uddeb\ud83c\uddf2" },
+      { n: "Moldova", c: "373", f: "\ud83c\uddf2\ud83c\udde9" },
+      { n: "Monaco", c: "377", f: "\ud83c\uddf2\ud83c\udde8" },
+      { n: "Mongolia", c: "976", f: "\ud83c\uddf2\ud83c\uddf3" },
+      { n: "Montenegro", c: "382", f: "\ud83c\uddf2\ud83c\uddea" },
+      { n: "Morocco", c: "212", f: "\ud83c\uddf2\ud83c\udde6" },
+      { n: "Mozambique", c: "258", f: "\ud83c\uddf2\ud83c\uddff" },
+      { n: "Myanmar", c: "95", f: "\ud83c\uddf2\ud83c\uddf2" },
+      { n: "Namibia", c: "264", f: "\ud83c\uddf3\ud83c\udde6" },
+      { n: "Nauru", c: "674", f: "\ud83c\uddf3\ud83c\uddf7" },
+      { n: "Nepal", c: "977", f: "\ud83c\uddf3\ud83c\uddf5" },
+      { n: "Netherlands", c: "31", f: "\ud83c\uddf3\ud83c\uddf1" },
+      { n: "New Zealand", c: "64", f: "\ud83c\uddf3\ud83c\uddff" },
+      { n: "Nicaragua", c: "505", f: "\ud83c\uddf3\ud83c\uddee" },
+      { n: "Niger", c: "227", f: "\ud83c\uddf3\ud83c\uddea" },
+      { n: "Nigeria", c: "234", f: "\ud83c\uddf3\ud83c\uddec" },
+      { n: "North Korea", c: "850", f: "\ud83c\uddf0\ud83c\uddf5" },
+      { n: "North Macedonia", c: "389", f: "\ud83c\uddf2\ud83c\uddf0" },
+      { n: "Norway", c: "47", f: "\ud83c\uddf3\ud83c\uddf4" },
+      { n: "Oman", c: "968", f: "\ud83c\uddf4\ud83c\uddf2" },
+      { n: "Pakistan", c: "92", f: "\ud83c\uddf5\ud83c\uddf0" },
+      { n: "Palau", c: "680", f: "\ud83c\uddf5\ud83c\uddfc" },
+      { n: "Palestine", c: "970", f: "\ud83c\uddf5\ud83c\uddf8" },
+      { n: "Panama", c: "507", f: "\ud83c\uddf5\ud83c\udde6" },
+      { n: "Papua New Guinea", c: "675", f: "\ud83c\uddf5\ud83c\uddec" },
+      { n: "Paraguay", c: "595", f: "\ud83c\uddf5\ud83c\uddfe" },
+      { n: "Peru", c: "51", f: "\ud83c\uddf5\ud83c\uddea" },
+      { n: "Philippines", c: "63", f: "\ud83c\uddf5\ud83c\udded" },
+      { n: "Poland", c: "48", f: "\ud83c\uddf5\ud83c\uddf1" },
+      { n: "Portugal", c: "351", f: "\ud83c\uddf5\ud83c\uddf9" },
+      { n: "Qatar", c: "974", f: "\ud83c\uddf6\ud83c\udde6" },
+      { n: "Romania", c: "40", f: "\ud83c\uddf7\ud83c\uddf4" },
+      { n: "Russia", c: "7", f: "\ud83c\uddf7\ud83c\uddfa" },
+      { n: "Rwanda", c: "250", f: "\ud83c\uddf7\ud83c\uddfc" },
+      { n: "Saint Lucia", c: "1758", f: "\ud83c\uddf1\ud83c\udde8" },
+      { n: "Samoa", c: "685", f: "\ud83c\uddfc\ud83c\uddf8" },
+      { n: "San Marino", c: "378", f: "\ud83c\uddf8\ud83c\uddf2" },
+      { n: "Saudi Arabia", c: "966", f: "\ud83c\uddf8\ud83c\udde6" },
+      { n: "Senegal", c: "221", f: "\ud83c\uddf8\ud83c\uddf3" },
+      { n: "Serbia", c: "381", f: "\ud83c\uddf7\ud83c\uddf8" },
+      { n: "Seychelles", c: "248", f: "\ud83c\uddf8\ud83c\udde8" },
+      { n: "Sierra Leone", c: "232", f: "\ud83c\uddf8\ud83c\uddf1" },
+      { n: "Singapore", c: "65", f: "\ud83c\uddf8\ud83c\uddec" },
+      { n: "Slovakia", c: "421", f: "\ud83c\uddf8\ud83c\uddf0" },
+      { n: "Slovenia", c: "386", f: "\ud83c\uddf8\ud83c\uddee" },
+      { n: "Solomon Islands", c: "677", f: "\ud83c\uddf8\ud83c\udde7" },
+      { n: "Somalia", c: "252", f: "\ud83c\uddf8\ud83c\uddf4" },
+      { n: "South Africa", c: "27", f: "\ud83c\uddff\ud83c\udde6" },
+      { n: "South Korea", c: "82", f: "\ud83c\uddf0\ud83c\uddf7" },
+      { n: "South Sudan", c: "211", f: "\ud83c\uddf8\ud83c\uddf8" },
+      { n: "Spain", c: "34", f: "\ud83c\uddea\ud83c\uddf8" },
+      { n: "Sri Lanka", c: "94", f: "\ud83c\uddf1\ud83c\uddf0" },
+      { n: "Sudan", c: "249", f: "\ud83c\uddf8\ud83c\udde9" },
+      { n: "Suriname", c: "597", f: "\ud83c\uddf8\ud83c\uddf7" },
+      { n: "Sweden", c: "46", f: "\ud83c\uddf8\ud83c\uddea" },
+      { n: "Switzerland", c: "41", f: "\ud83c\udde8\ud83c\udded" },
+      { n: "Syria", c: "963", f: "\ud83c\uddf8\ud83c\uddfe" },
+      { n: "Taiwan", c: "886", f: "\ud83c\uddf9\ud83c\uddfc" },
+      { n: "Tajikistan", c: "992", f: "\ud83c\uddf9\ud83c\uddef" },
+      { n: "Tanzania", c: "255", f: "\ud83c\uddf9\ud83c\uddff" },
+      { n: "Thailand", c: "66", f: "\ud83c\uddf9\ud83c\udded" },
+      { n: "Timor-Leste", c: "670", f: "\ud83c\uddf9\ud83c\uddf1" },
+      { n: "Togo", c: "228", f: "\ud83c\uddf9\ud83c\uddec" },
+      { n: "Tonga", c: "676", f: "\ud83c\uddf9\ud83c\uddf4" },
+      { n: "Trinidad and Tobago", c: "1868", f: "\ud83c\uddf9\ud83c\uddf9" },
+      { n: "Tunisia", c: "216", f: "\ud83c\uddf9\ud83c\uddf3" },
+      { n: "Turkey", c: "90", f: "\ud83c\uddf9\ud83c\uddf7" },
+      { n: "Turkmenistan", c: "993", f: "\ud83c\uddf9\ud83c\uddf2" },
+      { n: "Tuvalu", c: "688", f: "\ud83c\uddf9\ud83c\uddfb" },
+      { n: "Uganda", c: "256", f: "\ud83c\uddfa\ud83c\uddec" },
+      { n: "Ukraine", c: "380", f: "\ud83c\uddfa\ud83c\udde6" },
+      { n: "United Arab Emirates", c: "971", f: "\ud83c\udde6\ud83c\uddea" },
+      { n: "United Kingdom", c: "44", f: "\ud83c\uddec\ud83c\udde7" },
+      { n: "United States", c: "1", f: "\ud83c\uddfa\ud83c\uddf8" },
+      { n: "Uruguay", c: "598", f: "\ud83c\uddfa\ud83c\uddfe" },
+      { n: "Uzbekistan", c: "998", f: "\ud83c\uddfa\ud83c\uddff" },
+      { n: "Vanuatu", c: "678", f: "\ud83c\uddfb\ud83c\uddfa" },
+      { n: "Vatican City", c: "39", f: "\ud83c\uddfb\ud83c\udde6" },
+      { n: "Venezuela", c: "58", f: "\ud83c\uddfb\ud83c\uddea" },
+      { n: "Vietnam", c: "84", f: "\ud83c\uddfb\ud83c\uddf3" },
+      { n: "Yemen", c: "967", f: "\ud83c\uddfe\ud83c\uddea" },
+      { n: "Zambia", c: "260", f: "\ud83c\uddff\ud83c\uddf2" },
+      { n: "Zimbabwe", c: "263", f: "\ud83c\uddff\ud83c\uddfc" }
+    ];
+
+    function populateCountryCodeDropdowns() {
+      ['r-phone-code', 'r-phone-code-vendor'].forEach(function (id) {
+        var sel = document.getElementById(id);
+        if (!sel) return;
+        COUNTRY_CODES.forEach(function (c) {
+          var opt = document.createElement('option');
+          opt.value = c.c;
+          opt.textContent = c.f + ' +' + c.c + ' ' + c.n;
+          if (c.c === '973') opt.selected = true; // default: Bahrain
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    function populateCityDropdowns() {
+      ['r-location', 'r-city-vendor'].forEach(function (id) {
+        var sel = document.getElementById(id);
+        if (!sel) return;
+        BAHRAIN_CITIES.forEach(function (city) {
+          var opt = document.createElement('option');
+          opt.value = city; opt.textContent = city;
+          sel.appendChild(opt);
+        });
+      });
+    }
+
+    function selectPlan(plan) {
+      selectedPlan = plan;
+      ['starter', 'growth', 'enterprise'].forEach(function (p) {
+        var el = document.getElementById('plan-' + p);
+        if (el) el.classList.toggle('selected', p === plan);
+      });
+    }
+
+    function switchRole(role) {
+      currentRole = role;
+      document.getElementById('tab-consumer').classList.toggle('active', role === 'consumer');
+      document.getElementById('tab-vendor').classList.toggle('active', role === 'vendor');
+      document.getElementById('consumer-fields').style.display = (role === 'consumer' ? 'block' : 'none');
+      document.getElementById('vendor-fields').style.display = (role === 'vendor' ? 'block' : 'none');
+    }
+
+    function toggleDiet(btn, diet) {
+      btn.classList.toggle('active');
+      var i = selectedDiets.indexOf(diet);
+      if (i >= 0) { selectedDiets.splice(i, 1); } else { selectedDiets.push(diet); }
+    }
+
+    /* ── Live field validation helpers ── */
+    function isGmail(email) {
+      return /^[a-zA-Z0-9._%+-]+@gmail\.com$/.test(email.trim());
+    }
+
+    function validateEmailField() {
+      var input = document.getElementById('r-email');
+      var email = input.value.trim();
+      if (!email) { input.style.borderColor = 'var(--border)'; return; }
+      input.style.borderColor = isGmail(email) ? 'var(--green-400)' : '#dc2626';
+    }
+
+    function checkPasswordRules(pass) {
+      return {
+        len: pass.length >= 8,
+        letter: /[a-zA-Z]/.test(pass),
+        number: /[0-9]/.test(pass)
+      };
+    }
+
+    function validatePasswordField() {
+      var pass = document.getElementById('r-pass').value;
+      var rules = checkPasswordRules(pass);
+      document.querySelectorAll('.pw-req').forEach(function (el) {
+        var ok = rules[el.getAttribute('data-req')];
+        el.style.color = ok ? 'var(--green-600)' : 'var(--text-muted)';
+        el.textContent = (ok ? '✓ ' : '○ ') + el.textContent.replace(/^[✓○]\s*/, '');
+      });
+    }
+
+    /* Bahrain local numbers: 8 digits, starting 3, 6, 7, or 1 (no country code) */
+    var BAHRAIN_LOCAL_RE = /^[3671]\d{7}$/;
+    /* Generic international local number: 4–14 digits for any other country */
+    var GENERIC_LOCAL_RE = /^\d{4,14}$/;
+
+    function phoneCodeSelectId(inputId) {
+      return inputId === 'r-phone-vendor' ? 'r-phone-code-vendor' : 'r-phone-code';
+    }
+
+    function isValidLocalNumber(code, localDigits) {
+      if (code === '973') return BAHRAIN_LOCAL_RE.test(localDigits);
+      return GENERIC_LOCAL_RE.test(localDigits);
+    }
+
+    function buildFullPhone(inputId) {
+      var codeSel = document.getElementById(phoneCodeSelectId(inputId));
+      var input = document.getElementById(inputId);
+      var code = codeSel ? codeSel.value : '973';
+      var localDigits = input.value.replace(/\D/g, '');
+      return { code: code, local: localDigits, full: '+' + code + localDigits };
+    }
+
+    function validatePhoneField(inputId) {
+      var input = document.getElementById(inputId);
+      var val = input.value.trim();
+      if (!val) { input.style.borderColor = 'var(--border)'; return; }
+      var codeSel = document.getElementById(phoneCodeSelectId(inputId));
+      var code = codeSel ? codeSel.value : '973';
+      var localDigits = val.replace(/\D/g, '');
+      input.style.borderColor = isValidLocalNumber(code, localDigits) ? 'var(--green-400)' : '#dc2626';
+    }
+
+    /* ── OTP state ── */
+    var pendingUser = null;
+    var pendingBizName = null;
+    var currentOtp = null;
+    var otpChannel = null; // 'email' | 'phone'
+    var emailIsDemoFallback = false; // true if real email send failed and we're using an on-screen demo code instead
+
+    function generateOtp() {
+      return String(Math.floor(100000 + Math.random() * 900000));
+    }
+
+    async function sendOtp(destination, channel) {
+      otpChannel = channel;
+      var via = channel === 'phone' ? 'SMS to ' + destination : 'email to ' + destination;
+      var codeLength = '6';
+      document.getElementById('otp-subtitle').innerHTML =
+        'Enter the ' + codeLength + '-digit code we sent via ' + via + '.';
+      document.getElementById('otp-inbox-hint').style.display = channel === 'email' ? 'block' : 'none';
+
+      if (channel === 'email') {
+        // Real delivery via Supabase Auth — an actual email lands in the inbox.
+        emailIsDemoFallback = false;
+        var result = await supabaseClient.auth.signInWithOtp({
+          email: destination,
+          options: { shouldCreateUser: true }
+        });
+        if (result.error) {
+          // Supabase's SMTP send failed (rate limit, misconfigured provider, etc).
+          // Fall back to a demo code shown in the toast so the flow isn't blocked.
+          emailIsDemoFallback = true;
+          currentOtp = generateOtp();
+          showToast('⚠️ Email delivery unavailable — demo code: ' + currentOtp, 'warning');
+        } else {
+          showToast('📩 Verification code emailed to ' + destination);
+        }
+      } else {
+        // SMS still requires a paid provider (e.g. Twilio) connected in Supabase,
+        // so this channel stays in demo mode until that's set up.
+        currentOtp = generateOtp();
+        showToast('📩 Demo OTP via ' + via + ': ' + currentOtp);
+      }
+    }
+
+    function sendOtpViaEmail() {
+      if (!pendingUser) return;
+      sendOtp(pendingUser.email, 'email');
+    }
+
+    function sendOtpViaPhone() {
+      if (!pendingUser) return;
+      if (!pendingUser.phone) {
+        showToast('⚠️ No phone number on file — use email instead, or go back and add one.', 'warning');
+        return;
+      }
+      sendOtp(pendingUser.phone, 'phone');
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      var errEl = document.getElementById('reg-error');
+      errEl.style.display = 'none';
+
+      var first = document.getElementById('r-first').value.trim();
+      var last = document.getElementById('r-last').value.trim();
+      var email = document.getElementById('r-email').value.trim();
+      var pass = document.getElementById('r-pass').value;
+
+      if (!isGmail(email)) {
+        errEl.textContent = 'Please use a valid Gmail address (e.g. yourname@gmail.com).';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      var pwRules = checkPasswordRules(pass);
+      if (!pwRules.len || !pwRules.letter || !pwRules.number) {
+        errEl.textContent = 'Password must be at least 8 characters and include a letter and a number.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      for (var i = 0; i < users.length; i++) {
+        if (users[i].email === email) {
+          errEl.textContent = 'Email already registered — try signing in instead.';
+          errEl.style.display = 'block';
+          return;
+        }
+      }
+
+      var phoneInputId = currentRole === 'vendor' ? 'r-phone-vendor' : 'r-phone';
+      var phoneParts = buildFullPhone(phoneInputId);
+      var phone = '';
+      if (phoneParts.local) {
+        if (!isValidLocalNumber(phoneParts.code, phoneParts.local)) {
+          var isBahrain = phoneParts.code === '973';
+          errEl.textContent = isBahrain
+            ? 'Please enter a valid Bahrain phone number (8 digits, e.g. 3XXXXXXX) or leave it blank.'
+            : 'Please enter a valid phone number for the selected country, or leave it blank.';
+          errEl.style.display = 'block';
+          return;
+        }
+        phone = phoneParts.full;
+      }
+
+      var cityInputId = currentRole === 'vendor' ? 'r-city-vendor' : 'r-location';
+      var city = document.getElementById(cityInputId).value;
+      if (!city) {
+        errEl.textContent = 'Please select your official city / area in Bahrain.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      var newUser = {
+        id: 'u' + Date.now(),
+        name: first + ' ' + last,
+        email: email,
+        password: pass,
+        phone: phone,
+        role: currentRole,
+        mealsSaved: 0, co2Saved: 0, streak: 0, badges: [],
+        joinDate: new Date().toISOString()
+      };
+
+      if (currentRole === 'consumer') {
+        newUser.dietary = selectedDiets.slice();
+        newUser.location = city;
+        newUser.status = 'approved';
+      } else {
+        var bizName = document.getElementById('r-biz').value.trim();
+        if (!bizName) {
+          errEl.textContent = 'Please enter your business name.';
+          errEl.style.display = 'block';
+          return;
+        }
+        newUser.businessName = bizName;
+        newUser.businessType = document.getElementById('r-biztype').value;
+        newUser.businessAddress = document.getElementById('r-address').value.trim();
+        newUser.location = city;
+        newUser.plan = selectedPlan;
+        newUser.status = 'pending';
+        pendingBizName = bizName;
+      }
+
+      // Hold the account and move to OTP verification before it's actually created.
+      pendingUser = newUser;
+      document.getElementById('reg-step-form').style.display = 'none';
+      document.getElementById('reg-step-otp').style.display = 'block';
+      document.getElementById('otp-input').value = '';
+      document.getElementById('otp-error').style.display = 'none';
+      sendOtp(email, 'email');
+      startOtpResendCooldown();
+      document.getElementById('otp-input').focus();
+    }
+
+    var otpResendTimerHandle = null;
+
+    function startOtpResendCooldown() {
+      var link = document.getElementById('otp-resend');
+      var timerEl = document.getElementById('otp-resend-timer');
+      var secondsLeft = 30;
+      link.style.pointerEvents = 'none';
+      link.style.opacity = '0.5';
+      timerEl.textContent = ' (' + secondsLeft + 's)';
+
+      if (otpResendTimerHandle) clearInterval(otpResendTimerHandle);
+      otpResendTimerHandle = setInterval(function () {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(otpResendTimerHandle);
+          link.style.pointerEvents = '';
+          link.style.opacity = '';
+          timerEl.textContent = '';
+        } else {
+          timerEl.textContent = ' (' + secondsLeft + 's)';
+        }
+      }, 1000);
+    }
+
+    function resendOtp(e) {
+      e.preventDefault();
+      if (!pendingUser) return;
+      if (document.getElementById('otp-resend').style.pointerEvents === 'none') return;
+      sendOtp(otpChannel === 'phone' ? pendingUser.phone : pendingUser.email, otpChannel || 'email');
+      startOtpResendCooldown();
+    }
+
+    function cancelOtp(e) {
+      e.preventDefault();
+      pendingUser = null; currentOtp = null;
+      document.getElementById('reg-step-otp').style.display = 'none';
+      document.getElementById('reg-step-form').style.display = 'block';
+    }
+
+    async function verifyOtp() {
+      var otpErrEl = document.getElementById('otp-error');
+      var entered = document.getElementById('otp-input').value.trim();
+      otpErrEl.style.display = 'none';
+
+      if (otpChannel === 'email' && !emailIsDemoFallback) {
+        var result = await supabaseClient.auth.verifyOtp({
+          email: pendingUser.email,
+          token: entered,
+          type: 'email'
+        });
+        if (result.error) {
+          otpErrEl.textContent = 'Incorrect or expired code. Please try again.';
+          otpErrEl.style.display = 'block';
+          return;
+        }
+      } else {
+        if (entered !== currentOtp) {
+          otpErrEl.textContent = 'Incorrect code. Please try again.';
+          otpErrEl.style.display = 'block';
+          return;
+        }
+      }
+      finalizeRegistration(pendingUser, pendingBizName);
+    }
+
+    function finalizeRegistration(newUser, bizName) {
+      var email = newUser.email;
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      users.push(newUser);
+      localStorage.setItem('ee_users', JSON.stringify(users));
+      localStorage.setItem('ee_current_user', JSON.stringify(newUser));
+      localStorage.setItem('ee_has_logged_in', '1');
+
+      if (newUser.role === 'vendor') {
+        var planLabels = { starter: '🌱 Starter (Free)', growth: '🚀 Growth (BD 15/mo)', enterprise: '🏢 Enterprise (Custom)' };
+        var _secretClicks = 0, _secretTimer = null;
+        document.querySelector('.auth-card').innerHTML = `
+          <div style="text-align:center;padding:20px 0">
+            <div id="reg-pending-icon" style="font-size:56px;margin-bottom:16px;cursor:default;user-select:none;display:inline-block;transition:transform 0.15s">⏳</div>
+            <div class="auth-title" style="margin-bottom:6px">Application Submitted</div>
+            <div class="auth-subtitle" style="margin-bottom:24px">Your vendor account is currently under review.</div>
+
+            <div style="background:var(--green-50);border:1.5px solid var(--green-200);border-radius:16px;padding:20px;text-align:left;margin-bottom:16px">
+              <div style="font-size:13px;font-weight:700;color:var(--green-700);margin-bottom:12px">📋 What happens next</div>
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div style="width:24px;height:24px;border-radius:50%;background:var(--green-700);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">1</div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px">Application Review</div>
+                    <div style="font-size:12px;color:var(--text-soft)">Our team will review your business details within <strong>24 hours</strong> of submission.</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div style="width:24px;height:24px;border-radius:50%;background:var(--green-700);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">2</div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px">Approval Notification</div>
+                    <div style="font-size:12px;color:var(--text-soft)">Upon approval, you will receive a confirmation email at <strong>${email}</strong> with a secure link to complete your account setup.</div>
+                  </div>
+                </div>
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <div style="width:24px;height:24px;border-radius:50%;background:var(--green-700);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">3</div>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px">Payment & Activation</div>
+                    <div style="font-size:12px;color:var(--text-soft)">The email will include a payment link to activate your selected plan. Once payment is confirmed, your vendor dashboard will be fully unlocked and you can begin listing your surplus food immediately.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:20px;text-align:left;font-size:12px;color:var(--text-muted);display:flex;flex-direction:column;gap:4px">
+              <div><span style="font-weight:600;color:var(--dark)">Business:</span> ${bizName}</div>
+              <div><span style="font-weight:600;color:var(--dark)">Plan:</span> ${planLabels[newUser.plan]}</div>
+              <div><span style="font-weight:600;color:var(--dark)">Notification email:</span> ${email}</div>
+            </div>
+
+            <a href="index.html" class="btn btn-primary" style="width:100%;justify-content:center;padding:13px;font-size:15px;display:flex">Back to Home</a>
+            <p style="margin-top:12px;font-size:12px;color:var(--text-muted)">Questions? Contact us at <a href="mailto:support@echoeats.com" style="color:var(--green-700)">support@echoeats.com</a></p>
+          </div>`;
+
+        document.getElementById('reg-pending-icon').addEventListener('click', function () {
+          _secretClicks++;
+          this.style.transform = 'scale(1.4)';
+          setTimeout(() => this.style.transform = '', 150);
+          clearTimeout(_secretTimer);
+          if (_secretClicks >= 5) {
+            var allUsers = JSON.parse(localStorage.getItem('ee_users') || '[]');
+            var idx = allUsers.findIndex(function (u) { return u.email === email; });
+            if (idx >= 0) { allUsers[idx].status = 'approved'; localStorage.setItem('ee_users', JSON.stringify(allUsers)); }
+            var cu = JSON.parse(localStorage.getItem('ee_current_user') || '{}');
+            cu.status = 'approved'; localStorage.setItem('ee_current_user', JSON.stringify(cu));
+            this.textContent = '✅'; this.style.transform = 'scale(1.5)';
+            showToast('🎉 Vendor access unlocked!');
+            setTimeout(function () { window.location.href = 'vendor-dashboard.html'; }, 900);
+          } else { _secretTimer = setTimeout(function () { _secretClicks = 0; }, 1500); }
+        });
+        return;
+      }
+
+      setTimeout(function () { window.location.href = 'consumer-dashboard.html'; }, 500);
+    }
+
+    // Pre-select starter plan and populate Bahrain city + country code lists on load
+    document.addEventListener('DOMContentLoaded', function () {
+      selectPlan('starter');
+      populateCityDropdowns();
+      populateCountryCodeDropdowns();
+    });
+  </script>
+</body>
+
+</html>

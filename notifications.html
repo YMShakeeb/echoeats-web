@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notification Preferences — EchoEats</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+  <style>
+    .notif-hero {
+      background: linear-gradient(160deg, #0d2e12 0%, #1a4a26 50%, #0f2d16 100%);
+      padding: calc(var(--nav-h) + 60px) 0 70px;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(74, 222, 128, 0.15);
+    }
+
+    .notif-hero::before {
+      display: none;
+    }
+
+    .notif-hero::after {
+      display: none;
+    }
+
+    .notif-hero .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .notif-hero h1 {
+      font-size: 40px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -1.5px;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .notif-hero p {
+      color: var(--green-200);
+      font-size: 16px;
+      max-width: 520px;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .notif-hero-floats {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .notif-hero-floats span {
+      position: absolute;
+      opacity: 0.09;
+      user-select: none;
+      font-size: 48px;
+    }
+
+    .notif-hero-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      position: relative;
+    }
+
+    .notif-hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green-200);
+    }
+
+    /* Layout */
+    .notif-layout {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 28px;
+      padding: 40px 0 100px;
+    }
+
+    /* Sidebar */
+    .notif-nav {
+      position: sticky;
+      top: calc(var(--nav-h) + 20px);
+      align-self: start;
+    }
+
+    .notif-nav-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding: 0 4px;
+    }
+
+    .notif-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all .2s;
+      margin-bottom: 2px;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+    }
+
+    .notif-nav-item:hover,
+    .notif-nav-item.active {
+      background: var(--green-100);
+      color: var(--green-800);
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green-400);
+      flex-shrink: 0;
+      animation: livepulse 2s infinite;
+    }
+
+    @keyframes livepulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.4;
+      }
+    }
+
+    .notif-status-box {
+      margin-top: 24px;
+      padding: 14px;
+      background: var(--green-50);
+      border: 1px solid var(--green-200);
+      border-radius: var(--radius);
+    }
+
+    .notif-status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .notif-status-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--green-700);
+    }
+
+    .notif-status-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Section cards */
+    .notif-section {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 18px;
+      overflow: hidden;
+      scroll-margin-top: calc(var(--nav-h) + 24px);
+    }
+
+    .notif-section-header {
+      padding: 20px 24px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .notif-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--green-50);
+      border: 1px solid var(--green-200);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .notif-section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--dark);
+    }
+
+    .notif-section-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Toggle rows */
+    .toggle-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      gap: 24px;
+      transition: background .15s;
+    }
+
+    .toggle-row:last-child {
+      border-bottom: none;
+    }
+
+    .toggle-row:hover {
+      background: var(--bg);
+    }
+
+    .toggle-label strong {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 3px;
+    }
+
+    .toggle-label span {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      display: block;
+    }
+
+    /* Toggle switch */
+    .toggle {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 26px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .t-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--border);
+      border-radius: 26px;
+      transition: .3s;
+    }
+
+    .t-slider::before {
+      content: '';
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: .3s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .15);
+    }
+
+    input:checked+.t-slider {
+      background: var(--green-700);
+    }
+
+    input:checked+.t-slider::before {
+      transform: translateX(20px);
+    }
+
+    /* Sub panel */
+    .sub-panel {
+      margin: 0 24px 18px;
+      background: var(--green-50);
+      border: 1px solid var(--green-200);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .sub-panel-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--green-700);
+      margin-bottom: 10px;
+    }
+
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      color: var(--text-soft);
+      transition: all .2s;
+      font-family: inherit;
+    }
+
+    .chip.active {
+      border-color: var(--green-700);
+      background: var(--green-800);
+      color: #fff;
+    }
+
+    .chip:hover:not(.active) {
+      border-color: var(--green-400);
+      color: var(--green-700);
+    }
+
+    .chip-label {
+      font-size: 12px;
+      color: var(--green-600);
+      font-weight: 600;
+      margin-top: 10px;
+      margin-bottom: 6px;
+    }
+
+    /* Channel pills */
+    .channel-row {
+      display: flex;
+      gap: 10px;
+      padding: 16px 24px 20px;
+      flex-wrap: wrap;
+    }
+
+    .ch-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      border-radius: 100px;
+      border: 1.5px solid var(--border);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--white);
+      color: var(--text-soft);
+      transition: all .2s;
+      font-family: inherit;
+    }
+
+    .ch-pill.active {
+      border-color: var(--green-700);
+      background: var(--green-800);
+      color: #fff;
+    }
+
+    .ch-pill:hover:not(.active) {
+      border-color: var(--green-400);
+      color: var(--green-700);
+    }
+
+    /* Frequency buttons */
+    .freq-row {
+      display: flex;
+      gap: 8px;
+      padding: 4px 24px 18px;
+      flex-wrap: wrap;
+    }
+
+    .freq-btn {
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-soft);
+      font-family: inherit;
+      transition: all .2s;
+    }
+
+    .freq-btn.active {
+      border-color: var(--green-700);
+      background: var(--green-100);
+      color: var(--green-800);
+    }
+
+    .freq-btn:hover:not(.active) {
+      border-color: var(--green-300);
+      color: var(--green-700);
+    }
+
+    /* Quiet hours */
+    .time-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 24px 20px;
+      flex-wrap: wrap;
+    }
+
+    .time-row label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+
+    .t-select {
+      padding: 8px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--dark);
+      background: var(--white);
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .t-select:focus {
+      border-color: var(--green-400);
+    }
+
+    .sub-row-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 12px 24px 4px;
+    }
+
+    /* Save bar */
+    .save-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--green-900);
+      border-top: 1px solid var(--green-700);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 500;
+      transform: translateY(100%);
+      transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    .save-bar.visible {
+      transform: translateY(0);
+    }
+
+    .save-msg {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--green-200);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .save-msg::before {
+      content: '●';
+      color: var(--yellow);
+      animation: livepulse 1s infinite;
+    }
+
+    @media(max-width: 768px) {
+      .notif-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .notif-nav {
+        display: none;
+      }
+
+      .notif-hero h1 {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+        <li><a href="notifications.html" class="active">Notifications</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="notif-hero">
+    <div class="aurora-bg"></div>
+    <div class="dot-grid"></div>
+    <div class="mesh-lines"></div>
+    <div class="noise-overlay"></div>
+    <div class="sweep-light"></div>
+
+    <div class="hero-floats-deco">
+      <span class="fd float-slow" style="top:10%;right:12%;font-size:84px;opacity:0.80">🔔</span>
+      <span class="fd float-med" style="top:55%;right:6%;font-size:66px;opacity:0.75">📱</span>
+      <span class="fd float-fast" style="bottom:8%;right:30%;font-size:56px;opacity:0.70">⚡</span>
+      <span class="fd float-slow" style="top:30%;right:42%;font-size:48px;opacity:0.60">💬</span>
+    </div>
+
+    <div class="container" style="position:relative;z-index:3">
+      <div class="glow-pill" style="margin-bottom:24px;width:fit-content">
+        <span class="pill-dot"></span>
+        ⚙️ Account Settings
+      </div>
+      <h1>Notification <em class="text-shimmer" style="font-family:var(--font-serif);font-style:italic">Preferences</em>
+      </h1>
+      <p>Choose exactly when, how, and where EchoEats alerts you — never miss a deal, never get spammed.</p>
+      <div class="notif-hero-pills" style="margin-top:24px">
+        <span class="notif-hero-pill">🔔 Push &amp; SMS</span>
+        <span class="notif-hero-pill">📉 Price drop alerts</span>
+        <span class="notif-hero-pill">⏰ Last-chance reminders</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg)">
+    <div class="container">
+      <div class="notif-layout">
+
+        <!-- SIDEBAR -->
+        <div class="notif-nav">
+          <div class="notif-nav-label">Jump to</div>
+          <button class="notif-nav-item active" onclick="navTo('sec-channels',this)">📱 Delivery channels</button>
+          <button class="notif-nav-item" onclick="navTo('sec-vendor',this)">⭐ Vendor alerts</button>
+          <button class="notif-nav-item" onclick="navTo('sec-price',this)">📉 Price drops</button>
+          <button class="notif-nav-item" onclick="navTo('sec-proximity',this)">📍 Proximity alerts</button>
+          <button class="notif-nav-item" onclick="navTo('sec-lastchance',this)">⏱ Last-chance alerts</button>
+          <button class="notif-nav-item" onclick="navTo('sec-quiet',this)">🌙 Quiet hours</button>
+          <button class="notif-nav-item" onclick="navTo('sec-gamification',this)">🏆 Gamification</button>
+          <div class="notif-status-box">
+            <div class="notif-status-row">
+              <span class="live-dot"></span>
+              <span class="notif-status-text">Alerts active</span>
+            </div>
+            <div class="notif-status-desc">
+              You have <strong style="color:var(--green-700)" id="activeCount">7</strong> notification types enabled
+              across <strong style="color:var(--green-700)" id="channelCount">2</strong> channels.
+            </div>
+          </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div>
+
+          <!-- 1. DELIVERY CHANNELS -->
+          <div class="notif-section reveal" id="sec-channels">
+            <div class="notif-section-header">
+              <div class="notif-icon">📱</div>
+              <div>
+                <div class="notif-section-title">Delivery channels</div>
+                <div class="notif-section-desc">Choose how you receive notifications — select all that apply</div>
+              </div>
+            </div>
+            <div class="channel-row">
+              <button class="ch-pill active" onclick="togglePill(this)">🔔 Push notifications</button>
+              <button class="ch-pill active" onclick="togglePill(this)">✉️ Email</button>
+              <button class="ch-pill" onclick="togglePill(this)">💬 SMS</button>
+              <button class="ch-pill" onclick="togglePill(this)">📲 WhatsApp</button>
+            </div>
+          </div>
+
+          <!-- 2. VENDOR ALERTS -->
+          <div class="notif-section reveal" id="sec-vendor">
+            <div class="notif-section-header">
+              <div class="notif-icon">⭐</div>
+              <div>
+                <div class="notif-section-title">Favourite vendor alerts</div>
+                <div class="notif-section-desc">Get notified when vendors you follow post new items or open for the day
+                </div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>New item posted by a favourite vendor</strong>
+                <span>Alert the moment a saved vendor lists something new on EchoEats</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Vendor opening soon</strong>
+                <span>30-minute heads-up before your favourite vendor opens for the day</span>
+              </div>
+              <label class="toggle"><input type="checkbox" onchange="markDirty()"><span class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>New vendor joins EchoEats near you</strong>
+                <span>When a new restaurant or café launches within your area</span>
+              </div>
+              <label class="toggle"><input type="checkbox" onchange="markDirty()"><span class="t-slider"></span></label>
+            </div>
+          </div>
+
+          <!-- 3. PRICE DROPS -->
+          <div class="notif-section reveal" id="sec-price">
+            <div class="notif-section-header">
+              <div class="notif-icon">📉</div>
+              <div>
+                <div class="notif-section-title">Price drop notifications</div>
+                <div class="notif-section-desc">Track saved items and get alerted when they hit your target price</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Saved item hits my target price</strong>
+                <span>You set a target price on an item — we'll alert you the moment it gets there</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Any price drop on saved items</strong>
+                <span>Notify on every 15-minute recalculation tick if a saved item drops in price</span>
+              </div>
+              <label class="toggle"><input type="checkbox" onchange="markDirty()"><span class="t-slider"></span></label>
+            </div>
+            <div class="sub-row-label">Notify me when price drops by at least:</div>
+            <div class="freq-row">
+              <button class="freq-btn" onclick="setFreq(this)">Any drop</button>
+              <button class="freq-btn active" onclick="setFreq(this)">≥ 10%</button>
+              <button class="freq-btn" onclick="setFreq(this)">≥ 25%</button>
+              <button class="freq-btn" onclick="setFreq(this)">≥ 40%</button>
+              <button class="freq-btn" onclick="setFreq(this)">Target price only</button>
+            </div>
+          </div>
+
+          <!-- 4. PROXIMITY ALERTS -->
+          <div class="notif-section reveal" id="sec-proximity">
+            <div class="notif-section-header">
+              <div class="notif-icon">📍</div>
+              <div>
+                <div class="notif-section-title">Proximity alerts</div>
+                <div class="notif-section-desc">Get alerted when deals matching your dietary preferences appear near you
+                </div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Nearby deals matching my dietary preferences</strong>
+                <span>Alert when items within my chosen radius match my selected dietary tags — vegan,
+                  gluten-free, etc.</span>
+              </div>
+              <label class="toggle"><input type="checkbox" id="proxMaster" checked
+                  onchange="markDirty();toggleProxPanel()"><span class="t-slider"></span></label>
+            </div>
+            <div class="sub-panel" id="proxPanel">
+              <div class="sub-panel-label">📏 Alert radius</div>
+              <div class="chip-group" id="radiusChips">
+                <button class="chip" onclick="setRadius(this)">0.5 km</button>
+                <button class="chip active" onclick="setRadius(this)">1 km</button>
+                <button class="chip" onclick="setRadius(this)">2 km</button>
+                <button class="chip" onclick="setRadius(this)">5 km</button>
+                <button class="chip" onclick="setRadius(this)">Any distance</button>
+              </div>
+              <div class="chip-label">🥗 Only alert me for deals matching these dietary tags:</div>
+              <div class="chip-group" id="dietChips">
+                <button class="chip active" onclick="toggleChip(this)">🌿 Vegan</button>
+                <button class="chip" onclick="toggleChip(this)">🥗 Vegetarian</button>
+                <button class="chip" onclick="toggleChip(this)">🌾 Gluten-free</button>
+                <button class="chip" onclick="toggleChip(this)">🥜 Peanut-free</button>
+                <button class="chip" onclick="toggleChip(this)">🐟 Seafood-free</button>
+              </div>
+              <div
+                style="margin-top:12px;padding:10px 12px;background:var(--green-100);border-radius:var(--radius-sm);font-size:12px;color:var(--green-700);font-weight:600">
+                ✓ Only deals matching the selected tags above will fire proximity alerts
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>While commuting / on the move only</strong>
+                <span>Use phone motion data to fire proximity alerts only when you're actively travelling</span>
+              </div>
+              <label class="toggle"><input type="checkbox" onchange="markDirty()"><span class="t-slider"></span></label>
+            </div>
+          </div>
+
+          <!-- 5. LAST-CHANCE -->
+          <div class="notif-section reveal" id="sec-lastchance">
+            <div class="notif-section-header">
+              <div class="notif-icon">⏱</div>
+              <div>
+                <div class="notif-section-title">Last-chance alerts</div>
+                <div class="notif-section-desc">Expiry countdown notifications for saved and reserved items</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>1 hour before expiry</strong>
+                <span>Classic last-chance alert — 60 minutes before a saved item expires. Plenty of time to head
+                  over.</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>30-minute warning</strong>
+                <span>A second push for the final half-hour window on saved items</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>15-minute final notice</strong>
+                <span>One last alert when your reserved item is almost expired — reserved items only</span>
+              </div>
+              <label class="toggle"><input type="checkbox" onchange="markDirty()"><span class="t-slider"></span></label>
+            </div>
+          </div>
+
+          <!-- 6. QUIET HOURS -->
+          <div class="notif-section reveal" id="sec-quiet">
+            <div class="notif-section-header">
+              <div class="notif-icon">🌙</div>
+              <div>
+                <div class="notif-section-title">Quiet hours</div>
+                <div class="notif-section-desc">Pause all non-urgent push and SMS notifications during these hours</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Enable quiet hours</strong>
+                <span>No push or SMS during the window set below — email digests are unaffected</span>
+              </div>
+              <label class="toggle"><input type="checkbox" id="quietMaster" checked
+                  onchange="markDirty();toggleQuietPanel()"><span class="t-slider"></span></label>
+            </div>
+            <div class="time-row" id="quietPanel">
+              <label>From</label>
+              <select class="t-select" onchange="markDirty()">
+                <option>9:00 PM</option>
+                <option>10:00 PM</option>
+                <option selected>11:00 PM</option>
+                <option>12:00 AM</option>
+              </select>
+              <label>To</label>
+              <select class="t-select" onchange="markDirty()">
+                <option>6:00 AM</option>
+                <option selected>7:00 AM</option>
+                <option>8:00 AM</option>
+                <option>9:00 AM</option>
+              </select>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Override quiet hours for reserved items</strong>
+                <span>Allow the 15-minute last-chance alert to fire even during quiet hours for items you've paid
+                  for</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+          </div>
+
+          <!-- 7. GAMIFICATION -->
+          <div class="notif-section reveal" id="sec-gamification">
+            <div class="notif-section-header">
+              <div class="notif-icon">🏆</div>
+              <div>
+                <div class="notif-section-title">Gamification &amp; impact</div>
+                <div class="notif-section-desc">Badges, streaks, leaderboard movements, and CO₂ milestones</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Badge unlocked</strong>
+                <span>Celebrate every achievement — First Meal, 7-Day Streak, Carbon Hero, and more</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Streak at risk</strong>
+                <span>Alert if you haven't saved a meal today and your daily streak is about to reset</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Leaderboard rank change</strong>
+                <span>Notify when your community ranking moves up or down</span>
+              </div>
+              <label class="toggle"><input type="checkbox" onchange="markDirty()"><span class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>CO₂ milestone reached</strong>
+                <span>Celebrate every 5 kg of CO₂ you prevent from entering the atmosphere</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-label">
+                <strong>Weekly impact digest</strong>
+                <span>A Sunday summary email: meals saved, CO₂ prevented, and money saved this week</span>
+              </div>
+              <label class="toggle"><input type="checkbox" checked onchange="markDirty()"><span
+                  class="t-slider"></span></label>
+            </div>
+          </div>
+
+          <div style="height:16px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING SAVE BAR -->
+  <div class="save-bar" id="saveBar">
+    <div class="save-msg">Unsaved changes</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-outline btn-sm" style="color:var(--green-300);border-color:var(--green-600)"
+        onclick="discard()">Discard</button>
+      <button class="btn btn-white btn-sm" onclick="savePrefs()">Save preferences</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-bottom" style="border-top:none;padding-top:0">
+        <div class="footer-bottom-text">© 2026 EchoEats · SWEN 360 / CMPE 460 · Spring 2026</div>
+        <a href="index.html" class="btn btn-outline btn-sm"
+          style="color:var(--green-300);border-color:var(--green-700)">← Back to Home</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    var isDirty = false;
+
+    function markDirty() {
+      isDirty = true;
+      document.getElementById('saveBar').classList.add('visible');
+      updateCount();
+    }
+
+    function discard() {
+      isDirty = false;
+      document.getElementById('saveBar').classList.remove('visible');
+      showToast('Changes discarded.');
+    }
+
+    function savePrefs() {
+      var prefs = {
+        channels: Array.from(document.querySelectorAll('.ch-pill.active')).map(function (p) { return p.textContent.trim(); }),
+        proximityEnabled: document.getElementById('proxMaster').checked,
+        proximityRadius: (document.querySelector('#radiusChips .chip.active') || {}).textContent || '1 km',
+        proximityDiets: Array.from(document.querySelectorAll('#dietChips .chip.active')).map(function (c) { return c.textContent.trim(); }),
+        priceFreq: (document.querySelector('.freq-btn.active') || {}).textContent || '≥ 10%',
+        quietEnabled: document.getElementById('quietMaster').checked,
+        quietFrom: document.querySelectorAll('.t-select')[0].value,
+        quietTo: document.querySelectorAll('.t-select')[1].value,
+        savedAt: new Date().toISOString()
+      };
+      localStorage.setItem('ee_notif_prefs', JSON.stringify(prefs));
+      isDirty = false;
+      document.getElementById('saveBar').classList.remove('visible');
+      showToast('✓ Notification preferences saved!');
+    }
+
+    function updateCount() {
+      var on = document.querySelectorAll('.notif-section input[type=checkbox]:checked').length;
+      var el = document.getElementById('activeCount');
+      if (el) el.textContent = on;
+      var ch = document.querySelectorAll('.ch-pill.active').length;
+      var cel = document.getElementById('channelCount');
+      if (cel) cel.textContent = ch;
+    }
+
+    function togglePill(btn) { btn.classList.toggle('active'); markDirty(); updateCount(); }
+    function toggleChip(btn) { btn.classList.toggle('active'); markDirty(); }
+
+    function setRadius(btn) {
+      document.querySelectorAll('#radiusChips .chip').forEach(function (c) { c.classList.remove('active'); });
+      btn.classList.add('active');
+      markDirty();
+    }
+
+    function setFreq(btn) {
+      document.querySelectorAll('.freq-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      markDirty();
+    }
+
+    function toggleProxPanel() {
+      var p = document.getElementById('proxPanel');
+      p.style.display = document.getElementById('proxMaster').checked ? 'block' : 'none';
+    }
+
+    function toggleQuietPanel() {
+      var p = document.getElementById('quietPanel');
+      var on = document.getElementById('quietMaster').checked;
+      p.style.opacity = on ? '1' : '0.4';
+      p.style.pointerEvents = on ? '' : 'none';
+    }
+
+    function navTo(id, btn) {
+      var el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.notif-nav-item').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+    }
+
+    window.addEventListener('beforeunload', function (e) {
+      if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    // Restore saved prefs
+    (function () {
+      var s = localStorage.getItem('ee_notif_prefs');
+      if (!s) return;
+      try {
+        var p = JSON.parse(s);
+        if (p.proximityRadius) {
+          document.querySelectorAll('#radiusChips .chip').forEach(function (c) {
+            c.classList.toggle('active', c.textContent.trim() === p.proximityRadius);
+          });
+        }
+        if (p.proximityDiets) {
+          document.querySelectorAll('#dietChips .chip').forEach(function (c) {
+            c.classList.toggle('active', p.proximityDiets.indexOf(c.textContent.trim()) > -1);
+          });
+        }
+      } catch (e) { }
+    })();
+
+    updateCount();
+  </script>
+</body>
+
+</html>
