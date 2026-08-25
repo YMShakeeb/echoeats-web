@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Item Details — EchoEats</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+    <style>
+        .detail-page {
+            padding-top: calc(var(--nav-h) + 40px);
+            padding-bottom: 80px;
+            background: var(--bg);
+            min-height: 80vh;
+        }
+
+        .detail-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-soft);
+            text-decoration: none;
+            margin-bottom: 22px;
+            transition: color .15s;
+        }
+
+        .detail-back:hover {
+            color: var(--green-700);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .detail-hero-img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(160deg, var(--green-800), var(--green-600));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .detail-hero-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .detail-hero-emoji {
+            font-size: 100px;
+            opacity: 0.9;
+        }
+
+        .detail-discount-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--orange);
+            color: #fff;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 6px 12px;
+            border-radius: 100px;
+        }
+
+        .detail-vendor {
+            color: var(--green-600);
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            margin-bottom: 6px;
+        }
+
+        .detail-name {
+            font-size: 34px;
+            font-weight: 800;
+            color: var(--dark);
+            letter-spacing: -1px;
+            margin-bottom: 14px;
+        }
+
+        .detail-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .detail-tag {
+            background: var(--green-100);
+            color: var(--green-700);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 100px;
+        }
+
+        .detail-price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .detail-price-current {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--green-600);
+        }
+
+        .detail-price-was {
+            font-size: 16px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        .detail-desc {
+            font-size: 15px;
+            line-height: 1.75;
+            color: var(--text-soft);
+            margin-bottom: 26px;
+        }
+
+        .detail-reserve-btn {
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .detail-map-section {
+            margin-top: 48px;
+        }
+
+        .detail-map-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .detail-map-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+
+        .detail-map-address {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .detail-gmaps-btn {
+            white-space: nowrap;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .detail-map-frame-wrap {
+            width: 100%;
+            height: 420px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .detail-map-frame-wrap iframe,
+        .detail-map-frame-wrap .leaflet-container {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            background: #f2ede0;
+        }
+
+        .leaflet-container a.leaflet-control-zoom-in,
+        .leaflet-container a.leaflet-control-zoom-out {
+            color: var(--dark);
+        }
+
+        .leaflet-container {
+            touch-action: none;
+        }
+
+        .leaflet-control-attribution {
+            font-size: 10px !important;
+        }
+
+        .detail-not-found {
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        @media (max-width: 900px) {
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🌿</div>EchoEats
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="listings.html" class="active">Browse Deals</a></li>
+                <li><a href="how-it-works.html">How It Works</a></li>
+                <li><a href="vendors.html">For Vendors</a></li>
+                <li><a href="impact.html">Our Impact</a></li>
+                <li><a href="notifications.html">Notifications</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="login.html" class="nav-signin">Sign In</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="detail-page">
+        <div class="container">
+            <a href="listings.html" class="detail-back">&larr; Back to Browse Deals</a>
+
+            <div id="detail-content"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0">
+                <div class="footer-bottom-text">© 2026 EchoEats · Yousif Shakeeb</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ── PAYMENT MODAL ── -->
+    <div id="payment-modal"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9000;align-items:center;justify-content:center;padding:20px">
+        <div
+            style="background:var(--white);border-radius:24px;padding:32px;max-width:420px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto">
+            <div id="pay-step-form">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+                    <div style="font-size:18px;font-weight:800;color:var(--dark)">💳 Secure Checkout</div>
+                    <button onclick="closePayModal()"
+                        style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">✕</button>
+                </div>
+                <div
+                    style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <div style="font-weight:700;font-size:14px;color:var(--dark)" id="pay-item-name">Item</div>
+                        <div style="font-size:12px;color:var(--text-soft)" id="pay-hold-note"></div>
+                    </div>
+                    <div style="font-size:20px;font-weight:800;color:var(--green-700)" id="pay-item-price"></div>
+                </div>
+
+                <!-- Apple Pay Button -->
+                <button id="apple-pay-btn" onclick="confirmApplePay()"
+                    style="width:100%;background:#000;color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:14px;letter-spacing:-0.3px;transition:opacity .2s"
+                    onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                    </svg>
+                    Pay with Apple Pay
+                </button>
+
+                <!-- Divider -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+                    <div style="flex:1;height:1px;background:var(--border)"></div>
+                    <span style="font-size:12px;color:var(--text-muted);font-weight:600">or pay by card</span>
+                    <div style="flex:1;height:1px;background:var(--border)"></div>
+                </div>
+
+                <!-- Debit / Credit toggle -->
+                <div style="display:flex;gap:8px;margin-bottom:16px">
+                    <button id="tab-debit" onclick="switchCardType('debit')"
+                        style="flex:1;padding:9px;border-radius:10px;border:2px solid var(--green-600);background:var(--green-50);color:var(--green-700);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s">
+                        🏦 Debit Card
+                    </button>
+                    <button id="tab-credit" onclick="switchCardType('credit')"
+                        style="flex:1;padding:9px;border-radius:10px;border:2px solid var(--border);background:var(--white);color:var(--text-soft);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s">
+                        💳 Credit Card
+                    </button>
+                </div>
+                <div id="card-type-label"
+                    style="font-size:11px;color:var(--text-muted);margin-bottom:12px;margin-top:-8px">
+                    Debit cards accepted from all major banks.</div>
+
+                <div style="margin-bottom:14px">
+                    <label
+                        style="display:block;font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:6px">Card
+                        Number</label>
+                    <input id="pay-card-num" placeholder="1234 5678 9012 3456" maxlength="19"
+                        style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark);transition:border-color .2s"
+                        onfocus="this.style.borderColor='var(--green-400)'"
+                        onblur="this.style.borderColor='var(--border)'">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+                    <div>
+                        <label
+                            style="display:block;font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:6px">Expiry</label>
+                        <input id="pay-card-exp" placeholder="MM/YY" maxlength="5"
+                            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)"
+                            onfocus="this.style.borderColor='var(--green-400)'"
+                            onblur="this.style.borderColor='var(--border)'">
+                    </div>
+                    <div>
+                        <label
+                            style="display:block;font-size:12px;font-weight:700;color:var(--text-soft);margin-bottom:6px">CVV</label>
+                        <input id="pay-card-cvv" placeholder="123" maxlength="4" type="password"
+                            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)"
+                            onfocus="this.style.borderColor='var(--green-400)'"
+                            onblur="this.style.borderColor='var(--border)'">
+                    </div>
+                </div>
+                <div
+                    style="background:var(--bg);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text-muted);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+                    <span style="font-size:16px">🔒</span> Secured by Stripe · Your card details are encrypted and never
+                    stored.
+                </div>
+                <button id="pay-btn" class="btn btn-primary"
+                    style="width:100%;justify-content:center;padding:14px;font-size:15px" onclick="confirmPayment()">Pay
+                    Now</button>
+            </div>
+            <div id="pay-step-success" style="display:none;text-align:center">
+                <div style="font-size:56px;margin-bottom:12px">🎉</div>
+                <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:8px">Payment confirmed!</div>
+                <div style="font-size:14px;color:var(--text-soft);margin-bottom:6px"><strong
+                        id="pay-success-name"></strong>
+                    reserved for <strong id="pay-success-price"></strong></div>
+                <div
+                    style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:16px;margin:16px 0">
+                    <div style="font-size:13px;font-weight:700;color:var(--green-700);margin-bottom:8px">Your Order
+                        Number /
+                        Pickup Code</div>
+                    <div id="pay-success-code"
+                        style="font-family:monospace;font-size:22px;font-weight:800;letter-spacing:4px;color:var(--dark);background:var(--white);border:1px solid var(--border);border-radius:8px;padding:12px">
+                        EE-7X42</div>
+                    <div style="font-size:12px;color:var(--text-soft);margin-top:8px">⏱ Item held for 15 minutes · Show
+                        this
+                        code at pickup · Also visible anytime in your Dashboard</div>
+                </div>
+                <div id="pickup-location-wrap" style="display:none;text-align:left;margin-bottom:16px">
+                    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px">📍 Pickup Location
+                    </div>
+                    <div id="pickup-mini-map-wrap"
+                        style="width:100%;height:160px;border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:10px;background:#e5e3df">
+                        <div id="pickup-mini-map" style="width:100%;height:100%"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                        <div style="font-size:13px;color:var(--text-soft)">
+                            <strong id="pickup-vendor-name" style="color:var(--dark)"></strong>
+                        </div>
+                        <a id="pickup-directions-link" href="#" target="_blank" rel="noopener"
+                            class="btn btn-outline btn-sm" style="white-space:nowrap;text-decoration:none">Open in
+                            Google Maps</a>
+                    </div>
+                </div>
+                <div id="cancel-order-wrap"
+                    style="display:none;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:14px;margin-bottom:16px;text-align:left">
+                    <div style="font-size:13px;color:#9a3412;margin-bottom:8px">
+                        Changed your mind? You can cancel within <strong id="cancel-order-timer">3:00</strong> — the
+                        amount
+                        will be added to your EchoEats credit.
+                    </div>
+                    <button id="cancel-order-btn" class="btn btn-outline"
+                        style="width:100%;justify-content:center;border-color:#fdba74;color:#9a3412">Cancel
+                        Order</button>
+                </div>
+                <button class="btn btn-primary" style="width:100%;justify-content:center"
+                    onclick="closePayModal()">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="main.js"></script>
+    <script>
+        var item = null, itemId = null;
+
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            itemId = params.get('item');
+            item = (typeof EE_ITEM_DETAILS !== 'undefined' && itemId) ? EE_ITEM_DETAILS[itemId] : null;
+            var container = document.getElementById('detail-content');
+
+            if (!item) {
+                container.innerHTML =
+                    '<div class="detail-not-found">' +
+                    '<h2 class="section-title">Item not found</h2>' +
+                    '<p class="section-desc">This listing may have expired or been reserved.</p>' +
+                    '<a href="listings.html" class="btn btn-primary btn-lg" style="margin-top:20px">Browse other deals</a>' +
+                    '</div>';
+                return;
+            }
+
+            // Pull a bit more context (price/discount/tags) from the matching card on
+            // listings.html if the user arrived from there via sessionStorage cache;
+            // otherwise fall back to sensible defaults.
+            var cardMeta = null;
+            try { cardMeta = JSON.parse(sessionStorage.getItem('ee_last_card_meta_' + itemId)); } catch (e) { }
+
+            var priceCurrent = cardMeta ? cardMeta.priceCurrent : null;
+            var priceWas = cardMeta ? cardMeta.priceWas : null;
+            var discount = cardMeta ? cardMeta.discount : null;
+            var tags = cardMeta ? cardMeta.tags : [];
+            var imgSrc = cardMeta ? cardMeta.img : null;
+
+            var gmapsUrl = 'https://www.google.com/maps/dir/?api=1&destination=' + item.lat + ',' + item.lng;
+
+            var html = '';
+            html += '<div class="detail-grid">';
+
+            html += '<div class="detail-hero-img reveal">';
+            if (imgSrc) {
+                html += '<img src="' + imgSrc + '" alt="' + item.name + '">';
+            } else {
+                html += '<span class="detail-hero-emoji">🍽️</span>';
+            }
+            if (discount) html += '<div class="detail-discount-badge">-' + discount + '%</div>';
+            html += '</div>';
+
+            html += '<div class="reveal">';
+            html += '<div class="detail-vendor">' + item.vendor + ' · ' + item.dist + '</div>';
+            html += '<div class="detail-name">' + item.name + '</div>';
+            if (tags && tags.length) {
+                html += '<div class="detail-tags">' + tags.map(function (t) { return '<span class="detail-tag">' + t + '</span>'; }).join('') + '</div>';
+            }
+            html += '<div class="detail-price-row">';
+            html += '<span class="detail-price-current">$' + (priceCurrent || '—') + '</span>';
+            if (priceWas) html += '<span class="detail-price-was">$' + priceWas + '</span>';
+            html += '</div>';
+            html += '<p class="detail-desc">' + item.description + '</p>';
+            html += '<button class="btn btn-primary btn-lg detail-reserve-btn" id="detail-reserve-btn" onclick="authReserve(this)">Reserve</button>';
+            html += '</div>';
+
+            html += '</div>'; // .detail-grid
+
+            html += '<div class="detail-map-section reveal">';
+            html += '<div class="detail-map-header">';
+            html += '<div><div class="detail-map-title">📍 Pickup location</div>';
+            html += '<div class="detail-map-address">' + item.address + '</div></div>';
+            html += '<a href="' + gmapsUrl + '" target="_blank" rel="noopener" class="btn btn-outline btn-sm detail-gmaps-btn">Open in Google Maps</a>';
+            html += '</div>';
+            html += '<div class="detail-map-frame-wrap">';
+            html += '<div id="detail-map" role="img" aria-label="Map showing ' + item.vendor + ' location"></div>';
+            html += '</div>';
+            html += '</div>';
+
+            container.innerHTML = html;
+
+            var revealEls = document.querySelectorAll('.reveal');
+            revealEls.forEach(function (el) { el.classList.add('visible'); });
+
+            initDetailMap(item);
+        })();
+
+        /* ── BIG PICKUP MAP (real Leaflet tiles, matches the rest of the site) ── */
+        var detailMapInstance = null;
+
+        /* Classic Google-Maps-style teardrop pin, just in EchoEats green. */
+        function buildDetailPinIcon(size) {
+            var w = size || 40, h = Math.round(w * 1.3);
+            return L.divIcon({
+                className: '',
+                html: '<svg width="' + w + '" height="' + h + '" viewBox="0 0 40 52" ' +
+                    'xmlns="http://www.w3.org/2000/svg" style="display:block;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35))">' +
+                    '<path d="M20 0C9 0 0 9 0 20c0 15 20 32 20 32s20-17 20-32C40 9 31 0 20 0z" fill="var(--green-700,#15803d)"/>' +
+                    '<circle cx="20" cy="20" r="9" fill="#ffffff"/>' +
+                    '</svg>',
+                iconSize: [w, h],
+                iconAnchor: [w / 2, h],
+                popupAnchor: [0, -h + 6]
+            });
+        }
+
+        /* Lets a trackpad pan the map with a normal two-finger scroll (the way
+           Google Maps behaves), while a pinch gesture (browser reports it as a
+           wheel event with ctrlKey true) zooms instead. Leaflet's built-in
+           scrollWheelZoom only ever zooms on wheel, so it's left off and this
+           replaces it. touch-action:none on .leaflet-container (see CSS above)
+           stops the browser from intercepting the gesture for page scroll
+           before this handler ever sees it. zoomSnap:0 on the map (below) is
+           required too — with the default zoomSnap:1, Leaflet rounds every
+           small pinch nudge straight back to the nearest whole zoom level,
+           so nothing visibly happens until a huge pinch crosses a boundary. */
+        function attachTrackpadPan(map) {
+            var container = map.getContainer();
+
+            // Rapid, non-animated setZoom() calls (one per wheel/gesture tick —
+            // could be 60+/sec on a fast trackpad swipe) each force Leaflet to
+            // tear down the current tile grid and request a brand-new one, so
+            // the pane goes blank/grey between requests while new tiles load.
+            // Instead we just record the *target* zoom on every event and let
+            // a single rAF loop apply it, so Leaflet only repaints once per
+            // frame no matter how fast the trackpad fires events.
+            var pendingZoom = null;
+            var zoomRaf = null;
+            function flushZoom() {
+                zoomRaf = null;
+                if (pendingZoom === null) return;
+                map.setZoom(pendingZoom, { animate: false });
+                pendingZoom = null;
+            }
+            function queueZoom(z) {
+                pendingZoom = Math.max(map.getMinZoom(), Math.min(map.getMaxZoom(), z));
+                if (zoomRaf === null) zoomRaf = requestAnimationFrame(flushZoom);
+            }
+
+            container.addEventListener('wheel', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                // Normalize non-pixel delta modes (some browsers/devices report
+                // "lines" or "pages" instead of pixels).
+                var scale = e.deltaMode === 1 ? 16 : (e.deltaMode === 2 ? 320 : 1);
+                var dx = e.deltaX * scale;
+                var dy = e.deltaY * scale;
+                if (e.ctrlKey) {
+                    var base = pendingZoom !== null ? pendingZoom : map.getZoom();
+                    queueZoom(base - dy * 0.03);
+                } else {
+                    map.panBy([dx, dy], { animate: false, duration: 0 });
+                }
+            }, { passive: false });
+
+            // Safari fires non-standard 'gesture*' events for trackpad pinch,
+            // separate from (and often instead of) a ctrlKey+wheel event —
+            // handle it directly so pinch-to-zoom works there too.
+            var gestureStartZoom = null;
+            container.addEventListener('gesturestart', function (e) {
+                e.preventDefault();
+                gestureStartZoom = map.getZoom();
+            });
+            container.addEventListener('gesturechange', function (e) {
+                e.preventDefault();
+                if (gestureStartZoom === null) return;
+                queueZoom(gestureStartZoom + Math.log2(e.scale));
+            });
+            container.addEventListener('gestureend', function (e) {
+                e.preventDefault();
+                gestureStartZoom = null;
+            });
+        }
+
+        function initDetailMap(item) {
+            var mapEl = document.getElementById('detail-map');
+            if (!mapEl || !item) return;
+
+            setTimeout(function () {
+                if (!detailMapInstance) {
+                    detailMapInstance = L.map('detail-map', {
+                        zoomControl: true,
+                        dragging: true,
+                        tap: true,
+                        zoomSnap: 0,
+                        zoomDelta: 1,
+                        wheelDebounceTime: 0,
+                        scrollWheelZoom: false,
+                        // We drive zoom manually (attachTrackpadPan) with our
+                        // own rAF-throttled setZoom() calls. Leaflet's default
+                        // CSS-transform zoom animation (on by default in
+                        // Safari, which supports 3D transforms) fights this:
+                        // each new setZoom() interrupts the previous transform
+                        // mid-animation, leaving the tile pane stuck in a
+                        // scaled/transformed state — which renders as blank
+                        // grey — until the gesture stops and Leaflet finally
+                        // gets to finish a cycle and reset it. Turning the
+                        // built-in animation off avoids that fight entirely.
+                        zoomAnimation: false,
+                        fadeAnimation: false
+                    }).setView([item.lat, item.lng], 15);
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        maxZoom: 19,
+                        // Keep a wider ring of off-screen tiles cached so a
+                        // zoom/pan has tiles to reuse immediately instead of
+                        // showing blank/grey while new ones fetch.
+                        keepBuffer: 6
+                    }).addTo(detailMapInstance);
+                    L.marker([item.lat, item.lng], { icon: buildDetailPinIcon(40) })
+                        .addTo(detailMapInstance)
+                        .bindPopup('<strong>' + item.vendor + '</strong><br>' + item.address);
+                    attachTrackpadPan(detailMapInstance);
+                } else {
+                    detailMapInstance.setView([item.lat, item.lng], 15);
+                }
+                detailMapInstance.invalidateSize();
+            }, 100);
+        }
+
+        /* ══════════════════════════════════════════════════════════════════
+           RESERVE → PAYMENT MODAL
+           Mirrors the same localStorage-backed checkout flow used on
+           listings.html / index.html (15-min pickup hold, 3-min cancel
+           window, ee_orders record for the dashboard) so a reservation made
+           here shows up consistently everywhere else on the site.
+           ══════════════════════════════════════════════════════════════════ */
+        var RESERVED_PREFIX = 'ee_reserved_';
+        var ORDERS_KEY = 'ee_orders';
+        var STOCK_KEY = 'ee_stock';
+        var CANCEL_WINDOW_MS = 3 * 60 * 1000; // 3 minutes
+
+        var pendingBtn = null, pendingName = '', pendingPrice = '', pendingOrderId = null;
+        var cancelCountdownInterval = null;
+
+        /* ══════════════════════════════════════════════════════════════════
+           REAL APPLE PAY (via Stripe Payment Request Button)
+           Mirrors the same setup used on listings.html / index.html — only
+           activates with a real Stripe publishable key on an HTTPS domain
+           registered for Apple Pay, on Safari/iOS with a card in Wallet.
+           Falls back to the simulated Face ID sheet everywhere else.
+           ══════════════════════════════════════════════════════════════════ */
+        var STRIPE_PUBLISHABLE_KEY = 'pk_test_51U7DenFWUvNIXGJ5msDZj6RXLg36xR3I146IB7HCbjR2Qks1YN2iUhcPjpvh1Pv8BxDrfXp0SrygxPkwuJvwnkGm00ddp9K35R';
+        var CREATE_PAYMENT_INTENT_URL = '/.netlify/functions/create-payment-intent';
+
+        var stripeClient = null;
+        var stripePR = null;
+        var applePayReady = false;
+
+        if (window.Stripe && STRIPE_PUBLISHABLE_KEY && !STRIPE_PUBLISHABLE_KEY.includes('YOUR_KEY_HERE')) {
+            stripeClient = Stripe(STRIPE_PUBLISHABLE_KEY);
+        }
+
+        function priceStringToCents(priceStr) {
+            var n = parseFloat(String(priceStr).replace(/[^0-9.]/g, ''));
+            return Math.max(50, Math.round((isNaN(n) ? 5 : n) * 100));
+        }
+
+        function initApplePayForCheckout(name, priceStr) {
+            applePayReady = false;
+            stripePR = null;
+            var applePayBtn = document.getElementById('apple-pay-btn');
+            if (applePayBtn) applePayBtn.disabled = true;
+            if (!stripeClient) { if (applePayBtn) applePayBtn.disabled = false; return; }
+
+            stripePR = stripeClient.paymentRequest({
+                country: 'US',
+                currency: 'usd',
+                total: { label: name || 'EchoEats order', amount: priceStringToCents(priceStr) },
+                requestPayerName: false,
+                requestPayerEmail: false,
+            });
+
+            stripePR.canMakePayment().then(function (result) {
+                applePayReady = !!(result && result.applePay);
+                if (applePayBtn) applePayBtn.disabled = false;
+            }).catch(function () {
+                applePayReady = false;
+                if (applePayBtn) applePayBtn.disabled = false;
+            });
+
+            stripePR.on('paymentmethod', async function (ev) {
+                try {
+                    var res = await fetch(CREATE_PAYMENT_INTENT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            amount: priceStringToCents(pendingPrice),
+                            currency: 'usd',
+                            description: pendingName,
+                        }),
+                    });
+                    if (!res.ok) throw new Error('Backend did not return a PaymentIntent');
+                    var data = await res.json();
+
+                    var result = await stripeClient.confirmCardPayment(
+                        data.clientSecret,
+                        { payment_method: ev.paymentMethod.id },
+                        { handleActions: false }
+                    );
+
+                    if (result.error) {
+                        ev.complete('fail');
+                        showToast('⚠️ Apple Pay payment failed: ' + result.error.message, 'warning');
+                        return;
+                    }
+
+                    ev.complete('success');
+                    finalizeReservation();
+                } catch (err) {
+                    ev.complete('fail');
+                    showToast('⚠️ Payment could not be processed. ' + err.message, 'warning');
+                }
+            });
+        }
+
+        function markReserved(id) {
+            localStorage.setItem(RESERVED_PREFIX + id, JSON.stringify({
+                reservedAt: Date.now(),
+                expiresAt: Date.now() + 15 * 60 * 1000
+            }));
+        }
+
+        function isReserved(id) {
+            var raw = localStorage.getItem(RESERVED_PREFIX + id);
+            if (!raw) return false;
+            try {
+                var data = JSON.parse(raw);
+                if (Date.now() < data.expiresAt) return true;
+                localStorage.removeItem(RESERVED_PREFIX + id);
+                return false;
+            } catch (e) { return false; }
+        }
+
+        function decrementStockLocal(id) {
+            try {
+                var data = JSON.parse(localStorage.getItem(STOCK_KEY)) || {};
+                if (typeof data[id] === 'number') {
+                    data[id] = Math.max(0, data[id] - 1);
+                    localStorage.setItem(STOCK_KEY, JSON.stringify(data));
+                }
+            } catch (e) { }
+        }
+
+        function priceStringToDollars(priceStr) {
+            var n = parseFloat(String(priceStr).replace(/[^0-9.]/g, ''));
+            return isNaN(n) ? 0 : n;
+        }
+
+        function saveOrder(order) {
+            var orders = [];
+            try { orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; } catch (e) { }
+            orders.push(order);
+            localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+            return order;
+        }
+
+        function getOrderLocal(orderId) {
+            var orders = [];
+            try { orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; } catch (e) { }
+            return orders.find(function (o) { return o.id === orderId; }) || null;
+        }
+
+        function updateOrderLocal(orderId, patch) {
+            var orders = [];
+            try { orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || []; } catch (e) { }
+            var idx = orders.findIndex(function (o) { return o.id === orderId; });
+            if (idx === -1) return null;
+            orders[idx] = Object.assign({}, orders[idx], patch);
+            localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+            return orders[idx];
+        }
+
+        function makeOrderCode(orderId) {
+            var clean = String(orderId).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            return 'EE-' + clean.slice(-6);
+        }
+
+        function getCurrentUserName() {
+            try {
+                var raw = localStorage.getItem('ee_current_user');
+                return raw ? (JSON.parse(raw).name || 'there') : 'there';
+            } catch (e) { return 'there'; }
+        }
+
+        /* ── RESERVE BUTTON → AUTH CHECK → OPEN CHECKOUT ── */
+        function authReserve(btn) {
+            if (!localStorage.getItem('ee_current_user')) {
+                showToast('Sign in to reserve items', 'warning');
+                var dest = localStorage.getItem('ee_has_logged_in') ? 'login.html' : 'register.html';
+                setTimeout(function () { window.location.href = dest; }, 1300);
+                return;
+            }
+
+            var user = JSON.parse(localStorage.getItem('ee_current_user'));
+            if (user.role === 'vendor' || user.role === 'admin') {
+                showToast('⚠️ Only consumers can reserve items. Switch to a consumer account to make a reservation.', 'warning');
+                return;
+            }
+
+            if (isReserved(itemId)) {
+                showToast('⚠️ This item was already reserved — try another deal!', 'warning');
+                btn.textContent = '✓ Reserved';
+                btn.disabled = true;
+                btn.style.background = 'var(--green-400)';
+                btn.style.color = 'var(--dark)';
+                btn.style.cursor = 'not-allowed';
+                return;
+            }
+
+            var priceEl = document.querySelector('.detail-price-current');
+            pendingBtn = btn;
+            pendingName = item.name;
+            pendingPrice = priceEl ? priceEl.textContent.replace('$', '') : '';
+
+            document.getElementById('pay-item-name').textContent = pendingName;
+            document.getElementById('pay-item-price').textContent = '$' + pendingPrice;
+            document.getElementById('pay-hold-note').textContent = 'Item held for 15 minutes after payment.';
+            document.getElementById('payment-modal').style.display = 'flex';
+
+            // Build a real Stripe PaymentRequest sized to this item, so Apple Pay
+            // (when available) shows the correct amount in the native sheet.
+            initApplePayForCheckout(pendingName, pendingPrice);
+        }
+
+        function switchCardType(type) {
+            var debitBtn = document.getElementById('tab-debit');
+            var creditBtn = document.getElementById('tab-credit');
+            var label = document.getElementById('card-type-label');
+            if (!debitBtn || !creditBtn) return;
+            if (type === 'debit') {
+                debitBtn.style.border = '2px solid var(--green-600)';
+                debitBtn.style.background = 'var(--green-50)';
+                debitBtn.style.color = 'var(--green-700)';
+                creditBtn.style.border = '2px solid var(--border)';
+                creditBtn.style.background = 'var(--white)';
+                creditBtn.style.color = 'var(--text-soft)';
+                if (label) label.textContent = 'Debit cards accepted from all major banks.';
+            } else {
+                creditBtn.style.border = '2px solid var(--green-600)';
+                creditBtn.style.background = 'var(--green-50)';
+                creditBtn.style.color = 'var(--green-700)';
+                debitBtn.style.border = '2px solid var(--border)';
+                debitBtn.style.background = 'var(--white)';
+                debitBtn.style.color = 'var(--text-soft)';
+                if (label) label.textContent = 'Visa, Mastercard, Amex & more accepted.';
+            }
+        }
+
+        function confirmApplePay() {
+            document.getElementById('payment-modal').style.display = 'none';
+
+            if (applePayReady && stripePR) {
+                // REAL Apple Pay: opens the actual native OS payment sheet.
+                // Success/failure handled by the 'paymentmethod' listener
+                // registered in initApplePayForCheckout().
+                stripePR.show();
+                return;
+            }
+
+            // Fallback demo sheet — used automatically whenever real Apple Pay
+            // isn't available (no Stripe key configured, non-Safari browser,
+            // no card in Apple Wallet, etc.)
+            showApplePaySheet();
+        }
+
+        function showApplePaySheet() {
+            var sheet = document.getElementById('apple-pay-sheet');
+            var inner = document.getElementById('aps-inner');
+            document.getElementById('aps-step-main').style.display = '';
+            document.getElementById('aps-step-faceid').style.display = 'none';
+            document.getElementById('aps-step-success').style.display = 'none';
+            document.getElementById('aps-item-name').textContent = pendingName;
+            document.getElementById('aps-item-price').textContent = '$' + pendingPrice;
+            document.getElementById('aps-total').textContent = '$' + pendingPrice;
+            sheet.style.display = 'flex';
+            requestAnimationFrame(function () {
+                inner.style.transform = 'translateY(0)';
+            });
+        }
+
+        function closeApplePaySheet() {
+            var sheet = document.getElementById('apple-pay-sheet');
+            var inner = document.getElementById('aps-inner');
+            inner.style.transform = 'translateY(100%)';
+            setTimeout(function () {
+                sheet.style.display = 'none';
+                document.getElementById('payment-modal').style.display = 'flex';
+            }, 350);
+        }
+
+        function startFaceId() {
+            document.getElementById('aps-step-main').style.display = 'none';
+            document.getElementById('aps-step-faceid').style.display = '';
+            var ring = document.getElementById('faceid-ring');
+            var status = document.getElementById('faceid-status');
+            var icon = document.getElementById('faceid-icon');
+            ring.className = 'faceid-ring scanning';
+            status.textContent = 'Looking for Face ID…';
+            icon.textContent = '';
+            setTimeout(function () {
+                ring.className = 'faceid-ring success';
+                icon.textContent = '✓';
+                status.textContent = 'Face ID recognised';
+                setTimeout(function () {
+                    status.textContent = 'Authorising payment…';
+                    setTimeout(function () {
+                        completeApplePay();
+                    }, 900);
+                }, 700);
+            }, 1800);
+        }
+
+        function completeApplePay() {
+            document.getElementById('aps-step-faceid').style.display = 'none';
+            document.getElementById('aps-step-success').style.display = '';
+            document.getElementById('aps-success-amount').textContent = '$' + pendingPrice + ' · EchoEats';
+            setTimeout(function () {
+                var sheet = document.getElementById('apple-pay-sheet');
+                var inner = document.getElementById('aps-inner');
+                inner.style.transform = 'translateY(100%)';
+                setTimeout(function () {
+                    sheet.style.display = 'none';
+                    finalizeReservation();
+                }, 350);
+            }, 2200);
+        }
+
+        function confirmPayment() {
+            var num = document.getElementById('pay-card-num').value.replace(/\s/g, '');
+            var exp = document.getElementById('pay-card-exp').value;
+            var cvv = document.getElementById('pay-card-cvv').value;
+            if (num.length < 16 || !exp || cvv.length < 3) {
+                showToast('⚠️ Please fill in all card details.', 'warning');
+                return;
+            }
+            document.getElementById('pay-btn').textContent = 'Processing…';
+            document.getElementById('pay-btn').disabled = true;
+
+            setTimeout(function () {
+                finalizeReservation();
+                document.getElementById('pay-btn').textContent = 'Pay Now';
+                document.getElementById('pay-btn').disabled = false;
+            }, 1800);
+        }
+
+        function finalizeReservation() {
+            markReserved(itemId);
+            if (typeof recordReservation === 'function') recordReservation(itemId);
+            decrementStockLocal(itemId);
+
+            var userEmail = getCurrentUserEmail();
+            pendingOrderId = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+            var orderCode = makeOrderCode(pendingOrderId);
+            var cancelWindowExpiresAt = Date.now() + CANCEL_WINDOW_MS;
+
+            saveOrder({
+                id: pendingOrderId,
+                code: orderCode,
+                itemId: itemId,
+                itemName: pendingName,
+                price: priceStringToDollars(pendingPrice),
+                userEmail: userEmail,
+                status: 'active',
+                createdAt: Date.now(),
+                cancelWindowExpiresAt: cancelWindowExpiresAt,
+                vendor: item.vendor,
+                lat: item.lat,
+                lng: item.lng
+            });
+
+            if (pendingBtn) {
+                pendingBtn.textContent = '✓ Reserved';
+                pendingBtn.disabled = true;
+                pendingBtn.style.background = 'var(--green-400)';
+                pendingBtn.style.color = 'var(--dark)';
+                pendingBtn.style.cursor = 'not-allowed';
+            }
+
+            document.getElementById('pay-step-form').style.display = 'none';
+            document.getElementById('pay-step-success').style.display = '';
+            document.getElementById('pay-success-name').textContent = pendingName;
+            document.getElementById('pay-success-price').textContent = '$' + pendingPrice;
+            document.getElementById('pay-success-code').textContent = orderCode;
+            document.getElementById('payment-modal').style.display = 'flex';
+            showPickupLocationInModal();
+            startCancelCountdown(pendingOrderId);
+        }
+
+        /* ── PICKUP LOCATION SHOWN ON THE SUCCESS SCREEN ── */
+        var pickupMiniMapInstance = null;
+
+        function showPickupLocationInModal() {
+            var wrap = document.getElementById('pickup-location-wrap');
+            if (!item || !wrap) { if (wrap) wrap.style.display = 'none'; return; }
+
+            wrap.style.display = '';
+            document.getElementById('pickup-vendor-name').textContent = item.vendor;
+            document.getElementById('pickup-directions-link').href =
+                'https://www.google.com/maps/dir/?api=1&destination=' + item.lat + ',' + item.lng;
+
+            // Defer init until the modal (and its now-visible container) has
+            // actually laid out, otherwise Leaflet measures a 0×0 div.
+            setTimeout(function () {
+                var mapEl = document.getElementById('pickup-mini-map');
+                if (!mapEl) return;
+
+                if (!pickupMiniMapInstance) {
+                    pickupMiniMapInstance = L.map('pickup-mini-map', {
+                        zoomControl: false,
+                        attributionControl: false,
+                        dragging: false,
+                        scrollWheelZoom: false,
+                        doubleClickZoom: false
+                    }).setView([item.lat, item.lng], 15);
+                    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19
+                    }).addTo(pickupMiniMapInstance);
+                    pickupMiniMapInstance._marker = L.marker([item.lat, item.lng], { icon: buildDetailPinIcon(26) })
+                        .addTo(pickupMiniMapInstance)
+                        .bindPopup(item.vendor);
+                } else {
+                    pickupMiniMapInstance.setView([item.lat, item.lng], 15);
+                    pickupMiniMapInstance._marker.setLatLng([item.lat, item.lng]);
+                    pickupMiniMapInstance.invalidateSize();
+                }
+            }, 150);
+        }
+
+        /* ── 3-MINUTE CANCEL COUNTDOWN ── */
+        function startCancelCountdown(orderId) {
+            var wrap = document.getElementById('cancel-order-wrap');
+            var timerEl = document.getElementById('cancel-order-timer');
+            var btn = document.getElementById('cancel-order-btn');
+            if (!wrap || !timerEl || !btn) return;
+
+            wrap.style.display = '';
+            btn.onclick = function () { cancelOrderLocal(orderId); };
+
+            if (cancelCountdownInterval) clearInterval(cancelCountdownInterval);
+            function tick() {
+                var order = getOrderLocal(orderId);
+                var msLeft = order ? order.cancelWindowExpiresAt - Date.now() : 0;
+                if (!order || order.status !== 'active' || msLeft <= 0) {
+                    clearInterval(cancelCountdownInterval);
+                    wrap.style.display = 'none';
+                    return;
+                }
+                var secs = Math.ceil(msLeft / 1000);
+                var m = Math.floor(secs / 60);
+                var s = secs % 60;
+                timerEl.textContent = m + ':' + String(s).padStart(2, '0');
+            }
+            tick();
+            cancelCountdownInterval = setInterval(tick, 1000);
+        }
+
+        function cancelOrderLocal(orderId) {
+            var order = getOrderLocal(orderId);
+            if (!order || order.status !== 'active') return;
+            if (Date.now() > order.cancelWindowExpiresAt) {
+                showToast('⏱ Cancellation window has passed for this order.', 'warning');
+                return;
+            }
+
+            addCreditBalance(order.userEmail, order.price);
+            updateOrderLocal(orderId, { status: 'cancelled', cancelledAt: Date.now() });
+            localStorage.removeItem(RESERVED_PREFIX + order.itemId);
+            try {
+                var stock = JSON.parse(localStorage.getItem(STOCK_KEY)) || {};
+                if (typeof stock[order.itemId] === 'number') {
+                    stock[order.itemId] += 1;
+                    localStorage.setItem(STOCK_KEY, JSON.stringify(stock));
+                }
+            } catch (e) { }
+
+            showToast('✅ Order cancelled — $' + order.price.toFixed(2) + ' added to your EchoEats credit.');
+            var wrap = document.getElementById('cancel-order-wrap');
+            if (wrap) wrap.style.display = 'none';
+            if (cancelCountdownInterval) clearInterval(cancelCountdownInterval);
+
+            var btn = document.getElementById('detail-reserve-btn');
+            if (btn) {
+                btn.textContent = 'Reserve';
+                btn.disabled = false;
+                btn.style.background = '';
+                btn.style.color = '';
+                btn.style.cursor = '';
+            }
+        }
+
+        function closePayModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+            document.getElementById('pay-step-form').style.display = '';
+            document.getElementById('pay-step-success').style.display = 'none';
+            switchCardType('debit');
+            pendingBtn = null;
+            if (cancelCountdownInterval) clearInterval(cancelCountdownInterval);
+            var wrap = document.getElementById('cancel-order-wrap');
+            if (wrap) wrap.style.display = 'none';
+        }
+
+        /* ── CARD NUMBER / EXPIRY FORMATTING ── */
+        document.addEventListener('input', function (e) {
+            if (e.target && e.target.id === 'pay-card-num') {
+                var digits = e.target.value.replace(/\D/g, '').slice(0, 16);
+                e.target.value = digits.replace(/(.{4})/g, '$1 ').trim();
+            }
+            if (e.target && e.target.id === 'pay-card-exp') {
+                var digits2 = e.target.value.replace(/\D/g, '').slice(0, 4);
+                e.target.value = digits2.length > 2 ? digits2.slice(0, 2) + '/' + digits2.slice(2) : digits2;
+            }
+        });
+    </script>
+
+    <!-- ══ APPLE PAY SHEET ══════════════════════════════════════════════════ -->
+    <style>
+        #apple-pay-sheet {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9100;
+            background: rgba(0, 0, 0, 0.45);
+            align-items: flex-end;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        #aps-inner {
+            background: #1c1c1e;
+            border-radius: 20px 20px 0 0;
+            width: 100%;
+            max-width: 480px;
+            padding: 0 0 env(safe-area-inset-bottom, 16px);
+            transform: translateY(100%);
+            transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+            overflow: hidden;
+        }
+
+        .aps-handle {
+            width: 36px;
+            height: 5px;
+            background: #48484a;
+            border-radius: 3px;
+            margin: 10px auto 0;
+        }
+
+        .aps-merchant-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px 14px;
+            border-bottom: 1px solid #2c2c2e;
+        }
+
+        .aps-merchant-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: #1a4a26;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .aps-merchant-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .aps-merchant-sub {
+            font-size: 12px;
+            color: #8e8e93;
+            margin-top: 2px;
+        }
+
+        .aps-line-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 20px;
+        }
+
+        .aps-line-label {
+            font-size: 14px;
+            color: #8e8e93;
+        }
+
+        .aps-line-value {
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .aps-total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px 16px;
+            border-top: 1px solid #2c2c2e;
+        }
+
+        .aps-total-label {
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .aps-total-value {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .aps-card-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px 6px;
+            border-top: 1px solid #2c2c2e;
+        }
+
+        .aps-card-chip {
+            background: #2c2c2e;
+            border-radius: 8px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 13px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .aps-pay-btn {
+            margin: 10px 16px 16px;
+            background: #fff;
+            border: none;
+            border-radius: 14px;
+            padding: 15px;
+            width: calc(100% - 32px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            color: #000;
+            transition: opacity .15s;
+        }
+
+        .aps-pay-btn:active {
+            opacity: .8;
+        }
+
+        .aps-cancel-btn {
+            display: block;
+            width: calc(100% - 32px);
+            margin: 0 16px 20px;
+            background: #2c2c2e;
+            border: none;
+            border-radius: 14px;
+            padding: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #0a84ff;
+            cursor: pointer;
+            transition: opacity .15s;
+        }
+
+        .aps-cancel-btn:active {
+            opacity: .7;
+        }
+
+        #aps-step-faceid {
+            padding: 32px 20px 20px;
+            text-align: center;
+        }
+
+        .faceid-ring {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            border: 3px solid #48484a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            position: relative;
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            transition: border-color .3s, box-shadow .3s;
+        }
+
+        .faceid-ring::before {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #fff;
+            animation: none;
+        }
+
+        .faceid-ring.scanning::before {
+            animation: aps-spin 0.9s linear infinite;
+        }
+
+        .faceid-ring.scanning {
+            border-color: #2c2c2e;
+        }
+
+        .faceid-ring.success {
+            border-color: #30d158;
+            box-shadow: 0 0 0 6px rgba(48, 209, 88, .18);
+            color: #30d158;
+        }
+
+        @keyframes aps-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .aps-faceid-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .aps-faceid-sub {
+            font-size: 13px;
+            color: #8e8e93;
+            margin-bottom: 24px;
+        }
+
+        #faceid-status {
+            font-size: 14px;
+            color: #8e8e93;
+            margin-top: 12px;
+            min-height: 20px;
+        }
+
+        #aps-step-success {
+            padding: 36px 20px 28px;
+            text-align: center;
+        }
+
+        .aps-success-check {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #30d158;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 30px;
+            color: #fff;
+            animation: aps-pop .35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes aps-pop {
+            from {
+                transform: scale(0.4);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .aps-success-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .aps-success-sub {
+            font-size: 14px;
+            color: #8e8e93;
+        }
+    </style>
+
+    <div id="apple-pay-sheet">
+        <div id="aps-inner">
+            <div class="aps-handle"></div>
+
+            <!-- STEP 1: Main payment sheet -->
+            <div id="aps-step-main">
+                <div class="aps-merchant-row">
+                    <div class="aps-merchant-icon">🌿</div>
+                    <div>
+                        <div class="aps-merchant-name">EchoEats</div>
+                        <div class="aps-merchant-sub">Secure payment · echoeats.app</div>
+                    </div>
+                    <svg style="margin-left:auto;flex-shrink:0" width="52" height="22" viewBox="0 0 52 22" fill="none">
+                        <text y="17" font-size="17" font-family="-apple-system,BlinkMacSystemFont,sans-serif"
+                            font-weight="600" fill="white"> Pay</text>
+                    </svg>
+                </div>
+
+                <div class="aps-line-row">
+                    <span class="aps-line-label" id="aps-item-name">Item</span>
+                    <span class="aps-line-value" id="aps-item-price"></span>
+                </div>
+                <div class="aps-line-row" style="padding-top:0">
+                    <span class="aps-line-label">Service fee</span>
+                    <span class="aps-line-value">$0.00</span>
+                </div>
+
+                <div class="aps-total-row">
+                    <span class="aps-total-label">Total</span>
+                    <span class="aps-total-value" id="aps-total"></span>
+                </div>
+
+                <div class="aps-card-row">
+                    <span style="font-size:12px;color:#8e8e93">Pay with</span>
+                    <div class="aps-card-chip">
+                        <svg width="26" height="18" viewBox="0 0 26 18" fill="none">
+                            <rect width="26" height="18" rx="3" fill="#252525" />
+                            <circle cx="10" cy="9" r="5.5" fill="#EB001B" opacity=".9" />
+                            <circle cx="16" cy="9" r="5.5" fill="#F79E1B" opacity=".9" />
+                            <path
+                                d="M13 5.18A5.49 5.49 0 0 1 15.5 9 5.49 5.49 0 0 1 13 12.82 5.49 5.49 0 0 1 10.5 9 5.49 5.49 0 0 1 13 5.18z"
+                                fill="#FF5F00" />
+                        </svg>
+                        Mastercard ···· 4242
+                    </div>
+                    <svg style="margin-left:auto" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 3l5 5-5 5" stroke="#8e8e93" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </div>
+
+                <button class="aps-pay-btn" onclick="startFaceId()">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="black">
+                        <path
+                            d="M9 3H5a2 2 0 0 0-2 2v4m6-6h6m-6 0v18m0 0h6m-6 0H5a2 2 0 0 1-2-2v-4m18-10V5a2 2 0 0 0-2-2h-4m4 0h-4m4 0v18m0 0h-4m4 0a2 2 0 0 0 2-2v-4M3 9v6m18-6v6" />
+                    </svg>
+                    Double-Click to Pay
+                </button>
+                <button class="aps-cancel-btn" onclick="closeApplePaySheet()">Cancel</button>
+            </div>
+
+            <!-- STEP 2: Face ID -->
+            <div id="aps-step-faceid" style="display:none">
+                <div class="aps-faceid-title"> Pay</div>
+                <div class="aps-faceid-sub">Confirm with Face ID</div>
+                <div class="faceid-ring scanning" id="faceid-ring">
+                    <span id="faceid-icon"></span>
+                </div>
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="margin:0 auto;display:block">
+                    <path d="M4 18V8a4 4 0 0 1 4-4h10" stroke="#fff" stroke-width="3" stroke-linecap="round"
+                        opacity=".7" />
+                    <path d="M60 18V8a4 4 0 0 0-4-4H46" stroke="#fff" stroke-width="3" stroke-linecap="round"
+                        opacity=".7" />
+                    <path d="M4 46v10a4 4 0 0 0 4 4h10" stroke="#fff" stroke-width="3" stroke-linecap="round"
+                        opacity=".7" />
+                    <path d="M60 46v10a4 4 0 0 1-4 4H46" stroke="#fff" stroke-width="3" stroke-linecap="round"
+                        opacity=".7" />
+                    <line x1="22" y1="26" x2="22" y2="30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
+                        opacity=".5" />
+                    <line x1="42" y1="26" x2="42" y2="30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
+                        opacity=".5" />
+                    <path d="M32 28v6l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".4" />
+                    <path d="M24 42a10 4 0 0 0 16 0" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
+                        opacity=".5" />
+                </svg>
+                <div id="faceid-status">Looking for Face ID…</div>
+            </div>
+
+            <!-- STEP 3: Success -->
+            <div id="aps-step-success" style="display:none">
+                <div class="aps-success-check">✓</div>
+                <div class="aps-success-title">Payment Approved</div>
+                <div class="aps-success-sub" style="margin-top:6px" id="aps-success-amount"></div>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
