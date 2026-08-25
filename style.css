@@ -31,7 +31,7 @@
   --text-soft: #4a6b4f;
   --text-muted: #7aab82;
   --border: #d1e8d4;
-  --bg: #f7fdf8;
+  --bg: #eefdf2;
   --white: #ffffff;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
@@ -320,13 +320,30 @@ button {
   background: var(--green-100);
 }
 
+.nav-greeting {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 10px;
+  white-space: nowrap;
+  cursor: default;
+}
+
 /* ============================================================
    HERO SECTION
    ============================================================ */
 .hero {
   padding-top: calc(var(--nav-h) + 80px);
-  padding-bottom: 80px;
-  background: linear-gradient(160deg, #f0fdf4 0%, #f7fdf8 50%, #fff 100%);
+  padding-bottom: 120px;
+  background:
+    linear-gradient(180deg, transparent 0%, var(--white) 100%) bottom / 100% 320px no-repeat,
+    linear-gradient(160deg, #dcfce7 0%, #ecfdf3 50%, #f7fdf8 100%);
+  /* Back to clipping both axes. Letting Y overflow escape the box (previous
+     attempt) meant the drop-shadow spilled into the next sibling section
+     (.how-it-works, solid white background) — which paints on top of it and
+     sliced the shadow off in a hard rectangle, same problem in a new shape.
+     The real fix is to keep the shadow fully inside this box (see the
+     shrunk drop-shadow below) so it fades to nothing on its own, well
+     before it ever reaches this edge. */
   overflow: hidden;
   position: relative;
 }
@@ -338,18 +355,18 @@ button {
   right: -200px;
   width: 700px;
   height: 700px;
-  background: radial-gradient(circle, rgba(74, 222, 128, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.20) 0%, transparent 70%);
   pointer-events: none;
 }
 
 .hero::after {
   content: '';
   position: absolute;
-  bottom: -100px;
-  left: -100px;
+  top: 30%;
+  left: -150px;
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, rgba(27, 77, 46, 0.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(27, 77, 46, 0.10) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -433,7 +450,6 @@ button {
   gap: 32px;
   margin-top: 48px;
   padding-top: 40px;
-  border-top: 1px solid var(--border);
 }
 
 .hero-stat-num {
@@ -456,23 +472,326 @@ button {
   justify-content: center;
 }
 
-.hero-phone {
-  width: 300px;
-  background: var(--white);
-  border-radius: 36px;
-  box-shadow: var(--shadow-lg), 0 0 0 8px rgba(27, 77, 46, 0.05);
-  overflow: hidden;
-  border: 1px solid var(--border);
+/* HERO VISUAL — a real CSS-drawn phone frame (bezel + dynamic island) housing
+   the live app content directly. No photo compositing, so it's pixel-accurate
+   and fully responsive at any size. */
+.phone-mock-wrap {
   position: relative;
+  width: 370px;
+  margin-top: 40px;
   z-index: 2;
 }
 
-.phone-statusbar {
-  background: var(--green-800);
-  padding: 12px 20px 8px;
+/* Wraps just the photo so the overlay screen below can be positioned as
+   percentages against the photo's own box. */
+.phone-photo-frame {
+  position: relative;
+  width: 100%;
+}
+
+.hero-phone-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* Shrunk from (0 40px 60px) so the blur fully dissipates well inside
+     .hero's 120px bottom padding instead of needing the box to clip it or
+     let it spill into the next section — avoids a hard-edged cutoff either
+     way. */
+  filter: drop-shadow(0 18px 24px rgba(15, 45, 22, 0.28));
+  /* Safari bug fix: a filtered element inside an overflow:hidden ancestor
+     (.hero) can get its clip region miscalculated, biting a chunk out of
+     one rounded corner (seen on the bottom-right bezel) even though the
+     source photo itself is perfectly symmetric. Promoting this element to
+     its own compositing layer makes Safari recompute the filter's bounds
+     correctly instead of clipping against the stale ancestor rect. Purely
+     a rendering fix — no visual/layout change. */
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+}
+
+/* Real, interactive screen content layered exactly over the photo's screen
+   area. These top/left/width/height percentages were measured directly from
+   the source photo's pixels (not estimated), so the overlay's edges land
+   flush against the phone's actual bezel in the image at any render size. */
+.phone-photo-screen {
+  position: absolute;
+  top: 9.65%;
+  left: 21.24%;
+  width: 57.21%;
+  height: 74.65%;
+  background: var(--white);
+  /* Matched to the phone photo's actual bezel curve (measured directly from
+     the source image's pixels: ~67px radius at native resolution, scaled to
+     this mockup's 370px display width). The old 14px was noticeably tighter
+     than the real curve, so the overlay's corner cut across the photo's
+     bezel instead of following it. */
+  border-radius: 0 0 24px 24px;
+  overflow: hidden;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  font-family: inherit;
+}
+
+.phone-photo-home {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translateX(-50%);
+  width: 34%;
+  height: 4px;
+  border-radius: 4px;
+  background: #1f1f1f;
+  opacity: 0.85;
+}
+
+.phone-photo-header {
+  background: var(--green-800);
+  color: #fff;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.phone-photo-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 24px);
+  margin: 10px 12px;
+  background: var(--green-50);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 9px 14px;
+  flex-shrink: 0;
+  transition: background .15s ease, border-color .15s ease;
+}
+
+.phone-photo-search:focus-within {
+  background: #fff;
+  border-color: var(--green-300, var(--brand, #2f6b3c));
+}
+
+.phone-photo-search .pps-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.phone-photo-search input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text, #1a1a1a);
+  padding: 0;
+}
+
+.phone-photo-search input::placeholder {
+  color: var(--text-muted);
+}
+
+.phone-photo-label {
+  padding: 2px 14px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.phone-photo-card {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  margin: 0 12px 6px;
+  padding: 7px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+  flex-shrink: 0;
+  width: calc(100% - 24px);
+}
+
+.phone-photo-card:hover,
+.phone-photo-card:focus-visible {
+  transform: translateX(2px);
+  box-shadow: var(--shadow);
+  outline: none;
+}
+
+.phone-photo-card img {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--green-100);
+}
+
+.ppc-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ppc-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ppc-vendor {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+
+.ppc-bottom {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ppc-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--green-700);
+}
+
+.ppc-was {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.ppc-timer {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--orange);
+  background: #fff7ed;
+  padding: 2px 7px;
+  border-radius: 100px;
+  margin-left: auto;
+}
+
+.phone-mock {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(160deg, #3a3a3e 0%, #1c1c1f 45%, #0a0a0c 100%);
+  border-radius: 46px;
+  padding: 12px;
+  box-sizing: border-box;
+  box-shadow:
+    0 40px 70px -20px rgba(15, 45, 22, 0.35),
+    0 10px 25px -10px rgba(0, 0, 0, 0.25),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.08);
+}
+
+.phone-mock-btn {
+  position: absolute;
+  background: #131315;
+}
+
+.phone-mock-btn-power {
+  right: -3px;
+  top: 130px;
+  width: 3px;
+  height: 80px;
+  border-radius: 0 3px 3px 0;
+}
+
+.phone-mock-btn-vol1 {
+  left: -3px;
+  top: 110px;
+  width: 3px;
+  height: 36px;
+  border-radius: 3px 0 0 3px;
+}
+
+.phone-mock-btn-vol2 {
+  left: -3px;
+  top: 156px;
+  width: 3px;
+  height: 60px;
+  border-radius: 3px 0 0 3px;
+}
+
+.phone-mock-screen {
+  position: relative;
+  width: 100%;
+  background: var(--white);
+  border-radius: 36px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 22px;
+}
+
+.phone-mock-island {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  transform: translateX(-50%);
+  width: 92px;
+  height: 26px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 5;
+}
+
+.phone-mock-header {
+  background: var(--green-800);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 18px 14px;
+  flex-shrink: 0;
+}
+
+.phone-mock-logo {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: -0.3px;
+}
+
+.phone-mock-time {
+  font-size: 12px;
+  color: var(--green-200);
+}
+
+.phone-mock-body {
+  padding-bottom: 26px;
+}
+
+.phone-mock-home {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  width: 108px;
+  height: 4px;
+  border-radius: 4px;
+  background: #d1d5db;
 }
 
 .phone-logo {
@@ -499,9 +818,8 @@ button {
   padding: 10px 16px;
   font-size: 13px;
   color: var(--text-muted);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
 }
 
 .phone-section-label {
@@ -524,6 +842,12 @@ button {
   align-items: center;
   position: relative;
   transition: transform 0.2s;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.phone-card>div {
+  min-width: 0;
 }
 
 .phone-card:hover {
@@ -548,18 +872,33 @@ button {
   font-weight: 700;
   color: var(--text);
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .phone-card-vendor {
   font-size: 11px;
   color: var(--text-muted);
   margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .phone-card-bottom {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.phone-card-bottom>div:first-child {
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .phone-price {
@@ -585,6 +924,8 @@ button {
   background: #fff7ed;
   padding: 3px 10px;
   border-radius: 100px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* floating cards around phone */
@@ -597,24 +938,26 @@ button {
   box-shadow: var(--shadow);
   font-size: 13px;
   animation: float 4s ease-in-out infinite;
+  z-index: 4;
 }
 
 .hero-float-1 {
-  left: -60px;
-  top: 80px;
+  left: -78px;
+  top: 100px;
   animation-delay: 0s;
 }
 
 .hero-float-2 {
-  right: -50px;
-  top: 140px;
+  right: -78px;
+  top: 230px;
   animation-delay: 1.5s;
 }
 
 .hero-float-3 {
-  left: -40px;
-  bottom: 100px;
+  left: -48px;
+  bottom: -16px;
   animation-delay: 1s;
+  z-index: 4;
 }
 
 @keyframes float {
@@ -818,53 +1161,21 @@ button {
   line-height: 1.7;
 }
 
+/* Same card as the rest of the grid — just a subtle border tint so it
+   still reads as the flagship feature, without spanning columns (that
+   used to leave the last row with a single orphaned card and a big gap). */
 .feature-card.featured {
-  background: var(--green-800);
-  border-color: var(--green-700);
-  grid-column: span 2;
-}
-
-.feature-card.featured .feature-title {
-  color: var(--white);
-}
-
-.feature-card.featured .feature-desc {
-  color: var(--green-200);
+  border-color: var(--green-300);
 }
 
 .feature-card.featured .feature-icon {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--green-100);
+  border-color: var(--green-300);
 }
 
 .feature-card.featured::before {
   background: linear-gradient(90deg, var(--green-400), var(--yellow));
-}
-
-.featured-inner {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 32px;
-  align-items: center;
-}
-
-.pricing-formula {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: var(--radius);
-  padding: 20px 24px;
-  font-family: 'Courier New', monospace;
-  font-size: 14px;
-  color: var(--green-300);
-  white-space: nowrap;
-}
-
-.formula-label {
-  font-size: 11px;
-  color: var(--green-300);
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  transform: scaleX(1);
 }
 
 /* ============================================================
@@ -1038,6 +1349,31 @@ button {
   justify-content: space-between;
 }
 
+.listing-more-hint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--green-400);
+  margin-top: 8px;
+  opacity: 0.85;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.listing-more-arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.listing-card:hover .listing-more-hint {
+  opacity: 1;
+}
+
+.listing-card:hover .listing-more-arrow {
+  transform: translateX(3px);
+}
+
 
 .listing-price-current {
   font-size: 22px;
@@ -1135,7 +1471,7 @@ button {
    IMPACT / GAMIFICATION
    ============================================================ */
 .impact {
-  background: var(--white);
+  background: var(--bg);
   padding: 96px 0;
 }
 
@@ -1154,7 +1490,7 @@ button {
 }
 
 .impact-stat {
-  background: var(--bg);
+  background: var(--white);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 28px 24px;
@@ -1685,10 +2021,6 @@ button {
   .features-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-
-  .feature-card.featured {
-    grid-column: span 2;
-  }
 }
 
 @media (max-width: 768px) {
@@ -1723,14 +2055,6 @@ button {
   .testimonials-grid,
   .impact-inner,
   .vendor-cta-inner {
-    grid-template-columns: 1fr;
-  }
-
-  .feature-card.featured {
-    grid-column: span 1;
-  }
-
-  .featured-inner {
     grid-template-columns: 1fr;
   }
 
@@ -1904,7 +2228,8 @@ button {
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: var(--green-600);
+  background: linear-gradient(135deg, var(--green-400), var(--green-700));
+  box-shadow: 0 2px 10px rgba(74, 222, 128, .28);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2003,43 +2328,95 @@ button {
 }
 
 .dash-page-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 800;
   color: var(--dark);
+  letter-spacing: -0.6px;
 }
 
 .dash-stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
   gap: 14px;
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 .dash-stat-card {
+  position: relative;
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
+  border-radius: 18px;
+  padding: 20px 20px 18px;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  --accent: var(--green-500);
+  --accent-dark: var(--green-700);
+  --accent-tint: var(--green-50);
+}
+
+.dash-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--accent);
+}
+
+.dash-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  border-color: transparent;
+}
+
+.dash-stat-card:nth-child(5n+2) {
+  --accent: var(--blue);
+  --accent-dark: #1d4ed8;
+  --accent-tint: #eff6ff;
+}
+
+.dash-stat-card:nth-child(5n+3) {
+  --accent: var(--orange);
+  --accent-dark: #c2410c;
+  --accent-tint: #fff7ed;
+}
+
+.dash-stat-card:nth-child(5n+4) {
+  --accent: var(--purple);
+  --accent-dark: #6d28d9;
+  --accent-tint: #f5f3ff;
+}
+
+.dash-stat-card:nth-child(5n+5) {
+  --accent: var(--yellow);
+  --accent-dark: #a16207;
+  --accent-tint: #fefce8;
 }
 
 .dash-stat-num {
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 800;
-  color: var(--green-700);
-  letter-spacing: -1px;
-  margin-bottom: 3px;
+  color: var(--dark);
+  letter-spacing: -1.2px;
+  margin-bottom: 4px;
 }
 
 .dash-stat-label {
-  font-size: 11px;
-  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-soft);
 }
 
 .dash-stat-sub {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--green-600);
-  margin-top: 4px;
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--accent-dark);
+  background: var(--accent-tint);
+  padding: 3px 9px;
+  border-radius: 100px;
+  margin-top: 10px;
 }
 
 .dash-2col {
@@ -2052,8 +2429,13 @@ button {
 .dash-card {
   background: var(--white);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: 18px;
   padding: 22px;
+  transition: box-shadow .18s ease;
+}
+
+.dash-card:hover {
+  box-shadow: var(--shadow-sm);
 }
 
 .dash-card-header {
@@ -2065,8 +2447,20 @@ button {
 
 .dash-card-title {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-card-title::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-500);
+  flex-shrink: 0;
 }
 
 .dash-table-wrap {
@@ -2507,6 +2901,7 @@ tr:hover td {
     transform: translateY(-16px) rotate(3deg);
   }
 }
+
 /* ── Nav "Browse Deals" button (shown in place of "My Dashboard" while on the dashboard) ── */
 .nav-browse-deals {
   display: inline-flex;
