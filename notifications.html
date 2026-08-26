@@ -716,7 +716,6 @@
               </div>
               <div class="chip-label">🥗 Only alert me for deals matching these dietary tags:</div>
               <div class="chip-group" id="dietChips">
-                <button class="chip active" onclick="toggleChip(this)">🌿 Vegan</button>
                 <button class="chip" onclick="toggleChip(this)">🥗 Vegetarian</button>
                 <button class="chip" onclick="toggleChip(this)">🌾 Gluten-free</button>
                 <button class="chip" onclick="toggleChip(this)">🥜 Peanut-free</button>
@@ -742,7 +741,7 @@
               <div class="notif-icon">⏱</div>
               <div>
                 <div class="notif-section-title">Last-chance alerts</div>
-                <div class="notif-section-desc">Expiry countdown notifications for saved and reserved items</div>
+                <div class="notif-section-desc">Expiry countdown notifications for saved items and cart items</div>
               </div>
             </div>
             <div class="toggle-row">
@@ -765,7 +764,7 @@
             <div class="toggle-row">
               <div class="toggle-label">
                 <strong>15-minute final notice</strong>
-                <span>One last alert when your reserved item is almost expired — reserved items only</span>
+                <span>One last alert when your cart item is almost expired — cart items only</span>
               </div>
               <label class="toggle"><input type="checkbox" onchange="markDirty()"><span class="t-slider"></span></label>
             </div>
@@ -806,7 +805,7 @@
             </div>
             <div class="toggle-row">
               <div class="toggle-label">
-                <strong>Override quiet hours for reserved items</strong>
+                <strong>Override quiet hours for cart items</strong>
                 <span>Allow the 15-minute last-chance alert to fire even during quiet hours for items you've paid
                   for</span>
               </div>
@@ -884,7 +883,7 @@
   <footer class="footer">
     <div class="container">
       <div class="footer-bottom" style="border-top:none;padding-top:0">
-        <div class="footer-bottom-text">© 2026 EchoEats · SWEN 360 / CMPE 460 · Spring 2026</div>
+        <div class="footer-bottom-text">© 2026 EchoEats · Yousif Shakeeb</div>
         <a href="index.html" class="btn btn-outline btn-sm"
           style="color:var(--green-300);border-color:var(--green-700)">← Back to Home</a>
       </div>
