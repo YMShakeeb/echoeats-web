@@ -251,6 +251,25 @@
     }
   </style>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <style>
+    /* Custom cluster bubbles so groups of nearby vendors (e.g. all 4 listings
+       at City Centre Bahrain) collapse into one legible marker instead of
+       stacking illegibly on top of each other at low zoom. */
+    .ee-cluster {
+      background: var(--green-800, #1a4a26);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      border: 3px solid rgba(255, 255, 255, .85);
+      box-shadow: 0 3px 12px rgba(0, 0, 0, .4);
+    }
+  </style>
 </head>
 
 <body>
@@ -345,7 +364,7 @@
   <div id="list-section">
     <section class="listings-results">
       <div class="container">
-        <div class="results-count"><strong id="count">24</strong> deals available near you</div>
+        <div class="results-count"><strong id="count">23</strong> deals available near you</div>
         <div class="all-listings-grid" id="listings-grid">
 
           <!-- Cards (same pattern, 12 items) -->
@@ -367,7 +386,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$2.75</span><span
                     class="listing-price-was">$5.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Coffee + Cake')">Reserve</button>
+                  onclick="authReserve(this,'Coffee + Cake')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -396,7 +415,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$2.50</span><span
                     class="listing-price-was">$6.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Croissant Box')">Reserve</button>
+                  onclick="authReserve(this,'Croissant Box')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -424,7 +443,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$5.00</span><span
                     class="listing-price-was">$10.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Pizza Margherita')">Reserve</button>
+                  onclick="authReserve(this,'Pizza Margherita')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -453,7 +472,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$8.00</span><span
                     class="listing-price-was">$18.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Sushi Salmon &amp; California Roll Platter')">Reserve</button>
+                  onclick="authReserve(this,'Sushi Salmon &amp; California Roll Platter')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -482,7 +501,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$6.00</span><span
                     class="listing-price-was">$10.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Mezze Platter')">Reserve</button>
+                  onclick="authReserve(this,'Mezze Platter')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -511,7 +530,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$3.50</span><span
                     class="listing-price-was">$8.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Sourdough Loaf')">Reserve</button>
+                  onclick="authReserve(this,'Sourdough Loaf')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -540,7 +559,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$7.00</span><span
                     class="listing-price-was">$12.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Grilled Chicken')">Reserve</button>
+                  onclick="authReserve(this,'Grilled Chicken')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -569,7 +588,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$4.50</span><span
                     class="listing-price-was">$7.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Avocado Grain Bowl')">Reserve</button>
+                  onclick="authReserve(this,'Avocado Grain Bowl')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -598,7 +617,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$3.00</span><span
                     class="listing-price-was">$8.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Cupcake Box')">Reserve</button>
+                  onclick="authReserve(this,'Cupcake Box')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -626,7 +645,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$9.00</span><span
                     class="listing-price-was">$15.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Lamb Kofta Platter')">Reserve</button>
+                  onclick="authReserve(this,'Lamb Kofta Platter')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -655,7 +674,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$5.50</span><span
                     class="listing-price-was">$8.00</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Veggie Ramen')">Reserve</button>
+                  onclick="authReserve(this,'Veggie Ramen')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -683,7 +702,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$4.00</span><span
                     class="listing-price-was">$7.50</span></div><button class="listing-reserve-btn"
-                  onclick="authReserve(this,'Falafel Wrap')">Reserve</button>
+                  onclick="authReserve(this,'Falafel Wrap')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -713,7 +732,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$5.50</span><span
                     class="listing-price-was">$10.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Chicken Machboos')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Chicken Machboos')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -743,7 +762,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$2.00</span><span
                     class="listing-price-was">$5.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Luqaimat Box')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Luqaimat Box')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -773,7 +792,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$8.50</span><span
                     class="listing-price-was">$15.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Shawarma Box')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Shawarma Box')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -803,7 +822,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$4.00</span><span
                     class="listing-price-was">$6.50</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Power Salad Bowl')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Power Salad Bowl')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -833,7 +852,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$6.50</span><span
                     class="listing-price-was">$12.50</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Lamb Biryani')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Lamb Biryani')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -863,7 +882,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$3.50</span><span
                     class="listing-price-was">$7.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Mix Pastries')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Mix Pastries')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -893,7 +912,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$7.00</span><span
                     class="listing-price-was">$15.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Grilled Hammour')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Grilled Hammour')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -923,7 +942,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$3.00</span><span
                     class="listing-price-was">$5.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Smoothie Bowl')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Smoothie Bowl')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -953,7 +972,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$4.50</span><span
                     class="listing-price-was">$10.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Smash Burger')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Smash Burger')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -982,7 +1001,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$6.00</span><span
                     class="listing-price-was">$12.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Tuna Poke Bowl')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Tuna Poke Bowl')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -1012,7 +1031,7 @@
               <div class="listing-footer">
                 <div class="listing-price-block"><span class="listing-price-current">$2.50</span><span
                     class="listing-price-was">$4.00</span></div>
-                <button class="listing-reserve-btn" onclick="authReserve(this,'Hummus Platter')">Reserve</button>
+                <button class="listing-reserve-btn" onclick="authReserve(this,'Hummus Platter')">Add to Cart</button>
               </div>
             </div>
             <div class="decay-bar-wrap">
@@ -1030,6 +1049,7 @@
 
   <!-- MAP VIEW — Leaflet + OpenStreetMap (free, no API key required) -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   <div id="map-section" style="display:none;padding:0 0 72px;background:var(--bg)">
     <div class="container" style="padding-top:28px">
       <div style="position:relative">
@@ -1190,10 +1210,10 @@
       return data[itemId];
     }
 
-    function decrementStock(itemId) {
+    function decrementStock(itemId, qty) {
       const data = getStockData();
       if (typeof data[itemId] !== 'number') return;
-      data[itemId] = Math.max(0, data[itemId] - 1);
+      data[itemId] = Math.max(0, data[itemId] - (qty || 1));
       saveStockData(data);
       return data[itemId];
     }
@@ -1326,7 +1346,7 @@
       if (card) {
         const btn = card.querySelector('.listing-reserve-btn');
         if (btn) {
-          btn.textContent = 'Reserve';
+          btn.textContent = 'Add to Cart';
           btn.disabled = false;
           btn.style.background = '';
           btn.style.color = '';
@@ -1405,22 +1425,28 @@
     }
 
 
-    /* ── RESTORE RESERVED BUTTON STATES ON EVERY PAGE LOAD ──
-       This is what prevents double-booking after a refresh or
-       when a different tab / browser already claimed the item. */
+    /* ── RESTORE RESERVED / IN-CART BUTTON STATES ON EVERY PAGE LOAD ──
+       Prevents double-booking after a refresh or when a different tab /
+       browser already purchased or cart-added the item. */
     function restoreReservedStates() {
       document.querySelectorAll('#listings-grid .listing-card').forEach(card => {
         const itemId = card.dataset.itemId;
-        if (itemId && isReserved(itemId)) {
-          const btn = card.querySelector('.listing-reserve-btn');
-          if (btn) {
-            btn.textContent = '✓ Reserved';
-            btn.disabled = true;
-            btn.style.background = 'var(--green-400)';
-            btn.style.color = 'var(--dark)';
-            btn.style.cursor = 'not-allowed';
-            btn.style.opacity = '0.75';
-          }
+        if (!itemId) return;
+        const btn = card.querySelector('.listing-reserve-btn');
+        if (!btn) return;
+        if (isReserved(itemId)) {
+          btn.textContent = '✓ Reserved';
+          btn.disabled = true;
+          btn.style.background = 'var(--green-400)';
+          btn.style.color = 'var(--dark)';
+          btn.style.cursor = 'not-allowed';
+          btn.style.opacity = '0.75';
+        } else if (typeof isInCart === 'function' && isInCart(itemId)) {
+          btn.textContent = '✓ In Cart';
+          btn.disabled = true;
+          btn.style.background = 'var(--green-400)';
+          btn.style.color = 'var(--dark)';
+          btn.style.cursor = 'not-allowed';
         }
       });
     }
@@ -1517,7 +1543,14 @@
 
     /* ── AUTH-AWARE RESERVE → PAYMENT MODAL ── */
     let pendingBtn = null, pendingName = '', pendingPrice = '', pendingItemId = '';
+    let pendingCartItems = []; // the cart lines currently being paid for
+    let pendingOrderIds = [];  // every order id created by the current checkout
 
+    /* ── ADD TO CART BUTTON → AUTH CHECK → ADD TO RUNNING CART ──
+       Adding no longer checks out immediately: it pushes the item into the
+       shared cart (see main.js) and the shopper pays for everything in the
+       cart at once via the cart drawer's Checkout button, which calls
+       window.openCartCheckout() below. */
     function authReserve(btn, name) {
       const user = localStorage.getItem('ee_current_user');
       if (!user) {
@@ -1525,22 +1558,22 @@
         return;
       }
 
-      // Block vendors and admins from reserving
+      // Block vendors and admins from buying
       const parsedUser = JSON.parse(user);
       if (parsedUser.role === 'vendor' || parsedUser.role === 'admin') {
-        showToast('⚠️ Only consumers can reserve items. Switch to a consumer account to make a reservation.', 'warning');
+        showToast('⚠️ Only consumers can add items to cart. Switch to a consumer account to make a purchase.', 'warning');
         return;
       }
 
       /* ── DOUBLE-BOOKING CHECK ──
          Read the unique item ID from the card's data-item-id attribute.
-         isReserved() queries localStorage, so it catches reservations
-         made in other tabs, other browser sessions, or after a page
-         refresh — not just the current in-memory button state.        */
+         isReserved() queries localStorage, so it catches purchases made
+         in other tabs, other browser sessions, or after a page refresh —
+         not just the current in-memory button state.                    */
       const card = btn.closest('.listing-card');
       const itemId = card?.dataset.itemId || '';
       if (itemId && isReserved(itemId)) {
-        showToast('⚠️ This item was already reserved — try another deal!', 'warning');
+        showToast('⚠️ Already purchased — check your dashboard for pickup details.', 'warning');
         btn.textContent = '✓ Reserved';
         btn.disabled = true;
         btn.style.background = 'var(--green-400)';
@@ -1549,21 +1582,75 @@
         return;
       }
 
-      const priceEl = card?.querySelector('.listing-price-current');
-      pendingBtn = btn;
-      pendingName = name;
-      pendingItemId = itemId;
-      pendingPrice = priceEl ? priceEl.textContent : '';
+      if (itemId && typeof isInCart === 'function' && isInCart(itemId)) {
+        showToast('🛒 Already in your cart!', 'warning');
+        return;
+      }
 
-      document.getElementById('pay-item-name').textContent = name;
+      const priceEl = card?.querySelector('.listing-price-current');
+      const priceStr = priceEl ? priceEl.textContent : '';
+
+      if (typeof addToCart === 'function') {
+        const vendorEl = card?.querySelector('.listing-vendor');
+        const imgEl = card?.querySelector('.food-photo');
+        addToCart({
+          itemId: itemId,
+          name: name,
+          price: priceStringToDollars(priceStr),
+          vendor: vendorEl ? vendorEl.textContent.trim() : '',
+          image: imgEl ? imgEl.src : ''
+        });
+      }
+
+      btn.textContent = '✓ In Cart';
+      btn.disabled = true;
+      btn.style.background = 'var(--green-400)';
+      btn.style.color = 'var(--dark)';
+      btn.style.cursor = 'not-allowed';
+      showToast('🛒 Added "' + name + '" to your cart!');
+    }
+
+    /* ── CHECKOUT (called from the cart drawer's Checkout button) ──
+       Opens this page's payment modal populated with the whole cart's
+       contents/total, and sizes the real Apple Pay sheet to match. ── */
+    function openCartCheckout(cart) {
+      pendingCartItems = cart || [];
+      if (!pendingCartItems.length) return;
+
+      const total = pendingCartItems.reduce((sum, l) => sum + (l.price || 0) * (l.qty || 1), 0);
+      pendingItemId = pendingCartItems.length === 1 ? pendingCartItems[0].itemId : '';
+      pendingBtn = null; // resolved per-item, per-card at finalize time instead
+      pendingName = pendingCartItems.length === 1 ? pendingCartItems[0].name : `${pendingCartItems.length} items`;
+      pendingPrice = '$' + total.toFixed(2);
+
+      document.getElementById('pay-item-name').textContent = pendingName;
       document.getElementById('pay-item-price').textContent = pendingPrice;
-      document.getElementById('pay-hold-note').textContent = 'Item held for 15 minutes after payment.';
+      document.getElementById('pay-hold-note').textContent = pendingCartItems.length > 1
+        ? pendingCartItems.map(l => l.name + (l.qty > 1 ? ` ×${l.qty}` : '')).join(', ')
+        : 'Item held for 15 minutes after payment.';
+
+      // Show the item's photo when checking out a single item; a multi-item
+      // cart doesn't have one obvious photo to show, so fall back to hiding it.
+      const imgWrap = document.getElementById('pay-item-img-wrap');
+      const imgEl = document.getElementById('pay-item-img');
+      if (imgWrap && imgEl) {
+        const singleImage = pendingCartItems.length === 1 ? pendingCartItems[0].image : '';
+        if (singleImage) {
+          imgEl.style.display = '';
+          imgEl.src = singleImage;
+          imgWrap.style.display = 'flex';
+        } else {
+          imgWrap.style.display = 'none';
+        }
+      }
+
       document.getElementById('payment-modal').style.display = 'flex';
 
-      // Build a real Stripe PaymentRequest sized to this item, so Apple Pay
-      // (when available) shows the correct amount in the native sheet.
-      initApplePayForCheckout(name, pendingPrice);
+      // Build a real Stripe PaymentRequest sized to the cart total, so
+      // Apple Pay (when available) shows the correct amount.
+      initApplePayForCheckout(pendingName, pendingPrice);
     }
+    window.openCartCheckout = openCartCheckout;
 
     /* ── SHARED SUCCESS HANDLER ──
        Used by both the real Apple Pay flow (Stripe) and the card-form flow.
@@ -1612,64 +1699,87 @@
     }
 
     function finalizeReservation() {
-      if (pendingItemId) markReserved(pendingItemId);
-      if (pendingItemId && typeof recordReservation === 'function') recordReservation(pendingItemId);
-      if (pendingItemId) decrementStock(pendingItemId);
+      // Fall back to a single legacy item if checkout was somehow triggered
+      // without going through the cart (shouldn't normally happen).
+      const itemsToFinalize = pendingCartItems.length ? pendingCartItems :
+        (pendingItemId ? [{ itemId: pendingItemId, name: pendingName, price: priceStringToDollars(pendingPrice), qty: 1 }] : []);
 
-      // Create an order record so this purchase can be cancelled (refunded as
-      // site credit) within a 3-minute window.
       const userEmail = getCurrentUserEmail();
-      pendingOrderId = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      const orderCode = makeOrderCode(pendingOrderId);
-      const cancelWindowExpiresAt = Date.now() + CANCEL_WINDOW_MS;
-      const orderPin = (typeof ALL_MAP_PINS !== 'undefined') ? ALL_MAP_PINS.find(p => p.itemId === pendingItemId) : null;
-      saveOrder({
-        id: pendingOrderId,
-        code: orderCode,
-        itemId: pendingItemId,
-        itemName: pendingName,
-        price: priceStringToDollars(pendingPrice),
-        userEmail: userEmail,
-        status: 'active',
-        createdAt: Date.now(),
-        cancelWindowExpiresAt: cancelWindowExpiresAt,
-        vendor: orderPin ? orderPin.vendor : null,
-        lat: orderPin ? orderPin.lat : null,
-        lng: orderPin ? orderPin.lng : null
+      const codes = [];
+      pendingOrderIds = [];
+
+      itemsToFinalize.forEach(line => {
+        markReserved(line.itemId);
+        if (typeof recordReservation === 'function') recordReservation(line.itemId);
+        decrementStock(line.itemId, line.qty);
+
+        const orderId = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        const orderCode = makeOrderCode(orderId);
+        const cancelWindowExpiresAt = Date.now() + CANCEL_WINDOW_MS;
+        const orderPin = (typeof ALL_MAP_PINS !== 'undefined') ? ALL_MAP_PINS.find(p => p.itemId === line.itemId) : null;
+        const linePrice = (line.price || 0) * (line.qty || 1);
+
+        pendingOrderIds.push(orderId);
+        codes.push(orderCode);
+
+        saveOrder({
+          id: orderId,
+          code: orderCode,
+          itemId: line.itemId,
+          itemName: line.name + (line.qty > 1 ? ` ×${line.qty}` : ''),
+          price: linePrice,
+          userEmail: userEmail,
+          status: 'active',
+          createdAt: Date.now(),
+          cancelWindowExpiresAt: cancelWindowExpiresAt,
+          vendor: orderPin ? orderPin.vendor : (line.vendor || null),
+          lat: orderPin ? orderPin.lat : null,
+          lng: orderPin ? orderPin.lng : null
+        });
+
+        sendOrderConfirmationEmail({
+          toEmail: userEmail,
+          toName: getCurrentUserName(),
+          itemName: line.name,
+          price: linePrice,
+          orderCode: orderCode,
+          cancelWindowExpiresAt: cancelWindowExpiresAt,
+          cancelWindowMinutes: CANCEL_WINDOW_MS / 60000
+        });
+
+        const card = document.querySelector(`.listing-card[data-item-id="${line.itemId}"]`);
+        if (card) {
+          const btn = card.querySelector('.listing-reserve-btn');
+          if (btn) {
+            btn.textContent = '✓ Reserved';
+            btn.disabled = true;
+            btn.style.background = 'var(--green-400)';
+            btn.style.color = 'var(--dark)';
+            btn.style.cursor = 'not-allowed';
+          }
+          renderStockForCard(card);
+        }
       });
 
-      // Show the 3-minute cancel countdown on the item's own card right away,
-      // instead of waiting for the next 1-second interval tick.
+      pendingOrderId = pendingOrderIds[0] || null;
+
+      // Show the 3-minute cancel countdown on each purchased item's own
+      // card right away, instead of waiting for the next interval tick.
       renderCardCancelTimers();
 
-      sendOrderConfirmationEmail({
-        toEmail: userEmail,
-        toName: getCurrentUserName(),
-        itemName: pendingName,
-        price: priceStringToDollars(pendingPrice),
-        orderCode: orderCode,
-        cancelWindowExpiresAt: cancelWindowExpiresAt,
-        cancelWindowMinutes: CANCEL_WINDOW_MS / 60000
-      });
+      if (typeof clearCart === 'function') clearCart();
+      pendingCartItems = [];
 
-      if (pendingBtn) {
-        pendingBtn.textContent = '✓ Reserved';
-        pendingBtn.disabled = true;
-        pendingBtn.style.background = 'var(--green-400)';
-        pendingBtn.style.color = 'var(--dark)';
-        pendingBtn.style.cursor = 'not-allowed';
-      }
-      if (pendingItemId) {
-        const purchasedCard = document.querySelector(`.listing-card[data-item-id="${pendingItemId}"]`);
-        if (purchasedCard) renderStockForCard(purchasedCard);
-      }
       document.getElementById('pay-step-form').style.display = 'none';
       document.getElementById('pay-step-success').style.display = '';
       document.getElementById('pay-success-name').textContent = pendingName;
       document.getElementById('pay-success-price').textContent = pendingPrice;
-      document.getElementById('pay-success-code').textContent = orderCode;
+      const codeEl = document.getElementById('pay-success-code');
+      codeEl.textContent = codes.join('  ·  ');
+      codeEl.style.fontSize = codes.length > 1 ? '15px' : '';
+      codeEl.style.letterSpacing = codes.length > 1 ? '1px' : '';
       document.getElementById('payment-modal').style.display = 'flex';
-      showPickupLocation(pendingItemId);
+      showPickupLocation(itemsToFinalize[0] ? itemsToFinalize[0].itemId : '');
       startCancelCountdown(pendingOrderId);
     }
 
@@ -1916,12 +2026,17 @@
         tries++;
       }
       if (leafletMap) {
-        leafletMap.panTo([lat, lng]);
-        leafletMap.setZoom(16);
-        setTimeout(() => {
-          const marker = leafletMarkers.find(m => m._itemId === itemId);
-          if (marker) marker.openPopup();
-        }, 400);
+        const marker = leafletMarkers.find(m => m._itemId === itemId);
+        if (marker && leafletCluster && leafletCluster.zoomToShowLayer) {
+          // zoomToShowLayer expands any cluster the marker is currently
+          // grouped into before opening its popup, instead of panning to
+          // a spot that shows only a collapsed cluster bubble.
+          leafletCluster.zoomToShowLayer(marker, () => marker.openPopup());
+        } else {
+          leafletMap.panTo([lat, lng]);
+          leafletMap.setZoom(16);
+          setTimeout(() => { if (marker) marker.openPopup(); }, 400);
+        }
       }
     }
 
@@ -2005,44 +2120,45 @@
       }
     }
 
-    /* ── MAP DATA — spread across Bahrain ── */
+    /* ── MAP DATA — pinned to real Bahrain landmarks ──
+       Every listing is clustered (small jitter only) around one of six
+       real-world locations: City Centre Bahrain, Al Liwan, The Avenues,
+       Marassi Galleria, Souq Al Baraha, and Souq Al Manama. */
     const ALL_MAP_PINS = [
-      // Manama centre
-      { lat: 26.2235, lng: 50.5276, emoji: '🥐', name: 'Croissant Box', price: '$2.50', vendor: 'Patisserie Nour', distance: 0.3, itemId: 'croissant-box', tags: 'vegetarian' },
-      { lat: 26.2170, lng: 50.5940, emoji: '🍱', name: 'Sushi Platter', price: '$8.00', vendor: 'Sakura Kitchen', distance: 0.8, itemId: 'sushi-platter', tags: 'gluten-free seafood' },
-      { lat: 26.2050, lng: 50.5260, emoji: '🍕', name: 'Pizza Margherita', price: '$5.00', vendor: 'Pizzeria Roma', distance: 0.6, itemId: 'pizza-margherita', tags: 'vegetarian' },
-      { lat: 26.2250, lng: 50.5920, emoji: '🥗', name: 'Mezze Platter', price: '$6.00', vendor: 'Green Bowl', distance: 0.5, itemId: 'mezze-platter', tags: 'vegan' },
-      // Juffair
-      { lat: 26.2055, lng: 50.6020, emoji: '🍔', name: 'Smash Burger', price: '$4.50', vendor: 'Juffair Bites', distance: 2.1, itemId: 'burger-juffair', tags: '' },
-      // Zinj (south of Manama, inland)
-      { lat: 26.1980, lng: 50.5750, emoji: '🫙', name: 'Hummus Platter', price: '$2.50', vendor: 'Zinj Deli', distance: 2.5, itemId: 'hummus-zinj', tags: 'vegan' },
-      // Seef (northwest Manama, along highway)
-      { lat: 26.2320, lng: 50.5560, emoji: '🍣', name: 'Tuna Poke Bowl', price: '$6.00', vendor: 'Seef Poke Bar', distance: 3.0, itemId: 'poke-seef', tags: 'gluten-free' },
-      // Muharraq island
-      { lat: 26.2590, lng: 50.6150, emoji: '🍚', name: 'Chicken Machboos', price: '$5.50', vendor: 'Al Muharraq Kitchen', distance: 4.2, itemId: 'machboos-muharraq', tags: '' },
-      { lat: 26.2680, lng: 50.6260, emoji: '🍩', name: 'Luqaimat Box', price: '$2.00', vendor: 'Bait Al Halwa', distance: 4.5, itemId: 'luqaimat-muharraq', tags: 'vegetarian' },
-      // Al Janabiyah (northwest mainland, on land!)
-      { lat: 26.2180, lng: 50.5020, emoji: '🍞', name: 'Sourdough Loaf', price: '$3.50', vendor: 'Daily Bread', distance: 6.2, itemId: 'sourdough-loaf', tags: 'vegan peanut-free' },
-      // Saar (west central)
-      { lat: 26.1980, lng: 50.4870, emoji: '🍗', name: 'Grilled Chicken', price: '$7.00', vendor: 'Al Waha Grill', distance: 5.1, itemId: 'grilled-chicken', tags: '' },
-      // Budaiya (west coast)
-      { lat: 26.2080, lng: 50.4650, emoji: '🥤', name: 'Smoothie Bowl', price: '$3.00', vendor: 'Budaiya Juice Bar', distance: 7.2, itemId: 'smoothie-budaiya', tags: 'vegan' },
-      // A'ali / Isa Town area
-      { lat: 26.1720, lng: 50.5480, emoji: '🥐', name: 'Mix Pastries', price: '$3.50', vendor: 'Isa Town Bakery', distance: 8.6, itemId: 'pastries-isa', tags: 'vegetarian' },
-      { lat: 26.1650, lng: 50.5580, emoji: '🥑', name: 'Avocado Bowl', price: '$4.50', vendor: 'Blossom Kitchen', distance: 7.8, itemId: 'avocado-bowl', tags: 'vegan gluten-free peanut-free' },
-      // Riffa (central south)
-      { lat: 26.1290, lng: 50.5540, emoji: '🌯', name: 'Shawarma Party Box', price: '$8.50', vendor: 'Riffa Grill House', distance: 9.1, itemId: 'shawarma-riffa', tags: '' },
-      { lat: 26.1380, lng: 50.5420, emoji: '☕', name: 'Coffee + Cake', price: '$2.75', vendor: 'Café Saffron', distance: 8.4, itemId: 'coffee-cake', tags: 'vegetarian' },
-      // Hamad Town (southwest)
-      { lat: 26.1100, lng: 50.5090, emoji: '🥙', name: 'Power Salad Bowl', price: '$4.00', vendor: 'Fresh Co. Hamad', distance: 11.3, itemId: 'salad-hamad', tags: 'vegan gluten-free' },
-      { lat: 26.1050, lng: 50.4920, emoji: '🍛', name: 'Lamb Biryani', price: '$6.50', vendor: 'Spice Route', distance: 11.8, itemId: 'biryani-hamad', tags: '' },
-      // Sitra island (east)
-      { lat: 26.1530, lng: 50.6220, emoji: '🐟', name: 'Grilled Hammour', price: '$7.00', vendor: 'Sitra Fish Market', distance: 6.4, itemId: 'fish-sitra', tags: 'seafood gluten-free' },
-      // Manama centre — previously missing pins
-      { lat: 26.2200, lng: 50.5820, emoji: '🧁', name: 'Cupcake Box', price: '$3.00', vendor: 'Sugar & Spice', distance: 0.4, itemId: 'cupcake-box', tags: 'vegetarian peanut-free' },
-      { lat: 26.2150, lng: 50.5760, emoji: '🥩', name: 'Lamb Kofta Platter', price: '$9.00', vendor: "Sultan's Table", distance: 1.2, itemId: 'lamb-kofta', tags: '' },
-      { lat: 26.2300, lng: 50.5680, emoji: '🍜', name: 'Veggie Ramen Bowl', price: '$5.50', vendor: 'Lotus Noodle', distance: 1.4, itemId: 'veggie-ramen', tags: 'vegan gluten-free' },
-      { lat: 26.2190, lng: 50.5850, emoji: '🫔', name: 'Falafel Wrap Combo', price: '$4.00', vendor: 'Wrap & Roll', distance: 0.5, itemId: 'falafel-wrap', tags: 'vegetarian' },
+      // ── City Centre Bahrain (Seef, Manama) — 26.2333, 50.5539 ──
+      { lat: 26.2341, lng: 50.5528, emoji: '🥐', name: 'Croissant Box', price: '$2.50', vendor: 'Patisserie Nour', distance: 0.3, itemId: 'croissant-box', tags: 'vegetarian' },
+      { lat: 26.2321, lng: 50.5551, emoji: '🍞', name: 'Sourdough Loaf', price: '$3.50', vendor: 'Daily Bread', distance: 0.5, itemId: 'sourdough-loaf', tags: 'vegan peanut-free' },
+      { lat: 26.2338, lng: 50.5549, emoji: '🥩', name: 'Lamb Kofta Platter', price: '$9.00', vendor: "Sultan's Table", distance: 0.7, itemId: 'lamb-kofta', tags: '' },
+      { lat: 26.2326, lng: 50.5522, emoji: '🍣', name: 'Tuna Poke Bowl', price: '$6.00', vendor: 'Seef Poke Bar', distance: 0.4, itemId: 'poke-seef', tags: 'gluten-free' },
+
+      // ── Al Liwan (Hamala) — 26.1497, 50.4653 ──
+      { lat: 26.1525, lng: 50.4642, emoji: '🍕', name: 'Pizza Margherita', price: '$5.00', vendor: 'Pizzeria Roma', distance: 0.4, itemId: 'pizza-margherita', tags: 'vegetarian' },
+      { lat: 26.1509, lng: 50.4665, emoji: '🍗', name: 'Grilled Chicken', price: '$7.00', vendor: 'Al Waha Grill', distance: 0.6, itemId: 'grilled-chicken', tags: '' },
+      { lat: 26.1522, lng: 50.4660, emoji: '🍜', name: 'Veggie Ramen Bowl', price: '$5.50', vendor: 'Lotus Noodle', distance: 0.5, itemId: 'veggie-ramen', tags: 'vegan gluten-free' },
+      { lat: 26.1511, lng: 50.4644, emoji: '🫙', name: 'Hummus Platter', price: '$2.50', vendor: 'Zinj Deli', distance: 0.3, itemId: 'hummus-zinj', tags: 'vegan' },
+
+      // ── The Avenues (Manama Bay) — 26.2448, 50.5866 ──
+      { lat: 26.2475, lng: 50.5858, emoji: '☕', name: 'Coffee + Cake', price: '$2.75', vendor: 'Café Saffron', distance: 0.2, itemId: 'coffee-cake', tags: 'vegetarian' },
+      { lat: 26.2461, lng: 50.5877, emoji: '🥗', name: 'Mezze Platter', price: '$6.00', vendor: 'Green Bowl', distance: 0.5, itemId: 'mezze-platter', tags: 'vegan' },
+      { lat: 26.2473, lng: 50.5872, emoji: '🧁', name: 'Cupcake Box', price: '$3.00', vendor: 'Sugar & Spice', distance: 0.3, itemId: 'cupcake-box', tags: 'vegetarian peanut-free' },
+      { lat: 26.2463, lng: 50.5856, emoji: '🍔', name: 'Smash Burger', price: '$4.50', vendor: 'Juffair Bites', distance: 0.6, itemId: 'burger-juffair', tags: '' },
+
+      // ── Marassi Galleria (Diyar Al Muharraq) — 26.2790, 50.6540 ──
+      { lat: 26.2817, lng: 50.6531, emoji: '🍱', name: 'Sushi Platter', price: '$8.00', vendor: 'Sakura Kitchen', distance: 0.8, itemId: 'sushi-platter', tags: 'gluten-free seafood' },
+      { lat: 26.2803, lng: 50.6551, emoji: '🥑', name: 'Avocado Bowl', price: '$4.50', vendor: 'Blossom Kitchen', distance: 0.5, itemId: 'avocado-bowl', tags: 'vegan gluten-free peanut-free' },
+      { lat: 26.2815, lng: 50.6547, emoji: '🫔', name: 'Falafel Wrap Combo', price: '$4.00', vendor: 'Wrap & Roll', distance: 0.4, itemId: 'falafel-wrap', tags: 'vegetarian' },
+      { lat: 26.2804, lng: 50.6528, emoji: '🥤', name: 'Smoothie Bowl', price: '$3.00', vendor: 'Budaiya Juice Bar', distance: 0.6, itemId: 'smoothie-budaiya', tags: 'vegan' },
+
+      // ── Souq Al Baraha (Muharraq) — 26.2920, 50.6440 ──
+      { lat: 26.2928, lng: 50.6431, emoji: '🍩', name: 'Luqaimat Box', price: '$2.00', vendor: 'Bait Al Halwa', distance: 0.4, itemId: 'luqaimat-muharraq', tags: 'vegetarian' },
+      { lat: 26.2914, lng: 50.6452, emoji: '🍚', name: 'Chicken Machboos', price: '$5.50', vendor: 'Al Muharraq Kitchen', distance: 0.3, itemId: 'machboos-muharraq', tags: '' },
+      { lat: 26.2925, lng: 50.6446, emoji: '🌯', name: 'Shawarma Party Box', price: '$8.50', vendor: 'Riffa Grill House', distance: 0.5, itemId: 'shawarma-riffa', tags: '' },
+      { lat: 26.2911, lng: 50.6429, emoji: '🐟', name: 'Grilled Hammour', price: '$7.00', vendor: 'Sitra Fish Market', distance: 0.6, itemId: 'fish-sitra', tags: 'seafood gluten-free' },
+
+      // ── Souq Al Manama (Bab Al Bahrain, central Manama) — 26.2339, 50.5762 ──
+      { lat: 26.2346, lng: 50.5754, emoji: '🥐', name: 'Mix Pastries', price: '$3.50', vendor: 'Isa Town Bakery', distance: 0.3, itemId: 'pastries-isa', tags: 'vegetarian' },
+      { lat: 26.2331, lng: 50.5771, emoji: '🥙', name: 'Power Salad Bowl', price: '$4.00', vendor: 'Fresh Co. Hamad', distance: 0.5, itemId: 'salad-hamad', tags: 'vegan gluten-free' },
+      { lat: 26.2343, lng: 50.5767, emoji: '🍛', name: 'Lamb Biryani', price: '$6.50', vendor: 'Spice Route', distance: 0.4, itemId: 'biryani-hamad', tags: '' },
     ];
 
     // Populate ITEM_COORDS lookup from ALL_MAP_PINS
@@ -2111,7 +2227,7 @@
                 <span class="listing-price-current">BD ${price}</span>
                 <span class="listing-price-was">BD ${l.base.toFixed(2)}</span>
               </div>
-              <button class="listing-reserve-btn" onclick="authReserve(this,'${l.name.replace(/'/g, "\\'")}')">Reserve</button>
+              <button class="listing-reserve-btn" onclick="authReserve(this,'${l.name.replace(/'/g, "\\'")}')">Add to Cart</button>
             </div>
           </div>
           <div class="decay-bar-wrap">
@@ -2143,24 +2259,56 @@
     // Run after DOM ready — loads current vendor's own listings if signed in as vendor
     document.addEventListener('DOMContentLoaded', () => {
       loadVendorListings();
+      // Keep the "N deals available" badge honest — always reflect the
+      // actual number of cards in the grid instead of a hard-coded number.
+      const countEl = document.getElementById('count');
+      const grid = document.getElementById('listings-grid');
+      if (countEl && grid) {
+        countEl.textContent = grid.querySelectorAll('.listing-card').length;
+      }
     });
 
     let leafletMap = null;
     let leafletMapFS = null;
     let leafletMarkers = [];
     let leafletMarkersFS = [];
+    let leafletCluster = null;
+    let leafletClusterFS = null;
+
+    function makeClusterGroup() {
+      return L.markerClusterGroup({
+        maxClusterRadius: 50,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        iconCreateFunction: function (cluster) {
+          const count = cluster.getChildCount();
+          const size = count > 9 ? 42 : 36;
+          return L.divIcon({
+            html: `<div class="ee-cluster" style="width:${size}px;height:${size}px">${count}</div>`,
+            className: '',
+            iconSize: [size, size]
+          });
+        }
+      });
+    }
 
     function buildPinIcon(color, label) {
+      // The label bubble's width varies with its text ("$2.50 🥐" vs
+      // "$18.50 🌯"), so a fixed pixel iconAnchor made longer labels drift
+      // further from their true coordinate than shorter ones. Anchoring
+      // with a CSS transform instead keeps the little dot — the actual
+      // pin point — exactly on the marker's lat/lng regardless of label
+      // width.
       return L.divIcon({
         className: '',
         html: `
-          <div style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer">
+          <div style="position:relative;display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translate(-50%,-100%)">
             <div style="background:${color};color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:100px;white-space:nowrap;box-shadow:0 3px 12px rgba(0,0,0,.4);border:2px solid rgba(255,255,255,.35);line-height:1.2">${label}</div>
             <div style="width:8px;height:8px;background:${color};border-radius:50%;margin-top:3px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)"></div>
           </div>`,
         iconSize: null,
         iconAnchor: [0, 0],
-        popupAnchor: [10, -38]
+        popupAnchor: [0, -46]
       });
     }
 
@@ -2193,22 +2341,37 @@
               maxZoom: 19
             }).addTo(leafletMapFS);
           }
-          leafletMarkersFS.forEach(m => leafletMapFS.removeLayer(m));
+          if (leafletClusterFS) leafletMapFS.removeLayer(leafletClusterFS);
+          leafletClusterFS = makeClusterGroup();
           leafletMarkersFS = [];
           ALL_MAP_PINS.forEach(p => {
             const marker = L.marker([p.lat, p.lng], {
               icon: buildPinIcon('var(--green-800,#1a4a26)', `${p.price} ${p.emoji}`)
-            }).addTo(leafletMapFS);
-            marker.bindPopup(`<strong>${p.name}</strong><br>${p.vendor}<br>${p.price}`, { autoPan: false });
+            });
+            const fsPhoto = getItemPhoto(p.itemId);
+            marker.bindPopup(`<div style="font-family:sans-serif;min-width:160px">
+              ${fsPhoto ? `<img src="${fsPhoto}" alt="${p.name}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:8px">` : ''}
+              <strong>${p.name}</strong><br>${p.vendor}<br>${p.price}
+            </div>`, { autoPan: false });
             marker.on('click', () => {
               leafletMapFS.setView([p.lat, p.lng], 16, { animate: true });
               setTimeout(() => marker.openPopup(), 250);
             });
+            leafletClusterFS.addLayer(marker);
             leafletMarkersFS.push(marker);
           });
+          leafletMapFS.addLayer(leafletClusterFS);
           leafletMapFS.invalidateSize();
         }, 50);
       }
+    }
+
+    /* Look up the real food photo already used on that item's listing card,
+       so the map can show the same picture instead of just an emoji. */
+    function getItemPhoto(itemId) {
+      const card = document.querySelector(`.listing-card[data-item-id="${itemId}"]`);
+      const img = card ? card.querySelector('img.food-photo') : null;
+      return img ? img.src : null;
     }
 
     /* ── MAP RENDER — Leaflet + OpenStreetMap, free & no API key ── */
@@ -2230,24 +2393,29 @@
       }
       leafletMap.invalidateSize();
 
-      leafletMarkers.forEach(m => leafletMap.removeLayer(m));
+      if (leafletCluster) leafletMap.removeLayer(leafletCluster);
+      leafletCluster = makeClusterGroup();
       leafletMarkers = [];
 
       pins.forEach(p => {
         const reserved = isReserved(p.itemId);
-        const color = reserved ? '#6b7280' : '#1a4731';
-        const label = reserved ? `✓ Reserved` : `${p.price} ${p.emoji}`;
+        const inCart = !reserved && typeof isInCart === 'function' && isInCart(p.itemId);
+        const color = reserved ? '#6b7280' : (inCart ? '#2f855a' : '#1a4731');
+        const label = reserved ? `✓ Reserved` : (inCart ? `✓ In Cart` : `${p.price} ${p.emoji}`);
 
         const marker = L.marker([p.lat, p.lng], {
           icon: buildPinIcon(color, label)
-        }).addTo(leafletMap);
+        });
 
-        marker.bindPopup(`<div style="font-family:sans-serif;min-width:150px;padding:4px">
-          <div style="font-size:26px;text-align:center;margin-bottom:6px">${p.emoji}</div>
+        const photo = getItemPhoto(p.itemId);
+        marker.bindPopup(`<div style="font-family:sans-serif;min-width:160px;padding:4px">
+          ${photo
+            ? `<img src="${photo}" alt="${p.name}" style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:8px">`
+            : `<div style="font-size:26px;text-align:center;margin-bottom:6px">${p.emoji}</div>`}
           <div style="font-weight:800;font-size:14px;color:#1a4731">${p.name}</div>
           <div style="font-size:12px;color:#6b7280;margin:2px 0">${p.vendor} · ${p.distance}km away</div>
           <div style="font-size:18px;font-weight:800;color:${reserved ? '#9ca3af' : '#1a4731'};margin-top:6px">${p.price}</div>
-          ${reserved ? '<div style="font-size:11px;color:#6b7280;margin-top:4px">✓ Already reserved</div>' : ''}
+          ${reserved ? '<div style="font-size:11px;color:#6b7280;margin-top:4px">✓ Already purchased</div>' : (inCart ? '<div style="font-size:11px;color:#2f855a;margin-top:4px">🛒 In your cart</div>' : '')}
         </div>`, { autoPan: false });
 
         marker.on('click', () => {
@@ -2256,8 +2424,11 @@
         });
 
         marker._itemId = p.itemId;
+        leafletCluster.addLayer(marker);
         leafletMarkers.push(marker);
       });
+
+      leafletMap.addLayer(leafletCluster);
 
       if (pins.length > 0) {
         const bounds = L.latLngBounds(pins.map(p => [p.lat, p.lng]));
@@ -2266,15 +2437,20 @@
 
       document.getElementById('map-list-grid').innerHTML = pins.map(p => {
         const reserved = isReserved(p.itemId);
+        const inCart = !reserved && typeof isInCart === 'function' && isInCart(p.itemId);
+        const photo = getItemPhoto(p.itemId);
+        const thumb = photo
+          ? `<img src="${photo}" alt="${p.name}" style="width:44px;height:44px;object-fit:cover;border-radius:10px;flex-shrink:0">`
+          : `<div style="width:44px;height:44px;background:var(--green-50);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${p.emoji}</div>`;
         return `
         <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--white);border:1px solid var(--border);border-radius:14px;cursor:pointer;transition:box-shadow .2s;position:relative;${reserved ? 'opacity:.6' : ''}"
              onclick="zoomToMapPin('${p.itemId}')"
              onmouseover="this.style.boxShadow='var(--shadow)';this.querySelector('.vim-btn').style.opacity='1';this.querySelector('.vim-btn').style.transform='translateY(0)'"
              onmouseout="this.style.boxShadow='';this.querySelector('.vim-btn').style.opacity='0';this.querySelector('.vim-btn').style.transform='translateY(4px)'">
-          <div style="width:44px;height:44px;background:var(--green-50);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${p.emoji}</div>
+          ${thumb}
           <div style="flex:1">
             <div style="font-size:13px;font-weight:700;color:var(--dark)">${p.name}
-              ${reserved ? '<span style="margin-left:6px;font-size:10px;background:#e5e7eb;border-radius:4px;padding:2px 6px;color:#6b7280;font-weight:600">Reserved</span>' : ''}
+              ${reserved ? '<span style="margin-left:6px;font-size:10px;background:#e5e7eb;border-radius:4px;padding:2px 6px;color:#6b7280;font-weight:600">Reserved</span>' : (inCart ? '<span style="margin-left:6px;font-size:10px;background:var(--green-100);border-radius:4px;padding:2px 6px;color:var(--green-800);font-weight:600">In Cart</span>' : '')}
             </div>
             <div style="font-size:11px;color:var(--text-muted)">${p.vendor} · ${p.distance}km away</div>
           </div>
@@ -2295,8 +2471,12 @@
       if (!leafletMap) return;
       const marker = leafletMarkers.find(m => m._itemId === itemId);
       if (!marker) return;
-      leafletMap.setView(marker.getLatLng(), 16, { animate: true });
-      setTimeout(() => marker.openPopup(), 250);
+      if (leafletCluster && leafletCluster.zoomToShowLayer) {
+        leafletCluster.zoomToShowLayer(marker, () => marker.openPopup());
+      } else {
+        leafletMap.setView(marker.getLatLng(), 16, { animate: true });
+        setTimeout(() => marker.openPopup(), 250);
+      }
     }
   </script>
 
@@ -2313,9 +2493,10 @@
           style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted);margin:-12px -8px 0 0">✕</button>
       </div>
       <div style="font-size:44px;margin-bottom:12px">🔒</div>
-      <div style="font-size:18px;font-weight:800;color:var(--dark);margin-bottom:8px">Sign up to reserve this deal</div>
+      <div style="font-size:18px;font-weight:800;color:var(--dark);margin-bottom:8px">Sign up to add this deal to your
+        cart</div>
       <div style="font-size:13px;color:var(--text-soft);margin-bottom:24px;line-height:1.6">
-        Create a free account to reserve meals, track your savings, and unlock streak rewards.
+        Create a free account to add meals to your cart, track your savings, and unlock streak rewards.
       </div>
       <a href="register.html"
         style="display:block;width:100%;background:var(--green-700);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;box-sizing:border-box">
@@ -2339,12 +2520,19 @@
             style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">✕</button>
         </div>
         <div
-          style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div style="font-weight:700;font-size:14px;color:var(--dark)" id="pay-item-name">Item</div>
-            <div style="font-size:12px;color:var(--text-soft)" id="pay-hold-note"></div>
+          style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <div style="display:flex;align-items:center;gap:12px;min-width:0">
+            <div id="pay-item-img-wrap"
+              style="width:44px;height:44px;border-radius:10px;background:var(--green-100);display:none;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
+              <img id="pay-item-img" src="" alt="" style="width:100%;height:100%;object-fit:cover"
+                onerror="this.style.display='none';document.getElementById('pay-item-img-wrap').style.display='none'">
+            </div>
+            <div style="min-width:0">
+              <div style="font-weight:700;font-size:14px;color:var(--dark)" id="pay-item-name">Item</div>
+              <div style="font-size:12px;color:var(--text-soft)" id="pay-hold-note"></div>
+            </div>
           </div>
-          <div style="font-size:20px;font-weight:800;color:var(--green-700)" id="pay-item-price"></div>
+          <div style="font-size:20px;font-weight:800;color:var(--green-700);flex-shrink:0" id="pay-item-price"></div>
         </div>
 
         <!-- Apple Pay Button -->
@@ -2414,7 +2602,7 @@
         <div style="font-size:56px;margin-bottom:12px">🎉</div>
         <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:8px">Payment confirmed!</div>
         <div style="font-size:14px;color:var(--text-soft);margin-bottom:6px"><strong id="pay-success-name"></strong>
-          reserved for <strong id="pay-success-price"></strong></div>
+          purchased for <strong id="pay-success-price"></strong></div>
         <div
           style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:16px;margin:16px 0">
           <div style="font-size:13px;font-weight:700;color:var(--green-700);margin-bottom:8px">Your Order Number /
