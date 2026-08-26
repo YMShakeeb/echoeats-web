@@ -263,12 +263,20 @@
                         style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-muted)">✕</button>
                 </div>
                 <div
-                    style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
-                    <div>
-                        <div style="font-weight:700;font-size:14px;color:var(--dark)" id="pay-item-name">Item</div>
-                        <div style="font-size:12px;color:var(--text-soft)" id="pay-hold-note"></div>
+                    style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:14px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+                    <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                        <div id="pay-item-img-wrap"
+                            style="width:44px;height:44px;border-radius:10px;background:var(--green-100);display:none;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden">
+                            <img id="pay-item-img" src="" alt="" style="width:100%;height:100%;object-fit:cover"
+                                onerror="this.style.display='none';document.getElementById('pay-item-img-wrap').style.display='none'">
+                        </div>
+                        <div style="min-width:0">
+                            <div style="font-weight:700;font-size:14px;color:var(--dark)" id="pay-item-name">Item</div>
+                            <div style="font-size:12px;color:var(--text-soft)" id="pay-hold-note"></div>
+                        </div>
                     </div>
-                    <div style="font-size:20px;font-weight:800;color:var(--green-700)" id="pay-item-price"></div>
+                    <div style="font-size:20px;font-weight:800;color:var(--green-700);flex-shrink:0"
+                        id="pay-item-price"></div>
                 </div>
 
                 <!-- Apple Pay Button -->
@@ -345,7 +353,7 @@
                 <div style="font-size:20px;font-weight:800;color:var(--dark);margin-bottom:8px">Payment confirmed!</div>
                 <div style="font-size:14px;color:var(--text-soft);margin-bottom:6px"><strong
                         id="pay-success-name"></strong>
-                    reserved for <strong id="pay-success-price"></strong></div>
+                    purchased for <strong id="pay-success-price"></strong></div>
                 <div
                     style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:16px;margin:16px 0">
                     <div style="font-size:13px;font-weight:700;color:var(--green-700);margin-bottom:8px">Your Order
@@ -407,7 +415,7 @@
                 container.innerHTML =
                     '<div class="detail-not-found">' +
                     '<h2 class="section-title">Item not found</h2>' +
-                    '<p class="section-desc">This listing may have expired or been reserved.</p>' +
+                    '<p class="section-desc">This listing may have expired or already been claimed.</p>' +
                     '<a href="listings.html" class="btn btn-primary btn-lg" style="margin-top:20px">Browse other deals</a>' +
                     '</div>';
                 return;
@@ -450,7 +458,7 @@
             if (priceWas) html += '<span class="detail-price-was">$' + priceWas + '</span>';
             html += '</div>';
             html += '<p class="detail-desc">' + item.description + '</p>';
-            html += '<button class="btn btn-primary btn-lg detail-reserve-btn" id="detail-reserve-btn" onclick="authReserve(this)">Reserve</button>';
+            html += '<button class="btn btn-primary btn-lg detail-reserve-btn" id="detail-reserve-btn" data-item-id="' + itemId + '" onclick="authReserve(this)">Add to Cart</button>';
             html += '</div>';
 
             html += '</div>'; // .detail-grid
@@ -467,6 +475,7 @@
             html += '</div>';
 
             container.innerHTML = html;
+            restoreDetailButtonState();
 
             var revealEls = document.querySelectorAll('.reveal');
             revealEls.forEach(function (el) { el.classList.add('visible'); });
@@ -620,6 +629,8 @@
         var CANCEL_WINDOW_MS = 3 * 60 * 1000; // 3 minutes
 
         var pendingBtn = null, pendingName = '', pendingPrice = '', pendingOrderId = null;
+        var pendingCartItems = []; // the cart lines currently being paid for
+        var pendingOrderIds = []; // every order id created by the current checkout
         var cancelCountdownInterval = null;
 
         /* ══════════════════════════════════════════════════════════════════
@@ -721,11 +732,36 @@
             } catch (e) { return false; }
         }
 
-        function decrementStockLocal(id) {
+        /* Sets the Add to Cart button's state on load based on whether this
+           item is already purchased (isReserved) or already sitting in the
+           cart (isInCart) from an earlier visit. */
+        function restoreDetailButtonState() {
+            var btn = document.getElementById('detail-reserve-btn');
+            if (!btn || !itemId) return;
+            if (isReserved(itemId)) {
+                btn.textContent = '✓ Reserved';
+                btn.disabled = true;
+                btn.style.background = 'var(--green-400)';
+                btn.style.color = 'var(--dark)';
+                btn.style.cursor = 'not-allowed';
+            } else if (typeof isInCart === 'function' && isInCart(itemId)) {
+                btn.textContent = '✓ In Cart';
+                btn.disabled = true;
+                btn.style.background = 'var(--green-400)';
+                btn.style.color = 'var(--dark)';
+                btn.style.cursor = 'not-allowed';
+            }
+            /* Button was just inserted into the DOM above (dynamic render),
+               so main.js's own DOMContentLoaded sync ran too early to see
+               it — swap in the +/- stepper here instead, now that it exists. */
+            if (typeof syncCartControlsUI === 'function') syncCartControlsUI();
+        }
+
+        function decrementStockLocal(id, qty) {
             try {
                 var data = JSON.parse(localStorage.getItem(STOCK_KEY)) || {};
                 if (typeof data[id] === 'number') {
-                    data[id] = Math.max(0, data[id] - 1);
+                    data[id] = Math.max(0, data[id] - (qty || 1));
                     localStorage.setItem(STOCK_KEY, JSON.stringify(data));
                 }
             } catch (e) { }
@@ -772,10 +808,14 @@
             } catch (e) { return 'there'; }
         }
 
-        /* ── RESERVE BUTTON → AUTH CHECK → OPEN CHECKOUT ── */
+        /* ── ADD TO CART BUTTON → AUTH CHECK → ADD TO RUNNING CART ──
+           Adding no longer checks out immediately: it pushes the item into
+           the shared cart (see main.js) and the shopper pays for everything
+           in the cart at once via the cart drawer's Checkout button, which
+           calls window.openCartCheckout() below. */
         function authReserve(btn) {
             if (!localStorage.getItem('ee_current_user')) {
-                showToast('Sign in to reserve items', 'warning');
+                showToast('Sign in to add items to your cart', 'warning');
                 var dest = localStorage.getItem('ee_has_logged_in') ? 'login.html' : 'register.html';
                 setTimeout(function () { window.location.href = dest; }, 1300);
                 return;
@@ -783,12 +823,12 @@
 
             var user = JSON.parse(localStorage.getItem('ee_current_user'));
             if (user.role === 'vendor' || user.role === 'admin') {
-                showToast('⚠️ Only consumers can reserve items. Switch to a consumer account to make a reservation.', 'warning');
+                showToast('⚠️ Only consumers can add items to cart. Switch to a consumer account to make a purchase.', 'warning');
                 return;
             }
 
             if (isReserved(itemId)) {
-                showToast('⚠️ This item was already reserved — try another deal!', 'warning');
+                showToast('⚠️ Already purchased — check your dashboard for pickup details.', 'warning');
                 btn.textContent = '✓ Reserved';
                 btn.disabled = true;
                 btn.style.background = 'var(--green-400)';
@@ -797,20 +837,76 @@
                 return;
             }
 
+            if (typeof isInCart === 'function' && isInCart(itemId)) {
+                showToast('🛒 Already in your cart!', 'warning');
+                return;
+            }
+
             var priceEl = document.querySelector('.detail-price-current');
-            pendingBtn = btn;
-            pendingName = item.name;
-            pendingPrice = priceEl ? priceEl.textContent.replace('$', '') : '';
+            var priceStr = priceEl ? priceEl.textContent.replace('$', '').trim() : '0';
+            var imgEl = document.querySelector('.detail-hero-img img');
+
+            if (typeof addToCart === 'function') {
+                addToCart({
+                    itemId: itemId,
+                    name: item.name,
+                    price: priceStringToDollars(priceStr),
+                    vendor: item.vendor,
+                    image: imgEl ? imgEl.src : ''
+                });
+            }
+
+            btn.textContent = '✓ In Cart';
+            btn.disabled = true;
+            btn.style.background = 'var(--green-400)';
+            btn.style.color = 'var(--dark)';
+            btn.style.cursor = 'not-allowed';
+            showToast('🛒 Added "' + item.name + '" to your cart!');
+        }
+
+        /* ── CHECKOUT (called from the cart drawer's Checkout button) ──
+           Opens this page's payment modal populated with the whole cart's
+           contents/total, and sizes the real Apple Pay sheet to match. ── */
+        function openCartCheckout(cart) {
+            pendingCartItems = cart || [];
+            if (!pendingCartItems.length) return;
+
+            var total = pendingCartItems.reduce(function (sum, l) { return sum + (l.price || 0) * (l.qty || 1); }, 0);
+            pendingBtn = (itemId && pendingCartItems.some(function (l) { return l.itemId === itemId; }))
+                ? document.getElementById('detail-reserve-btn') : null;
+            pendingName = pendingCartItems.length === 1
+                ? pendingCartItems[0].name
+                : pendingCartItems.length + ' items';
+            pendingPrice = total.toFixed(2);
 
             document.getElementById('pay-item-name').textContent = pendingName;
             document.getElementById('pay-item-price').textContent = '$' + pendingPrice;
-            document.getElementById('pay-hold-note').textContent = 'Item held for 15 minutes after payment.';
+            document.getElementById('pay-hold-note').textContent = pendingCartItems.length > 1
+                ? pendingCartItems.map(function (l) { return l.name + (l.qty > 1 ? ' ×' + l.qty : ''); }).join(', ')
+                : 'Item held for 15 minutes after payment.';
+
+            // Show the item's photo when checking out a single item; a multi-item
+            // cart doesn't have one obvious photo to show, so fall back to hiding it.
+            var imgWrap = document.getElementById('pay-item-img-wrap');
+            var imgEl = document.getElementById('pay-item-img');
+            if (imgWrap && imgEl) {
+                var singleImage = pendingCartItems.length === 1 ? pendingCartItems[0].image : '';
+                if (singleImage) {
+                    imgEl.style.display = '';
+                    imgEl.src = singleImage;
+                    imgWrap.style.display = 'flex';
+                } else {
+                    imgWrap.style.display = 'none';
+                }
+            }
+
             document.getElementById('payment-modal').style.display = 'flex';
 
-            // Build a real Stripe PaymentRequest sized to this item, so Apple Pay
-            // (when available) shows the correct amount in the native sheet.
+            // Build a real Stripe PaymentRequest sized to the cart total, so
+            // Apple Pay (when available) shows the correct amount.
             initApplePayForCheckout(pendingName, pendingPrice);
         }
+        window.openCartCheckout = openCartCheckout;
 
         function switchCardType(type) {
             var debitBtn = document.getElementById('tab-debit');
@@ -934,30 +1030,46 @@
         }
 
         function finalizeReservation() {
-            markReserved(itemId);
-            if (typeof recordReservation === 'function') recordReservation(itemId);
-            decrementStockLocal(itemId);
+            // Fall back to the page's own item if checkout was somehow triggered
+            // without going through the cart (shouldn't normally happen).
+            var itemsToFinalize = pendingCartItems.length ? pendingCartItems : [{
+                itemId: itemId, name: pendingName, price: priceStringToDollars(pendingPrice), qty: 1, vendor: item.vendor
+            }];
 
             var userEmail = getCurrentUserEmail();
-            pendingOrderId = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-            var orderCode = makeOrderCode(pendingOrderId);
-            var cancelWindowExpiresAt = Date.now() + CANCEL_WINDOW_MS;
+            var codes = [];
+            pendingOrderIds = [];
 
-            saveOrder({
-                id: pendingOrderId,
-                code: orderCode,
-                itemId: itemId,
-                itemName: pendingName,
-                price: priceStringToDollars(pendingPrice),
-                userEmail: userEmail,
-                status: 'active',
-                createdAt: Date.now(),
-                cancelWindowExpiresAt: cancelWindowExpiresAt,
-                vendor: item.vendor,
-                lat: item.lat,
-                lng: item.lng
+            itemsToFinalize.forEach(function (line) {
+                markReserved(line.itemId);
+                if (typeof recordReservation === 'function') recordReservation(line.itemId);
+                decrementStockLocal(line.itemId, line.qty);
+
+                var orderId = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+                var orderCode = makeOrderCode(orderId);
+                pendingOrderIds.push(orderId);
+                codes.push(orderCode);
+
+                saveOrder({
+                    id: orderId,
+                    code: orderCode,
+                    itemId: line.itemId,
+                    itemName: line.name + (line.qty > 1 ? ' ×' + line.qty : ''),
+                    price: (line.price || 0) * (line.qty || 1),
+                    userEmail: userEmail,
+                    status: 'active',
+                    createdAt: Date.now(),
+                    cancelWindowExpiresAt: Date.now() + CANCEL_WINDOW_MS,
+                    vendor: line.vendor || item.vendor,
+                    lat: (line.itemId === itemId) ? item.lat : undefined,
+                    lng: (line.itemId === itemId) ? item.lng : undefined
+                });
             });
 
+            pendingOrderId = pendingOrderIds[0];
+
+            // Update this page's own Add to Cart button if its item was part
+            // of the checkout just completed.
             if (pendingBtn) {
                 pendingBtn.textContent = '✓ Reserved';
                 pendingBtn.disabled = true;
@@ -966,14 +1078,20 @@
                 pendingBtn.style.cursor = 'not-allowed';
             }
 
+            if (typeof clearCart === 'function') clearCart();
+            pendingCartItems = [];
+
             document.getElementById('pay-step-form').style.display = 'none';
             document.getElementById('pay-step-success').style.display = '';
             document.getElementById('pay-success-name').textContent = pendingName;
             document.getElementById('pay-success-price').textContent = '$' + pendingPrice;
-            document.getElementById('pay-success-code').textContent = orderCode;
+            var codeEl = document.getElementById('pay-success-code');
+            codeEl.textContent = codes.join('  ·  ');
+            codeEl.style.fontSize = codes.length > 1 ? '15px' : '';
+            codeEl.style.letterSpacing = codes.length > 1 ? '1px' : '';
             document.getElementById('payment-modal').style.display = 'flex';
             showPickupLocationInModal();
-            startCancelCountdown(pendingOrderId);
+            startCancelCountdown(pendingOrderIds);
         }
 
         /* ── PICKUP LOCATION SHOWN ON THE SUCCESS SCREEN ── */
@@ -1016,19 +1134,23 @@
             }, 150);
         }
 
-        /* ── 3-MINUTE CANCEL COUNTDOWN ── */
-        function startCancelCountdown(orderId) {
+        /* ── 3-MINUTE CANCEL COUNTDOWN ──
+           Accepts either a single orderId (string) or an array of orderIds
+           — a cart checkout creates one order per line item, and the whole
+           purchase is cancelled together as a single undo action. */
+        function startCancelCountdown(orderIds) {
+            var ids = Array.isArray(orderIds) ? orderIds : [orderIds];
             var wrap = document.getElementById('cancel-order-wrap');
             var timerEl = document.getElementById('cancel-order-timer');
             var btn = document.getElementById('cancel-order-btn');
             if (!wrap || !timerEl || !btn) return;
 
             wrap.style.display = '';
-            btn.onclick = function () { cancelOrderLocal(orderId); };
+            btn.onclick = function () { cancelOrderLocal(ids); };
 
             if (cancelCountdownInterval) clearInterval(cancelCountdownInterval);
             function tick() {
-                var order = getOrderLocal(orderId);
+                var order = getOrderLocal(ids[0]);
                 var msLeft = order ? order.cancelWindowExpiresAt - Date.now() : 0;
                 if (!order || order.status !== 'active' || msLeft <= 0) {
                     clearInterval(cancelCountdownInterval);
@@ -1044,33 +1166,43 @@
             cancelCountdownInterval = setInterval(tick, 1000);
         }
 
-        function cancelOrderLocal(orderId) {
-            var order = getOrderLocal(orderId);
-            if (!order || order.status !== 'active') return;
-            if (Date.now() > order.cancelWindowExpiresAt) {
+        function cancelOrderLocal(orderIds) {
+            var ids = Array.isArray(orderIds) ? orderIds : [orderIds];
+            var totalRefund = 0, refundedAny = false, affectedItemIds = [];
+
+            ids.forEach(function (orderId) {
+                var order = getOrderLocal(orderId);
+                if (!order || order.status !== 'active' || Date.now() > order.cancelWindowExpiresAt) return;
+
+                addCreditBalance(order.userEmail, order.price);
+                updateOrderLocal(orderId, { status: 'cancelled', cancelledAt: Date.now() });
+                localStorage.removeItem(RESERVED_PREFIX + order.itemId);
+                try {
+                    var stock = JSON.parse(localStorage.getItem(STOCK_KEY)) || {};
+                    if (typeof stock[order.itemId] === 'number') {
+                        stock[order.itemId] += 1;
+                        localStorage.setItem(STOCK_KEY, JSON.stringify(stock));
+                    }
+                } catch (e) { }
+
+                totalRefund += order.price;
+                refundedAny = true;
+                affectedItemIds.push(order.itemId);
+            });
+
+            if (!refundedAny) {
                 showToast('⏱ Cancellation window has passed for this order.', 'warning');
                 return;
             }
 
-            addCreditBalance(order.userEmail, order.price);
-            updateOrderLocal(orderId, { status: 'cancelled', cancelledAt: Date.now() });
-            localStorage.removeItem(RESERVED_PREFIX + order.itemId);
-            try {
-                var stock = JSON.parse(localStorage.getItem(STOCK_KEY)) || {};
-                if (typeof stock[order.itemId] === 'number') {
-                    stock[order.itemId] += 1;
-                    localStorage.setItem(STOCK_KEY, JSON.stringify(stock));
-                }
-            } catch (e) { }
-
-            showToast('✅ Order cancelled — $' + order.price.toFixed(2) + ' added to your EchoEats credit.');
+            showToast('✅ Order cancelled — $' + totalRefund.toFixed(2) + ' added to your EchoEats credit.');
             var wrap = document.getElementById('cancel-order-wrap');
             if (wrap) wrap.style.display = 'none';
             if (cancelCountdownInterval) clearInterval(cancelCountdownInterval);
 
             var btn = document.getElementById('detail-reserve-btn');
-            if (btn) {
-                btn.textContent = 'Reserve';
+            if (btn && itemId && affectedItemIds.indexOf(itemId) > -1) {
+                btn.textContent = 'Add to Cart';
                 btn.disabled = false;
                 btn.style.background = '';
                 btn.style.color = '';
@@ -1117,157 +1249,199 @@
         }
 
         #aps-inner {
-            background: #1c1c1e;
+            background: #f2f2f7;
             border-radius: 20px 20px 0 0;
             width: 100%;
-            max-width: 480px;
+            max-width: 420px;
             padding: 0 0 env(safe-area-inset-bottom, 16px);
             transform: translateY(100%);
             transition: transform 0.38s cubic-bezier(0.32, 0.72, 0, 1);
             overflow: hidden;
+            box-shadow: 0 -8px 40px rgba(0, 0, 0, .25);
         }
 
         .aps-handle {
             width: 36px;
             height: 5px;
-            background: #48484a;
+            background: #d1d1d6;
             border-radius: 3px;
             margin: 10px auto 0;
         }
 
-        .aps-merchant-row {
+        /* ── Apple Pay logotype header + close button ── */
+        .aps-header-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 18px 20px 14px;
-            border-bottom: 1px solid #2c2c2e;
+            justify-content: space-between;
+            padding: 20px 20px 18px;
         }
 
-        .aps-merchant-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 10px;
-            background: #1a4a26;
+        .aps-logotype {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1d1d1f;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            letter-spacing: -.2px;
+        }
+
+        .aps-close-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: #e5e5ea;
+            color: #6e6e73;
+            font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            cursor: pointer;
             flex-shrink: 0;
+            transition: background .15s;
         }
 
-        .aps-merchant-name {
-            font-size: 15px;
-            font-weight: 600;
-            color: #fff;
+        .aps-close-btn:hover {
+            background: #dcdce1;
         }
 
         .aps-merchant-sub {
+            padding: 0 20px 8px;
             font-size: 12px;
             color: #8e8e93;
-            margin-top: 2px;
+            margin-top: -10px;
         }
 
+        /* ── Payment method row: white rounded card, like the reference ── */
+        .aps-card-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            margin: 0 16px 10px;
+            background: #fff;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background .12s;
+        }
+
+        .aps-card-row:hover {
+            background: #fafafa;
+        }
+
+        .aps-card-chip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+        }
+
+        .aps-card-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1d1d1f;
+            flex: 1;
+        }
+
+        .aps-card-digits {
+            font-size: 15px;
+            color: #6e6e73;
+            letter-spacing: 1px;
+        }
+
+        /* ── Line items (item / service fee) ── */
         .aps-line-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 11px 20px;
+            padding: 8px 20px;
         }
 
         .aps-line-label {
-            font-size: 14px;
-            color: #8e8e93;
+            font-size: 13px;
+            color: #6e6e73;
         }
 
         .aps-line-value {
-            font-size: 14px;
-            color: #fff;
+            font-size: 13px;
+            color: #1d1d1f;
             font-weight: 500;
         }
 
+        /* ── Bottom "Pay" amount section ── */
         .aps-total-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 20px 16px;
-            border-top: 1px solid #2c2c2e;
+            align-items: baseline;
+            padding: 18px 20px 4px;
+            margin-top: 6px;
         }
 
         .aps-total-label {
             font-size: 15px;
-            font-weight: 700;
-            color: #fff;
+            color: #6e6e73;
         }
 
         .aps-total-value {
-            font-size: 18px;
-            font-weight: 800;
-            color: #fff;
+            font-size: 26px;
+            font-weight: 700;
+            color: #1d1d1f;
         }
 
-        .aps-card-row {
+        /* ── Confirm-with-side-button affordance ── */
+        .aps-pay-btn {
+            margin: 22px auto 6px;
+            background: none;
+            border: none;
+            padding: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 10px;
-            padding: 10px 20px 6px;
-            border-top: 1px solid #2c2c2e;
+            cursor: pointer;
+            width: 100%;
         }
 
-        .aps-card-chip {
-            background: #2c2c2e;
-            border-radius: 8px;
-            padding: 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 13px;
-            color: #fff;
-            font-weight: 500;
-        }
-
-        .aps-pay-btn {
-            margin: 10px 16px 16px;
-            background: #fff;
-            border: none;
-            border-radius: 14px;
-            padding: 15px;
-            width: calc(100% - 32px);
+        .aps-sidebtn-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1.5px solid #0a84ff;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 700;
-            color: #000;
-            transition: opacity .15s;
+            color: #0a84ff;
         }
 
-        .aps-pay-btn:active {
-            opacity: .8;
+        .aps-pay-btn-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6e6e73;
         }
 
         .aps-cancel-btn {
             display: block;
             width: calc(100% - 32px);
-            margin: 0 16px 20px;
-            background: #2c2c2e;
+            margin: 8px 16px 18px;
+            background: none;
             border: none;
-            border-radius: 14px;
-            padding: 15px;
+            padding: 10px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 500;
             color: #0a84ff;
             cursor: pointer;
             transition: opacity .15s;
         }
 
         .aps-cancel-btn:active {
-            opacity: .7;
+            opacity: .6;
         }
 
         #aps-step-faceid {
-            padding: 32px 20px 20px;
+            padding: 32px 20px 24px;
             text-align: center;
         }
 
@@ -1275,7 +1449,7 @@
             width: 88px;
             height: 88px;
             border-radius: 50%;
-            border: 3px solid #48484a;
+            border: 3px solid #e5e5ea;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1283,7 +1457,7 @@
             position: relative;
             font-size: 32px;
             font-weight: 700;
-            color: #fff;
+            color: #1d1d1f;
             transition: border-color .3s, box-shadow .3s;
         }
 
@@ -1293,7 +1467,7 @@
             inset: -6px;
             border-radius: 50%;
             border: 3px solid transparent;
-            border-top-color: #fff;
+            border-top-color: #0a84ff;
             animation: none;
         }
 
@@ -1302,12 +1476,12 @@
         }
 
         .faceid-ring.scanning {
-            border-color: #2c2c2e;
+            border-color: #e5e5ea;
         }
 
         .faceid-ring.success {
             border-color: #30d158;
-            box-shadow: 0 0 0 6px rgba(48, 209, 88, .18);
+            box-shadow: 0 0 0 6px rgba(48, 209, 88, .15);
             color: #30d158;
         }
 
@@ -1320,19 +1494,19 @@
         .aps-faceid-title {
             font-size: 17px;
             font-weight: 700;
-            color: #fff;
+            color: #1d1d1f;
             margin-bottom: 6px;
         }
 
         .aps-faceid-sub {
             font-size: 13px;
-            color: #8e8e93;
+            color: #6e6e73;
             margin-bottom: 24px;
         }
 
         #faceid-status {
             font-size: 14px;
-            color: #8e8e93;
+            color: #6e6e73;
             margin-top: 12px;
             min-height: 20px;
         }
@@ -1371,13 +1545,13 @@
         .aps-success-title {
             font-size: 20px;
             font-weight: 800;
-            color: #fff;
+            color: #1d1d1f;
             margin-bottom: 6px;
         }
 
         .aps-success-sub {
             font-size: 14px;
-            color: #8e8e93;
+            color: #6e6e73;
         }
     </style>
 
@@ -1387,15 +1561,27 @@
 
             <!-- STEP 1: Main payment sheet -->
             <div id="aps-step-main">
-                <div class="aps-merchant-row">
-                    <div class="aps-merchant-icon">🌿</div>
-                    <div>
-                        <div class="aps-merchant-name">EchoEats</div>
-                        <div class="aps-merchant-sub">Secure payment · echoeats.app</div>
+                <div class="aps-header-row">
+                    <div class="aps-logotype"> Pay</div>
+                    <button class="aps-close-btn" onclick="closeApplePaySheet()" aria-label="Close">✕</button>
+                </div>
+
+                <div class="aps-card-row">
+                    <div class="aps-card-chip">
+                        <svg width="28" height="18" viewBox="0 0 26 18" fill="none">
+                            <rect width="26" height="18" rx="3" fill="#F2F2F2" />
+                            <circle cx="10" cy="9" r="5.5" fill="#EB001B" opacity=".9" />
+                            <circle cx="16" cy="9" r="5.5" fill="#F79E1B" opacity=".9" />
+                            <path
+                                d="M13 5.18A5.49 5.49 0 0 1 15.5 9 5.49 5.49 0 0 1 13 12.82 5.49 5.49 0 0 1 10.5 9 5.49 5.49 0 0 1 13 5.18z"
+                                fill="#FF5F00" />
+                        </svg>
                     </div>
-                    <svg style="margin-left:auto;flex-shrink:0" width="52" height="22" viewBox="0 0 52 22" fill="none">
-                        <text y="17" font-size="17" font-family="-apple-system,BlinkMacSystemFont,sans-serif"
-                            font-weight="600" fill="white"> Pay</text>
+                    <span class="aps-card-name">Mastercard</span>
+                    <span class="aps-card-digits">···· 4242</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 3l5 5-5 5" stroke="#c7c7cc" stroke-width="1.5" stroke-linecap="round"
+                            stroke-linejoin="round" />
                     </svg>
                 </div>
 
@@ -1409,35 +1595,20 @@
                 </div>
 
                 <div class="aps-total-row">
-                    <span class="aps-total-label">Total</span>
+                    <span class="aps-total-label">Pay</span>
                     <span class="aps-total-value" id="aps-total"></span>
                 </div>
-
-                <div class="aps-card-row">
-                    <span style="font-size:12px;color:#8e8e93">Pay with</span>
-                    <div class="aps-card-chip">
-                        <svg width="26" height="18" viewBox="0 0 26 18" fill="none">
-                            <rect width="26" height="18" rx="3" fill="#252525" />
-                            <circle cx="10" cy="9" r="5.5" fill="#EB001B" opacity=".9" />
-                            <circle cx="16" cy="9" r="5.5" fill="#F79E1B" opacity=".9" />
-                            <path
-                                d="M13 5.18A5.49 5.49 0 0 1 15.5 9 5.49 5.49 0 0 1 13 12.82 5.49 5.49 0 0 1 10.5 9 5.49 5.49 0 0 1 13 5.18z"
-                                fill="#FF5F00" />
-                        </svg>
-                        Mastercard ···· 4242
-                    </div>
-                    <svg style="margin-left:auto" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M6 3l5 5-5 5" stroke="#8e8e93" stroke-width="1.5" stroke-linecap="round"
-                            stroke-linejoin="round" />
-                    </svg>
-                </div>
+                <div class="aps-merchant-sub">EchoEats · echoeats.app</div>
 
                 <button class="aps-pay-btn" onclick="startFaceId()">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="black">
-                        <path
-                            d="M9 3H5a2 2 0 0 0-2 2v4m6-6h6m-6 0v18m0 0h6m-6 0H5a2 2 0 0 1-2-2v-4m18-10V5a2 2 0 0 0-2-2h-4m4 0h-4m4 0v18m0 0h-4m4 0a2 2 0 0 0 2-2v-4M3 9v6m18-6v6" />
-                    </svg>
-                    Double-Click to Pay
+                    <span class="aps-sidebtn-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
+                            <path d="M9 9l-2 3 2 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </span>
+                    <span class="aps-pay-btn-label">Confirm with Side Button</span>
                 </button>
                 <button class="aps-cancel-btn" onclick="closeApplePaySheet()">Cancel</button>
             </div>
@@ -1450,21 +1621,21 @@
                     <span id="faceid-icon"></span>
                 </div>
                 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="margin:0 auto;display:block">
-                    <path d="M4 18V8a4 4 0 0 1 4-4h10" stroke="#fff" stroke-width="3" stroke-linecap="round"
-                        opacity=".7" />
-                    <path d="M60 18V8a4 4 0 0 0-4-4H46" stroke="#fff" stroke-width="3" stroke-linecap="round"
-                        opacity=".7" />
-                    <path d="M4 46v10a4 4 0 0 0 4 4h10" stroke="#fff" stroke-width="3" stroke-linecap="round"
-                        opacity=".7" />
-                    <path d="M60 46v10a4 4 0 0 1-4 4H46" stroke="#fff" stroke-width="3" stroke-linecap="round"
-                        opacity=".7" />
-                    <line x1="22" y1="26" x2="22" y2="30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
-                        opacity=".5" />
-                    <line x1="42" y1="26" x2="42" y2="30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
-                        opacity=".5" />
-                    <path d="M32 28v6l-3 3" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".4" />
-                    <path d="M24 42a10 4 0 0 0 16 0" stroke="#fff" stroke-width="2.5" stroke-linecap="round"
-                        opacity=".5" />
+                    <path d="M4 18V8a4 4 0 0 1 4-4h10" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round"
+                        opacity=".6" />
+                    <path d="M60 18V8a4 4 0 0 0-4-4H46" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round"
+                        opacity=".6" />
+                    <path d="M4 46v10a4 4 0 0 0 4 4h10" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round"
+                        opacity=".6" />
+                    <path d="M60 46v10a4 4 0 0 1-4 4H46" stroke="#1d1d1f" stroke-width="3" stroke-linecap="round"
+                        opacity=".6" />
+                    <line x1="22" y1="26" x2="22" y2="30" stroke="#1d1d1f" stroke-width="2.5" stroke-linecap="round"
+                        opacity=".45" />
+                    <line x1="42" y1="26" x2="42" y2="30" stroke="#1d1d1f" stroke-width="2.5" stroke-linecap="round"
+                        opacity=".45" />
+                    <path d="M32 28v6l-3 3" stroke="#1d1d1f" stroke-width="2" stroke-linecap="round" opacity=".35" />
+                    <path d="M24 42a10 4 0 0 0 16 0" stroke="#1d1d1f" stroke-width="2.5" stroke-linecap="round"
+                        opacity=".45" />
                 </svg>
                 <div id="faceid-status">Looking for Face ID…</div>
             </div>
