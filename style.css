@@ -1404,6 +1404,54 @@ button {
   transform: scale(1.04);
 }
 
+/* +/- quantity stepper shown in place of "Add to Cart" once an item
+   is already in the cart (index.html, listings.html, item-detail.html) */
+.listing-cart-stepper {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: var(--green-600);
+  border-radius: 100px;
+  padding: 8px 14px;
+}
+
+.listing-cart-stepper-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--white);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: background 0.15s;
+}
+
+.listing-cart-stepper-btn:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+.listing-cart-stepper-qty {
+  min-width: 16px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--white);
+}
+
+.listing-cart-stepper-detail {
+  width: 100%;
+  max-width: 280px;
+  justify-content: center;
+  padding: 12px 14px;
+}
+
 /* per-card 3-minute order cancellation countdown */
 .listing-cancel-timer {
   display: flex;
@@ -2924,4 +2972,255 @@ tr:hover td {
   50% {
     transform: translateX(4px);
   }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SHOPPING CART — nav icon + slide-in drawer
+   Added so "Add to Cart" builds a real running cart (ee_cart in
+   localStorage) instead of checking out a single item immediately.
+   Markup for the drawer is injected by main.js on every page.
+   ══════════════════════════════════════════════════════════════════ */
+.nav-cart-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 100px;
+  background: var(--green-100);
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  transition: background .2s, transform .15s;
+  flex-shrink: 0;
+}
+
+.nav-cart-btn:hover {
+  background: var(--green-200, #cdeccb);
+  transform: translateY(-1px);
+}
+
+.nav-cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--green-700);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 100px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  border: 2px solid var(--white);
+}
+
+.nav-cart-badge.show {
+  display: flex;
+}
+
+.ee-cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+
+.ee-cart-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ee-cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 400px;
+  max-width: 92vw;
+  background: var(--white);
+  z-index: 9201;
+  box-shadow: -16px 0 48px rgba(0, 0, 0, .22);
+  transform: translateX(100%);
+  transition: transform .32s cubic-bezier(.34, 1.2, .64, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.ee-cart-drawer.open {
+  transform: translateX(0);
+}
+
+.ee-cart-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.ee-cart-drawer-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ee-cart-drawer-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+}
+
+.ee-cart-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 18px;
+}
+
+.ee-cart-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-soft);
+}
+
+.ee-cart-empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.ee-cart-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ee-cart-line-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--green-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ee-cart-line-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ee-cart-line-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ee-cart-line-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ee-cart-line-vendor {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.ee-cart-line-qty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.ee-cart-qty-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-soft);
+  line-height: 1;
+}
+
+.ee-cart-qty-btn:hover {
+  background: var(--green-100);
+  color: var(--green-800);
+}
+
+.ee-cart-line-right {
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.ee-cart-line-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--green-700);
+}
+
+.ee-cart-line-remove {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 4px;
+  text-decoration: underline;
+}
+
+.ee-cart-line-remove:hover {
+  color: var(--red, #dc2626);
+}
+
+.ee-cart-drawer-foot {
+  border-top: 1px solid var(--border);
+  padding: 16px 22px 22px;
+  flex-shrink: 0;
+}
+
+.ee-cart-subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.ee-cart-subtotal-amt {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--green-700);
 }
