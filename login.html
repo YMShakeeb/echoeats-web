@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var p = localStorage.getItem('ee_theme') || 'system'; var d = p === 'dark' || (p === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light'); } catch (e) { } })();</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — EchoEats</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+</head>
+
+<body class="auth-page" style="padding-top:0">
+
+  <!-- Full Navbar -->
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin active">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Body -->
+  <div class="auth-body" style="padding-top: calc(var(--nav-h, 72px) + 40px)">
+    <div class="auth-card">
+
+      <!-- ============ LOGIN PANEL ============ -->
+      <div id="panel-login">
+        <div style="text-align:center;margin-bottom:24px">
+          <div class="nav-logo-icon"
+            style="width:56px;height:56px;border-radius:16px;font-size:28px;margin:0 auto 12px">🌿</div>
+          <div class="auth-title">Welcome back</div>
+          <div class="auth-subtitle">Sign in to your EchoEats account</div>
+        </div>
+
+        <div class="auth-tabs" style="margin-bottom:20px">
+          <button type="button" class="auth-tab active" id="login-tab-consumer"
+            onclick="switchLoginRole('consumer')">Consumer</button>
+          <button type="button" class="auth-tab" id="login-tab-vendor"
+            onclick="switchLoginRole('vendor')">Vendor</button>
+        </div>
+
+        <form onsubmit="handleLogin(event)">
+          <div style="margin-bottom:16px">
+            <label class="form-label"
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Email
+              Address</label>
+            <input type="email" id="login-email" class="form-input" placeholder="you@example.com" required
+              style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s;background:var(--white);color:var(--dark)">
+          </div>
+          <div style="margin-bottom:8px">
+            <label class="form-label"
+              style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Password</label>
+            <div style="position:relative">
+              <input type="password" id="login-password" class="form-input" placeholder="Your password" required
+                style="width:100%;padding:11px 42px 11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;transition:border-color .2s;background:var(--white);color:var(--dark)">
+              <button type="button" data-target="login-password" onclick="eeTogglePasswordVisibility(this)"
+                aria-label="Show password"
+                style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;line-height:1;padding:6px;color:var(--text-muted);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+            </div>
+          </div>
+          <div style="text-align:right;margin-bottom:16px">
+            <a href="#" onclick="showForgotPassword(event)"
+              style="font-size:12.5px;color:var(--green-700);font-weight:600">Forgot password?</a>
+          </div>
+          <div id="login-error" class="auth-error"></div>
+          <button type="submit" class="btn btn-primary"
+            style="width:100%;justify-content:center;padding:13px;font-size:15px">
+            Sign In
+          </button>
+        </form>
+
+        <div style="display:flex;align-items:center;gap:12px;margin:16px 0">
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+          <span style="font-size:12px;color:var(--text-muted);font-weight:600">OR</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+        <button type="button" id="google-btn" onclick="openGoogleSignIn()"
+          style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;border:1.5px solid var(--border);border-radius:12px;background:var(--white);font-size:15px;font-weight:600;color:var(--dark);cursor:pointer;transition:box-shadow 0.2s"
+          onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow=''">
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+            <path fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+            <path fill="#FBBC05"
+              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+            <path fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          </svg>
+          Continue with Google
+        </button>
+        <p style="margin-top:16px;text-align:center;font-size:13px;color:var(--text-muted)">
+          Don't have an account? <a href="register.html" style="color:var(--green-700);font-weight:600">Sign up free</a>
+        </p>
+      </div>
+
+      <!-- ============ CONTINUE AS… ROLE CHOOSER ============
+           Shown after a successful sign-in when the account holds more
+           than one role (e.g. registered as a consumer, later added a
+           vendor profile with the same email). Picking one sets that as
+           the active role for this session and routes to its dashboard. -->
+      <div id="panel-role-chooser" style="display:none;text-align:center">
+        <div class="nav-logo-icon" style="width:56px;height:56px;border-radius:16px;font-size:28px;margin:0 auto 12px">
+          🌿</div>
+        <div class="auth-title" style="margin-bottom:6px">Welcome back<span id="role-chooser-name"></span></div>
+        <div class="auth-subtitle" style="margin-bottom:24px">This email has both a consumer and a vendor profile —
+          which one do you want to use?</div>
+        <button type="button" class="btn btn-primary" onclick="chooseRole('consumer')"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-bottom:12px">
+          🍽️ Continue as Consumer
+        </button>
+        <button type="button" class="btn btn-outline" onclick="chooseRole('vendor')"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px">
+          🏪 Continue as Vendor
+        </button>
+      </div>
+
+      <!-- ============ FORGOT PASSWORD — STEP 1: EMAIL ============ -->
+      <div id="panel-forgot-email" style="display:none">
+        <div style="text-align:center;margin-bottom:24px">
+          <div class="nav-logo-icon" style="width:56px;height:56px;border-radius:16px;font-size:28px;margin:0 auto 12px">
+            🌿</div>
+          <div class="auth-title">Reset your password</div>
+          <div class="auth-subtitle">Enter your account email and we'll send a verification code</div>
+        </div>
+        <div style="margin-bottom:16px">
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Email
+            Address</label>
+          <input type="email" id="forgot-email" class="form-input" placeholder="you@example.com"
+            onkeydown="if(event.key==='Enter'){event.preventDefault();sendResetCode();}"
+            style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+        </div>
+        <div id="forgot-email-error" class="auth-error"></div>
+        <button type="button" class="btn btn-primary" id="forgot-send-btn" onclick="sendResetCode()"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-bottom:12px">
+          Send Reset Code
+        </button>
+        <p style="text-align:center">
+          <a href="#" onclick="showLoginPanel(event)" style="font-size:12.5px;color:var(--text-muted)">← Back to sign
+            in</a>
+        </p>
+      </div>
+
+      <!-- ============ FORGOT PASSWORD — STEP 2: OTP + NEW PASSWORD ============ -->
+      <div id="panel-forgot-verify" style="display:none;text-align:center">
+        <div style="font-size:44px;margin-bottom:12px">📩</div>
+        <div class="auth-title" style="margin-bottom:6px">Enter your code</div>
+        <div class="auth-subtitle" id="forgot-otp-subtitle" style="margin-bottom:6px">
+          Enter the 6-digit code we sent you.
+        </div>
+
+        <div
+          style="font-size:12.5px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 12px;margin-bottom:16px;text-align:left">
+          📥 Check your inbox — and your <strong>spam/junk folder</strong> — for the email. If you use the Gmail app,
+          also check the <strong>Promotions</strong> and <strong>Spam</strong> tabs. It can take a minute to arrive.
+        </div>
+
+        <div id="forgot-otp-demo-box"
+          style="display:none;font-size:13px;font-weight:700;color:var(--green-800);background:var(--green-50);border:1.5px solid var(--green-200);border-radius:10px;padding:10px 12px;margin-bottom:16px;text-align:center">
+        </div>
+
+        <input type="text" id="forgot-otp-input" maxlength="6" inputmode="numeric" placeholder="• • • • • •"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();verifyResetCode();}"
+          style="width:100%;padding:14px;border:1.5px solid var(--border);border-radius:12px;font-size:22px;letter-spacing:8px;text-align:center;outline:none;background:var(--white);color:var(--dark);margin-bottom:16px">
+
+        <div style="text-align:left;margin-bottom:16px">
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">New
+            Password</label>
+          <div style="position:relative;margin-bottom:8px">
+            <input type="password" id="forgot-new-password" placeholder="At least 8 characters" minlength="8"
+              oninput="validateForgotPasswordField()"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();verifyResetCode();}"
+              style="width:100%;padding:11px 42px 11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+            <button type="button" data-target="forgot-new-password" onclick="eeTogglePasswordVisibility(this)"
+              aria-label="Show password"
+              style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;line-height:1;padding:6px;color:var(--text-muted);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+          <div id="forgot-pass-requirements"
+            style="display:flex;flex-direction:column;gap:3px;margin-bottom:14px;padding:10px 12px;background:var(--bg);border-radius:10px">
+            <div class="pw-req" data-req="len" style="font-size:11.5px;color:var(--text-muted)">○ At least 8 characters
+            </div>
+            <div class="pw-req" data-req="letter" style="font-size:11.5px;color:var(--text-muted)">○ At least 1 letter
+            </div>
+            <div class="pw-req" data-req="number" style="font-size:11.5px;color:var(--text-muted)">○ At least 1 number
+            </div>
+          </div>
+          <label class="form-label"
+            style="display:block;font-size:13px;font-weight:600;color:var(--text-soft);margin-bottom:5px">Confirm New
+            Password</label>
+          <div style="position:relative">
+            <input type="password" id="forgot-confirm-password" placeholder="Re-enter password"
+              onkeydown="if(event.key==='Enter'){event.preventDefault();verifyResetCode();}"
+              style="width:100%;padding:11px 42px 11px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;outline:none;background:var(--white);color:var(--dark)">
+            <button type="button" data-target="forgot-confirm-password" onclick="eeTogglePasswordVisibility(this)"
+              aria-label="Show password"
+              style="position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;line-height:1;padding:6px;color:var(--text-muted);display:flex;align-items:center;justify-content:center"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+        </div>
+
+        <div id="forgot-otp-error" style="display:none;color:red;font-size:12px;margin-bottom:10px;text-align:left">
+        </div>
+
+        <button type="button" class="btn btn-primary" onclick="verifyResetCode()"
+          style="width:100%;justify-content:center;padding:13px;font-size:15px;margin-bottom:14px">
+          Reset Password
+        </button>
+
+        <p style="font-size:12.5px;color:var(--text-muted)">
+          Didn't get a code?
+          <a href="#" id="forgot-otp-resend" onclick="resendResetCode(event)"
+            style="color:var(--green-700);font-weight:600">Resend OTP Code</a>
+          <span id="forgot-otp-resend-timer" style="color:var(--text-muted);font-weight:600"></span>
+        </p>
+        <p style="margin-top:10px">
+          <a href="#" onclick="showLoginPanel(event)" style="font-size:12.5px;color:var(--text-muted)">← Back to sign
+            in</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="main.js"></script>
+  <script>
+    // @ts-nocheck
+
+    /* ── Supabase (real email OTP delivery for password reset) ── */
+    var SUPABASE_URL = 'https://ytppwkvtzftmgjghbvzt.supabase.co';
+    var SUPABASE_KEY = 'sb_publishable_pyB2FiWjhCRJgpHsm9aojQ_wmjA7wSX';
+    var supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    var forgotEmail = '';
+    var forgotIsDemoFallback = false; // true if real email send failed and we're using an on-screen demo code instead
+    var forgotDemoOtp = null;
+    var forgotResendTimerHandle = null;
+    var pendingRoleChoiceUser = null; // user object awaiting a "Continue as…" pick
+    var loginRole = 'consumer'; // which tab is selected — the role to enter as, if the account has it
+
+    function switchLoginRole(role) {
+      loginRole = role;
+      document.getElementById('login-tab-consumer').classList.toggle('active', role === 'consumer');
+      document.getElementById('login-tab-vendor').classList.toggle('active', role === 'vendor');
+      var errEl = document.getElementById('login-error');
+      if (errEl) errEl.style.display = 'none';
+    }
+
+    (function () {
+      if (!localStorage.getItem('ee_users')) {
+        var users = [
+          { id: 'u1', name: 'Demo Consumer', email: 'consumer@test.com', password: '123456', role: 'consumer', roles: ['consumer'], status: 'approved', mealsSaved: 47, co2Saved: 22.6, badges: ['🌱', '💚', '🔥'] },
+          { id: 'v1', name: 'Nadia Mahmoud', email: 'vendor@test.com', password: '123456', role: 'vendor', roles: ['vendor'], status: 'approved', businessName: 'Romeos Cafe', businessType: 'Bakery', mealsSaved: 0, co2Saved: 0, badges: [] },
+          { id: 'a1', name: 'EchoEats Admin', email: 'admin@echoeats.com', password: 'admin123', role: 'admin', roles: ['admin'], status: 'approved', mealsSaved: 0, co2Saved: 0, badges: [] }
+        ];
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      }
+    })();
+
+    /* ── Google Sign-In (real Supabase OAuth) ──────────────────────────────
+       Kicks off Supabase's hosted Google OAuth flow. This navigates the
+       whole tab to Google (not a popup) and Google redirects back to
+       Supabase's callback URL, which then redirects to `redirectTo` below
+       with the session encoded in the URL. supabase-js auto-detects that
+       and fires the SIGNED_IN event handled by completeGoogleAuth() below. */
+    function openGoogleSignIn() {
+      var btn = document.getElementById('google-btn');
+      if (btn) btn.disabled = true;
+      // Stashed so the auth-state handler below can tell "we just came
+      // back from a real Google redirect" apart from "there's a stale
+      // token sitting in localStorage from ages ago" — Supabase sometimes
+      // delivers the post-redirect session as an INITIAL_SESSION event
+      // rather than SIGNED_IN, which would otherwise get wiped as stale
+      // by the staleness guard below and silently do nothing.
+      sessionStorage.setItem('ee_google_oauth_pending', '1');
+      supabaseClient.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin + window.location.pathname }
+      }).then(function (result) {
+        if (result.error) {
+          if (btn) btn.disabled = false;
+          sessionStorage.removeItem('ee_google_oauth_pending');
+          showToast('Google sign-in failed to start. Try again.', 'warning');
+        }
+        // On success the browser navigates away to Google, so nothing else runs here.
+      });
+    }
+
+    // Maps a Supabase auth user (from Google) onto EchoEats' existing
+    // ee_users/ee_current_user localStorage system, same as every other
+    // login path, then routes to the right dashboard.
+    var _googleAuthHandled = false;
+    function completeGoogleAuth(session) {
+      if (_googleAuthHandled || !session || !session.user) return;
+      _googleAuthHandled = true;
+
+      var authUser = session.user;
+      var meta = authUser.user_metadata || {};
+      var email = authUser.email;
+      var name = meta.full_name || meta.name || (email ? email.split('@')[0] : 'Google User');
+
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = users.find(function (u) { return u.email === email; });
+
+      if (!user) {
+        // Auto-create a consumer account for new Google users
+        user = {
+          id: 'g' + Date.now(),
+          name: name,
+          email: email,
+          password: '',
+          role: 'consumer',
+          roles: ['consumer'],
+          status: 'approved',
+          googleAuth: true,
+          avatarColor: eeGetAvatarColor({ name: name }),
+          avatarUrl: meta.avatar_url || meta.picture || null,
+          mealsSaved: 0, co2Saved: 0, badges: [],
+          joinDate: new Date().toISOString()
+        };
+        users.push(user);
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      }
+
+      proceedAfterAuth(user, loginRole);
+    }
+
+    // Supabase reports OAuth failures (e.g. this Google account's email
+    // already has an EchoEats account created a different way — manual
+    // sign-up, or a different provider — and linking isn't enabled) by
+    // appending error info to the redirect URL instead of ever firing
+    // SIGNED_IN. Without this, that comes back as a silent no-op: the
+    // page just reloads and looks stuck. Surface it as a toast instead,
+    // then strip it from the URL so it doesn't resurface on refresh.
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var hashParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+      var errDesc = params.get('error_description') || hashParams.get('error_description');
+      var err = params.get('error') || hashParams.get('error');
+      if (err || errDesc) {
+        showToast(eeFriendlyOAuthErrorMessage(errDesc || err), 'warning');
+        var btn = document.getElementById('google-btn');
+        if (btn) btn.disabled = false;
+        var clean = window.location.origin + window.location.pathname;
+        window.history.replaceState({}, document.title, clean);
+      }
+    })();
+
+    // Fires once supabase-js parses the access token out of the redirect
+    // URL (or immediately, if a session is already active) — this is how
+    // we catch the user coming back from Google.
+    supabaseClient.auth.onAuthStateChange(function (event, session) {
+      if (event !== 'SIGNED_IN' && event !== 'INITIAL_SESSION') return;
+      if (!session || !session.user) return;
+
+      // INITIAL_SESSION just means "Supabase found a token sitting in
+      // localStorage" — it fires on every page load, not just right after
+      // a real Google redirect. Normally that means EchoEats' own record
+      // of who's signed in (ee_current_user) should agree, or else it's
+      // stale (e.g. left over from before a fix, or from a deleted/signed-out
+      // account) and must not be trusted — nuke it instead of auto-logging in.
+      // EXCEPTION: right after a genuine Google redirect, Supabase can
+      // deliver the very first session as INITIAL_SESSION instead of
+      // SIGNED_IN (this happens especially for emails that already had a
+      // Supabase auth record from manual sign-up/OTP verification) — the
+      // pending flag set in openGoogleSignIn() lets us recognize that case
+      // and trust it instead of wiping it.
+      var oauthPending = sessionStorage.getItem('ee_google_oauth_pending') === '1';
+      if (event === 'INITIAL_SESSION' && !oauthPending) {
+        var current = null;
+        try { current = JSON.parse(localStorage.getItem('ee_current_user') || 'null'); } catch (e) { }
+        if (!current || current.email !== session.user.email) {
+          clearSupabaseSession();
+          return;
+        }
+      }
+
+      var provider = session.user.app_metadata && session.user.app_metadata.provider;
+      if (provider === 'google') {
+        sessionStorage.removeItem('ee_google_oauth_pending');
+        completeGoogleAuth(session);
+      }
+    });
+
+    function handleLogin(e) {
+      e.preventDefault();
+      var email = document.getElementById('login-email').value.trim();
+      var pass = document.getElementById('login-password').value;
+      var errEl = document.getElementById('login-error');
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      errEl.style.display = 'none';
+
+      // Matching is by email + password only — the Consumer/Vendor tabs no
+      // longer filter which account to match (one email = one account,
+      // which may hold both roles); they just pick which role to enter as.
+      var user = users.find(function (u) { return u.email === email && u.password === pass; });
+
+      if (!user) {
+        errEl.textContent = 'Invalid email or password. Create an account or try again.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      proceedAfterAuth(user, loginRole);
+    }
+
+    // Shared by password login and Google sign-in: routes straight to a
+    // dashboard when `preferredRole` names a role the account actually has
+    // (this is how the Consumer/Vendor tabs on the sign-in form work now —
+    // they pick which role to enter as, not which account to match). Falls
+    // back to the "Continue as…" chooser when there's no usable preference
+    // (Google sign-in, or a preferred role the account doesn't hold) and
+    // the account holds more than one role; otherwise just enters as
+    // whichever single role the account has.
+    function proceedAfterAuth(user, preferredRole) {
+      if (user.role === 'admin') {
+        localStorage.setItem('ee_current_user', JSON.stringify(user));
+        localStorage.setItem('ee_has_logged_in', '1');
+        showToast('Welcome back, ' + user.name.split(' ')[0] + '!');
+        setTimeout(function () { window.location.href = 'admin.html'; }, 700);
+        return;
+      }
+
+      var roles = eeUserRoles(user);
+
+      if (preferredRole && roles.indexOf(preferredRole) !== -1) {
+        enterAsRole(user, preferredRole, false);
+        return;
+      }
+
+      if (roles.length > 1) {
+        pendingRoleChoiceUser = user;
+        document.getElementById('panel-login').style.display = 'none';
+        document.getElementById('panel-role-chooser').style.display = 'block';
+        document.getElementById('role-chooser-name').textContent = user.name ? (', ' + user.name.split(' ')[0]) : '';
+        return;
+      }
+
+      if (preferredRole && roles[0] !== preferredRole) {
+        // Only one role on this account, and it's not the tab they picked —
+        // same helpful hint as before, so they can switch tabs and retry.
+        var actualRole = roles[0];
+        var errEl = document.getElementById('login-error');
+        errEl.innerHTML = 'That email is registered as a <strong>' + actualRole +
+          '</strong> account. Switch to the "' + (actualRole === 'vendor' ? 'Vendor' : 'Consumer') +
+          '" tab above to sign in.';
+        errEl.style.display = 'block';
+        showToast('⚠️ You don\'t have a ' + preferredRole + ' account with this email.', 'warning');
+        return;
+      }
+
+      enterAsRole(user, roles[0] || user.role, false);
+    }
+
+    function chooseRole(role) {
+      if (!pendingRoleChoiceUser) return;
+      enterAsRole(pendingRoleChoiceUser, role, true);
+    }
+
+    // fromChooser=true means the person already saw both options, so a
+    // pending-vendor profile just gets a toast (they can pick consumer
+    // instead) rather than the harder full-page error the plain sign-in
+    // form shows when vendor is someone's only role.
+    function enterAsRole(user, role, fromChooser) {
+      if (role === 'vendor' && user.vendorStatus === 'pending') {
+        if (fromChooser) {
+          showToast('⏳ Your vendor profile is still pending approval — continuing as a consumer for now.', 'warning');
+          enterAsRole(user, 'consumer', true);
+        } else {
+          var errEl = document.getElementById('login-error');
+          errEl.innerHTML = '⏳ Your vendor account is <strong>pending approval</strong>. You\'ll be notified within 24 hours. <a href="index.html" style="color:var(--green-700)">Go home</a>';
+          errEl.style.display = 'block';
+        }
+        return;
+      }
+
+      var toSave = JSON.parse(JSON.stringify(user));
+      toSave.role = role;
+      localStorage.setItem('ee_current_user', JSON.stringify(toSave));
+      localStorage.setItem('ee_has_logged_in', '1');
+      showToast('Welcome back, ' + user.name.split(' ')[0] + '!');
+      setTimeout(function () {
+        window.location.href = role === 'vendor' ? 'vendor-dashboard.html' : 'consumer-dashboard.html';
+      }, 700);
+    }
+
+    /* ── Forgot Password Flow ── */
+
+    function checkPasswordRules(pass) {
+      return {
+        len: pass.length >= 8,
+        letter: /[a-zA-Z]/.test(pass),
+        number: /[0-9]/.test(pass)
+      };
+    }
+
+    function validateForgotPasswordField() {
+      var pass = document.getElementById('forgot-new-password').value;
+      var rules = checkPasswordRules(pass);
+      document.querySelectorAll('#forgot-pass-requirements .pw-req').forEach(function (el) {
+        var ok = rules[el.getAttribute('data-req')];
+        el.style.color = ok ? 'var(--green-600)' : 'var(--text-muted)';
+        el.textContent = (ok ? '✓ ' : '○ ') + el.textContent.replace(/^[✓○]\s*/, '');
+      });
+    }
+
+    function showLoginPanel(e) {
+      if (e) e.preventDefault();
+      document.getElementById('panel-login').style.display = 'block';
+      document.getElementById('panel-forgot-email').style.display = 'none';
+      document.getElementById('panel-forgot-verify').style.display = 'none';
+    }
+
+    function showForgotPassword(e) {
+      e.preventDefault();
+      document.getElementById('panel-login').style.display = 'none';
+      document.getElementById('panel-forgot-email').style.display = 'block';
+      document.getElementById('panel-forgot-verify').style.display = 'none';
+      document.getElementById('forgot-email').value = document.getElementById('login-email').value.trim();
+      document.getElementById('forgot-email-error').style.display = 'none';
+    }
+
+    async function sendResetCode() {
+      var email = document.getElementById('forgot-email').value.trim();
+      var errEl = document.getElementById('forgot-email-error');
+      errEl.style.display = 'none';
+
+      if (!email) {
+        errEl.textContent = 'Please enter your email address.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = users.find(function (u) { return u.email === email; });
+      if (!user) {
+        errEl.textContent = 'No EchoEats account found with that email.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      forgotEmail = email;
+      forgotIsDemoFallback = false;
+
+      // Give immediate feedback — Supabase's built-in (non-custom-SMTP)
+      // email sender can take several seconds, so without this the button
+      // just sits there looking broken while the request is in flight.
+      var sendBtn = document.getElementById('forgot-send-btn');
+      var originalBtnText = sendBtn.textContent;
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending…';
+
+      // Cap the worst-case wait: if Supabase hasn't responded within 6s
+      // (rate-limited / slow without custom SMTP), stop waiting and fall
+      // back to the on-screen demo code right away instead of leaving the
+      // shopper staring at a spinner for however long Supabase takes.
+      var timeoutPromise = new Promise(function (resolve) {
+        setTimeout(function () { resolve({ error: { message: 'timeout' } }); }, 6000);
+      });
+      var result = await Promise.race([
+        supabaseClient.auth.signInWithOtp({
+          email: email,
+          options: { shouldCreateUser: true }
+        }),
+        timeoutPromise
+      ]);
+
+      sendBtn.disabled = false;
+      sendBtn.textContent = originalBtnText;
+
+      var demoNotice = document.getElementById('forgot-otp-demo-box');
+      if (result.error) {
+        // Supabase's built-in email sender is rate-limited / unreliable without
+        // custom SMTP configured. Fall back to an on-screen demo code so
+        // password reset isn't completely blocked.
+        forgotIsDemoFallback = true;
+        forgotDemoOtp = String(Math.floor(100000 + Math.random() * 900000));
+        showToast('⚠️ Email delivery unavailable right now — showing demo code instead.', 'warning');
+        if (demoNotice) {
+          demoNotice.style.display = 'block';
+          demoNotice.textContent = 'Demo code (email delivery unavailable): ' + forgotDemoOtp;
+        }
+      } else {
+        if (demoNotice) demoNotice.style.display = 'none';
+        showToast('📩 Verification code emailed to ' + email);
+      }
+      document.getElementById('forgot-otp-subtitle').innerHTML =
+        'Enter the 6-digit code we sent via email to ' + email + '.';
+      document.getElementById('panel-forgot-email').style.display = 'none';
+      document.getElementById('panel-forgot-verify').style.display = 'block';
+      document.getElementById('forgot-otp-input').value = '';
+      document.getElementById('forgot-new-password').value = '';
+      document.getElementById('forgot-confirm-password').value = '';
+      document.getElementById('forgot-otp-error').style.display = 'none';
+      document.querySelectorAll('#forgot-pass-requirements .pw-req').forEach(function (el) {
+        el.style.color = 'var(--text-muted)';
+        el.textContent = '○ ' + el.textContent.replace(/^[✓○]\s*/, '');
+      });
+      startForgotResendCooldown();
+      document.getElementById('forgot-otp-input').focus();
+    }
+
+    function startForgotResendCooldown() {
+      var link = document.getElementById('forgot-otp-resend');
+      var timerEl = document.getElementById('forgot-otp-resend-timer');
+      var secondsLeft = 30;
+      link.style.pointerEvents = 'none';
+      link.style.opacity = '0.5';
+      timerEl.textContent = ' (' + secondsLeft + 's)';
+
+      if (forgotResendTimerHandle) clearInterval(forgotResendTimerHandle);
+      forgotResendTimerHandle = setInterval(function () {
+        secondsLeft--;
+        if (secondsLeft <= 0) {
+          clearInterval(forgotResendTimerHandle);
+          link.style.pointerEvents = '';
+          link.style.opacity = '';
+          timerEl.textContent = '';
+        } else {
+          timerEl.textContent = ' (' + secondsLeft + 's)';
+        }
+      }, 1000);
+    }
+
+    function resendResetCode(e) {
+      e.preventDefault();
+      if (document.getElementById('forgot-otp-resend').style.pointerEvents === 'none') return;
+      sendResetCode();
+    }
+
+    async function verifyResetCode() {
+      var code = document.getElementById('forgot-otp-input').value.trim();
+      var newPass = document.getElementById('forgot-new-password').value;
+      var confirmPass = document.getElementById('forgot-confirm-password').value;
+      var errEl = document.getElementById('forgot-otp-error');
+      errEl.style.display = 'none';
+
+      if (!newPass) {
+        errEl.textContent = 'Please enter a new password.';
+        errEl.style.display = 'block';
+        return;
+      }
+      var rules = checkPasswordRules(newPass);
+      if (!rules.len || !rules.letter || !rules.number) {
+        errEl.textContent = 'Password must be at least 8 characters and include a letter and a number.';
+        errEl.style.display = 'block';
+        return;
+      }
+      if (newPass !== confirmPass) {
+        errEl.textContent = 'Passwords do not match.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      if (forgotIsDemoFallback) {
+        if (code !== forgotDemoOtp) {
+          errEl.textContent = 'Incorrect code. Please try again.';
+          errEl.style.display = 'block';
+          return;
+        }
+      } else {
+        var result = await supabaseClient.auth.verifyOtp({
+          email: forgotEmail,
+          token: code,
+          type: 'email'
+        });
+
+        if (result.error) {
+          errEl.textContent = 'Incorrect or expired code. Please try again.';
+          errEl.style.display = 'block';
+          return;
+        }
+      }
+
+      // Code verified for real — now actually update the password in the app's user store.
+      var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+      var user = users.find(function (u) { return u.email === forgotEmail; });
+      if (user) {
+        user.password = newPass;
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      }
+
+      showToast('✅ Password reset! You can now sign in.');
+      showLoginPanel();
+      document.getElementById('login-email').value = forgotEmail;
+      document.getElementById('login-password').value = '';
+    }
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>(function () { try { var p = localStorage.getItem('ee_theme') || 'system'; var d = p === 'dark' || (p === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light'); } catch (e) { } })();</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get Help — EchoEats</title>
+    <meta name="description"
+        content="Get help with your EchoEats order — chat with our assistant or find contact details for every restaurant and vendor on the platform." />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+    <style>
+        .help-hero {
+            background: linear-gradient(160deg, #0d2e12 0%, #1a4a26 50%, #0f2d16 100%);
+            padding: calc(var(--nav-h) + 56px) 0 56px;
+            text-align: center;
+        }
+
+        .help-hero h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        .help-hero p {
+            color: var(--green-200);
+            font-size: 15px;
+            max-width: 460px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .help-body {
+            background: var(--bg);
+            padding: 56px 0 90px;
+        }
+
+        .help-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            max-width: 860px;
+            margin: 0 auto 56px;
+        }
+
+        .help-option-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            text-align: center;
+        }
+
+        .help-option-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--green-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 16px;
+        }
+
+        .help-option-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .help-option-desc {
+            font-size: 13.5px;
+            color: var(--text-soft);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .help-directory {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .help-directory-head {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .help-directory-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .help-directory-desc {
+            font-size: 13.5px;
+            color: var(--text-soft);
+            max-width: 520px;
+            margin: 8px auto 32px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .help-area-group {
+            margin-bottom: 26px;
+        }
+
+        .help-area-label {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--green-700);
+            margin-bottom: 10px;
+            padding-left: 4px;
+        }
+
+        .help-vendor-list {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        .help-vendor-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .help-vendor-row:last-child {
+            border-bottom: none;
+        }
+
+        .help-vendor-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        .help-vendor-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .help-vendor-phone {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--text-soft);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 7px 14px;
+            white-space: nowrap;
+        }
+
+        .help-vendor-phone:hover {
+            border-color: var(--green-400);
+            color: var(--green-800);
+        }
+
+        .help-vendor-link {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--green-800);
+            background: var(--green-100);
+            border-radius: 100px;
+            padding: 7px 14px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .help-vendor-link:hover {
+            background: var(--green-200);
+        }
+
+        .help-note {
+            max-width: 620px;
+            margin: 28px auto 0;
+            background: var(--green-50);
+            border: 1px solid var(--green-200);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            font-size: 12.5px;
+            color: var(--text-soft);
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        @media (max-width: 720px) {
+            .help-options {
+                grid-template-columns: 1fr;
+            }
+
+            .help-vendor-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .help-vendor-actions {
+                width: 100%;
+            }
+
+            .help-vendor-phone,
+            .help-vendor-link {
+                flex: 1;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🌿</div>EchoEats
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="listings.html">Browse Deals</a></li>
+                <li><a href="how-it-works.html">How It Works</a></li>
+                <li><a href="vendors.html">For Vendors</a></li>
+                <li><a href="impact.html">Our Impact</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="login.html" class="nav-signin">Sign In</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="help-hero">
+        <div class="container">
+            <h1>How can we help?</h1>
+            <p>Chat with our assistant for a quick answer, or find contact details for every restaurant on EchoEats.</p>
+        </div>
+    </div>
+
+    <section class="help-body">
+        <div class="container">
+
+            <div class="help-options">
+                <div class="help-option-card reveal">
+                    <div class="help-option-icon">💬</div>
+                    <div class="help-option-title">Live Chat</div>
+                    <div class="help-option-desc">Get an instant answer from our AI assistant — it can bring in a human
+                        teammate any time you need one.</div>
+                    <button class="btn btn-primary btn-sm" onclick="eeChatOpenPanel()">Start Chatting</button>
+                </div>
+                <div class="help-option-card reveal">
+                    <div class="help-option-icon">🍽️</div>
+                    <div class="help-option-title">Contact a Restaurant</div>
+                    <div class="help-option-desc">Have a question about a specific order or pickup? Find every
+                        restaurant
+                        and vendor on EchoEats below.</div>
+                    <a href="#directory" class="btn btn-primary btn-sm">View Directory</a>
+                </div>
+            </div>
+
+            <div class="help-directory" id="directory">
+                <div class="help-directory-head">
+                    <div class="help-directory-title">Restaurant &amp; Vendor Directory</div>
+                    <p class="help-directory-desc">Every restaurant currently selling surplus food on EchoEats, grouped
+                        by
+                        area. Tap a listing to see their live deals.</p>
+                </div>
+
+                <div id="helpVendorDirectory"><!-- populated by main.js from live listing data --></div>
+
+                <div class="help-note">
+                    ℹ️ Call a restaurant directly for order or pickup questions. For anything urgent that a vendor
+                    can't resolve, use Live Chat above and our team will follow up with you directly.
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;padding-top:0">
+                <div class="footer-bottom-text">© 2026 EchoEats · Yousif Shakeeb</div>
+                <a href="index.html" class="btn btn-outline btn-sm">← Back to Home</a>
+            </div>
+        </div>
+    </footer>
+    <script src="main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+ 
+[functions]
+  node_bundler = "esbuild"
+ 
+[build.environment]
+  NODE_VERSION = "20"
+  # SUPABASE_URL (and the Supabase anon/publishable key, if it's also set
+  # as a site env var) are meant to be public — they're the same values
+  # login.html/register.html embed client-side for the Supabase JS SDK.
+  # Netlify's secrets scanner flags that intentional match as a leak, so
+  # this tells it to skip these specific, safe-to-expose keys. Do NOT add
+  # STRIPE_SECRET_KEY, SUPABASE_SERVICE_ROLE_KEY, or RESEND_API_KEY here —
+  # those are real secrets and must never be omitted from scanning.
+   SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL,RESEND_FROM" 
+# Runs every 15 minutes; only actually emails vendors whose 24-hour
+# window has passed (see netlify/functions/send-vendor-decision-emails.js).
+[functions."send-vendor-decision-emails"]
+  schedule = "*/15 * * * *"

@@ -1,0 +1,2348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script>(function () { try { var p = localStorage.getItem('ee_theme') || 'system'; var d = p === 'dark' || (p === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light'); } catch (e) { } })();</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Dashboard — EchoEats</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+
+  <style>
+    /* ── "See all N deals" — a real CTA pill instead of a plain text
+       link, so it pops out next to the card title. ── */
+    .see-all-deals-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+      background: linear-gradient(135deg, var(--green-600), var(--green-800));
+      padding: 7px 14px;
+      border-radius: 100px;
+      box-shadow: 0 3px 10px rgba(27, 77, 46, 0.28);
+      transition: transform .18s ease, box-shadow .18s ease;
+      white-space: nowrap;
+    }
+
+    .see-all-deals-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(27, 77, 46, 0.35);
+    }
+
+    .see-all-arrow {
+      display: inline-block;
+      transition: transform .18s ease;
+    }
+
+    .see-all-deals-link:hover .see-all-arrow {
+      transform: translateX(3px);
+    }
+
+    /* ── Badge cards (Overview preview + full Impact grid) ──
+       Every badge belongs to a bronze / silver / gold tier. Earned badges
+       get a metallic medal (radial gradient + embossed highlight/shadow
+       rings) instead of a flat tinted circle, plus a small corner ribbon
+       naming the tier — this is what reads as a "real" award rather than
+       a plain colored icon. */
+    .badge-card {
+      position: relative;
+      text-align: center;
+      padding: 16px 10px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      overflow: hidden;
+      transition: box-shadow .15s ease, transform .15s ease;
+    }
+
+    .badge-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .badge-card.tier-bronze::before {
+      background: linear-gradient(90deg, #b5722f, #e3a469, #b5722f);
+    }
+
+    .badge-card.tier-silver::before {
+      background: linear-gradient(90deg, #94a3b8, #f1f5f9, #94a3b8);
+    }
+
+    .badge-card.tier-gold::before {
+      background: linear-gradient(90deg, #b8860b, #ffe08a, #b8860b);
+    }
+
+    .badge-card.earned {
+      background: var(--white);
+      border-color: var(--border);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .badge-card.earned:hover {
+      box-shadow: var(--shadow);
+      transform: translateY(-2px);
+    }
+
+    .badge-card.locked {
+      opacity: .55;
+      filter: grayscale(0.55);
+    }
+
+    .badge-tier-tag {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 100px;
+      line-height: 1.5;
+    }
+
+    .tier-bronze .badge-tier-tag {
+      background: linear-gradient(135deg, #d38a4f, #8c5426);
+    }
+
+    .tier-silver .badge-tier-tag {
+      background: linear-gradient(135deg, #cbd5e1, #64748b);
+    }
+
+    .tier-gold .badge-tier-tag {
+      background: linear-gradient(135deg, #f5c542, #a8760a);
+    }
+
+    .badge-emoji-wrap {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px auto 8px;
+      position: relative;
+    }
+
+    .badge-emoji-wrap-lg {
+      width: 56px;
+      height: 56px;
+    }
+
+    /* Locked: plain flat circle — no metal shine until it's earned */
+    .badge-card.locked .badge-emoji-wrap {
+      background: var(--bg);
+      color: var(--text-muted);
+    }
+
+    /* Earned: metallic medal per tier */
+    .badge-card.earned.tier-bronze .badge-emoji-wrap {
+      background: radial-gradient(circle at 34% 28%, #f2c199, #cd7f32 55%, #8c5426 100%);
+      color: #4a2a0f;
+      box-shadow: 0 0 0 3px var(--white), 0 0 0 5px #cd7f3266, inset 0 -4px 6px rgba(0, 0, 0, .28), inset 0 2px 3px rgba(255, 255, 255, .55);
+    }
+
+    .badge-card.earned.tier-silver .badge-emoji-wrap {
+      background: radial-gradient(circle at 34% 28%, #fdfdfe, #c0c9d6 55%, #8c97a8 100%);
+      color: #37424f;
+      box-shadow: 0 0 0 3px var(--white), 0 0 0 5px #94a3b866, inset 0 -4px 6px rgba(0, 0, 0, .22), inset 0 2px 3px rgba(255, 255, 255, .8);
+    }
+
+    .badge-card.earned.tier-gold .badge-emoji-wrap {
+      background: radial-gradient(circle at 34% 28%, #fff2c2, #eab308 55%, #a1690a 100%);
+      color: #5a3c05;
+      box-shadow: 0 0 0 3px var(--white), 0 0 0 5px #eab30866, inset 0 -4px 6px rgba(0, 0, 0, .28), inset 0 2px 3px rgba(255, 255, 255, .65);
+    }
+
+    .badge-name {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+
+    .badge-reason {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 2px;
+    }
+
+    .badge-progress-track {
+      height: 5px;
+      border-radius: 100px;
+      background: var(--bg);
+      overflow: hidden;
+      margin-top: 9px;
+    }
+
+    .badge-progress-fill {
+      height: 100%;
+      background: var(--green-600);
+      border-radius: 100px;
+    }
+
+    .badge-progress-text {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .badge-claim-btn {
+      margin-top: 9px;
+      width: 100%;
+      border: none;
+      border-radius: 100px;
+      background: var(--green-700);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 6px 0;
+      cursor: pointer;
+      transition: background .15s ease;
+    }
+
+    .badge-claim-btn:hover {
+      background: var(--green-800);
+    }
+
+    .badge-claimed-tag {
+      margin-top: 9px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--green-700);
+    }
+
+    /* ── Live Deals Near You cards (Overview) ── */
+    .qd-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: box-shadow .15s ease;
+    }
+
+    .qd-card:hover {
+      box-shadow: var(--shadow);
+    }
+
+    .qd-img-wrap {
+      position: relative;
+      height: 150px;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    /* Full, uncropped photo: a softly blurred copy fills the frame edge
+       to edge, and the sharp foreground copy sits on top scaled to fit
+       entirely inside — so nothing about the food gets cut off, but
+       there's no empty letterbox bars either. */
+    .qd-img-bg {
+      position: absolute;
+      inset: -10px;
+      width: calc(100% + 20px);
+      height: calc(100% + 20px);
+      object-fit: cover;
+      filter: blur(18px) brightness(0.85) saturate(1.15);
+      transform: scale(1.15);
+    }
+
+    .qd-img-fg {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .qd-discount {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      z-index: 2;
+      background: var(--discount-red);
+      color: #fff;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 100px;
+    }
+
+    .qd-body {
+      padding: 12px 14px 14px;
+    }
+
+    .qd-name {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--dark);
+      margin-bottom: 2px;
+      line-height: 1.35;
+    }
+
+    .qd-vendor {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .qd-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .qd-price {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--green-700);
+    }
+
+    .qd-was {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-decoration: line-through;
+      margin-left: 5px;
+    }
+
+    .qd-view-btn {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--green-800);
+      background: var(--green-100);
+      padding: 6px 13px;
+      border-radius: 100px;
+      white-space: nowrap;
+      text-decoration: none;
+      flex-shrink: 0;
+    }
+
+    .qd-view-btn:hover {
+      background: var(--green-200);
+    }
+
+    @media (max-width: 720px) {
+      #quick-deals {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <nav class="navbar scrolled" id="navbar">
+    <div class="container">
+      <a href="index.html" class="nav-logo">
+        <div class="nav-logo-icon">🌿</div>EchoEats
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="listings.html">Browse Deals</a></li>
+        <li><a href="how-it-works.html">How It Works</a></li>
+        <li><a href="vendors.html">For Vendors</a></li>
+        <li><a href="impact.html">Our Impact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="nav-signin">Sign In</a>
+        <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dash-wrap">
+
+    <!-- SIDEBAR -->
+    <div class="dash-sidebar">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sb-av">U</div>
+        <div>
+          <div class="sidebar-name" id="sb-name">Consumer</div>
+          <div class="sidebar-role" id="sb-email">Loading...</div>
+        </div>
+      </div>
+      <div class="sidebar-section-label">Main</div>
+      <button class="sidebar-link active" onclick="showPage('overview',this)">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11.5 12 4l9 7.5" />
+          <path
+            d="M5.5 10v9a1 1 0 0 0 1 1H9.5a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-9" />
+        </svg>
+        Overview
+      </button>
+      <button class="sidebar-link" id="sidebar-link-reservations" onclick="showPage('reservations',this)">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 8h12l-1 12H7L6 8Z" />
+          <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+        </svg>
+        My Orders
+      </button>
+      <button class="sidebar-link" onclick="showPage('impact',this)">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M3.7 9h16.6M3.7 15h16.6" />
+          <path d="M12 3.5c2.4 2.2 3.6 5.3 3.6 8.5s-1.2 6.3-3.6 8.5c-2.4-2.2-3.6-5.3-3.6-8.5S9.6 5.7 12 3.5Z" />
+        </svg>
+        My Impact
+      </button>
+      <a href="credits.html" class="sidebar-link">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2.5" y="6" width="19" height="13" rx="2.4" />
+          <path d="M2.5 10.5h19" />
+          <path d="M6 15h4" />
+        </svg>
+        My Credits
+      </a>
+      <div class="sidebar-section-label">Explore</div>
+      <a href="impact.html" class="sidebar-link">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 4h10v4.5A5 5 0 0 1 12 13.5 5 5 0 0 1 7 8.5V4Z" />
+          <path d="M7 5.5H4a2.5 2.5 0 0 0 2.5 4.5M17 5.5h3a2.5 2.5 0 0 1-2.5 4.5" />
+          <path d="M12 13.5V18M9 20.5h6M10 20.5v-2.3M14 20.5v-2.3" />
+        </svg>
+        Leaderboard
+      </a>
+      <div class="sidebar-section-label">Account</div>
+      <button class="sidebar-link" onclick="openSettingsModal()">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+        </svg>
+        Settings
+        <span id="notif-badge"
+          style="display:none;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:100px;margin-left:auto"></span>
+      </button>
+      <button class="sidebar-link" onclick="logout()">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />
+          <path d="M15 16.5 20 12l-5-4.5" />
+          <path d="M20 12H9" />
+        </svg>
+        Sign Out
+      </button>
+      <button class="sidebar-link sidebar-link-danger" onclick="openDeleteAccountModal()">
+        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 7h14" />
+          <path d="M9.5 7V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2" />
+          <path d="M7 7v11.5A2 2 0 0 0 9 20.5h6a2 2 0 0 0 2-2V7" />
+          <path d="M10.5 11v5M13.5 11v5" />
+        </svg>
+        Delete Account
+      </button>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="dash-main">
+
+      <!-- OVERVIEW PAGE -->
+      <div id="page-overview">
+        <div class="dash-topbar">
+          <div>
+            <div class="dash-page-title">Welcome back, <span id="user-first">there</span>!</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-top:2px">Your impact summary</div>
+          </div>
+        </div>
+
+        <div class="dash-stats-grid">
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">🍽️</div>
+            <div class="dash-stat-num" id="d-meals">0</div>
+            <div class="dash-stat-label">Meals saved total</div>
+            <div class="dash-stat-sub">Keep it up!</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">🌍</div>
+            <div class="dash-stat-num" id="d-co2">0kg</div>
+            <div class="dash-stat-label">CO2 prevented</div>
+            <div class="dash-stat-sub">Great impact</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">💸</div>
+            <div class="dash-stat-num" id="d-saved">BD 0</div>
+            <div class="dash-stat-label">Money saved</div>
+            <div class="dash-stat-sub">vs. full price</div>
+          </div>
+          <div class="dash-stat-card">
+            <div class="dash-stat-icon">🎁</div>
+            <div class="dash-stat-num" id="d-credit" style="color:var(--green-700)">BD 0</div>
+            <div class="dash-stat-label">EchoEats credit</div>
+            <div class="dash-stat-sub">From cancelled orders</div>
+          </div>
+        </div>
+
+        <div class="dash-2col">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Recent Activity</div>
+            </div>
+            <div id="recent-activity">
+              <div style="padding:20px 0;text-align:center;color:var(--text-muted);font-size:13px">
+                No reservations yet —
+                <a href="listings.html" style="color:var(--green-600);font-weight:600">browse live deals</a>
+              </div>
+            </div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Your Badges</div>
+            </div>
+            <div id="overview-badges" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px"></div>
+          </div>
+        </div>
+
+        <!-- Quick deals -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-title">Live Deals Near You</div>
+            <a href="listings.html" class="see-all-deals-link">See all 12 deals <span class="see-all-arrow">→</span></a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="quick-deals"></div>
+        </div>
+      </div>
+
+      <!-- RESERVATIONS PAGE -->
+      <div id="page-reservations" style="display:none">
+        <div class="dash-topbar">
+          <div class="dash-page-title">My Orders</div>
+        </div>
+
+        <!-- ACTIVE RESERVATIONS — real ee_orders data, with cancel-within-15-minutes,
+             verification, working maps link, and a real mark-picked-up flow -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <div class="dash-card-title">Active Reservations</div>
+          </div>
+          <div id="active-reservations-list" style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
+          </div>
+          <div id="active-reservations-empty" style="padding:48px 20px;text-align:center">
+            <div
+              style="width:56px;height:56px;border-radius:50%;background:var(--green-100);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px">
+              🍽️</div>
+            <div style="font-size:15px;font-weight:800;color:var(--dark);margin-bottom:6px">No active reservations
+              yet</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Grab a deal before it expires and
+              it'll show up here.</div>
+            <a href="listings.html" class="btn btn-primary">Browse Live Deals</a>
+          </div>
+        </div>
+
+        <!-- IMAGE VERIFICATION MODAL — real camera API -->
+        <div id="verify-modal"
+          style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center">
+          <div
+            style="background:var(--white);border-radius:20px;padding:28px;max-width:400px;width:90%;text-align:center">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+              <div style="font-size:16px;font-weight:800;color:var(--dark)">📸 Food Quality Scan</div>
+              <button onclick="closeVerifyModal()"
+                style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted)">✕</button>
+            </div>
+            <p style="font-size:13px;color:var(--text-soft);margin-bottom:16px">Point your camera at the food item. Our
+              AI will verify freshness and quality.</p>
+
+            <!-- Live camera feed -->
+            <div id="cam-container"
+              style="position:relative;border-radius:12px;overflow:hidden;background:#111;margin-bottom:16px;height:220px;display:flex;align-items:center;justify-content:center">
+              <video id="cam-video" autoplay playsinline muted
+                style="width:100%;height:100%;object-fit:cover;display:none"></video>
+              <canvas id="cam-canvas" style="display:none;width:100%;height:100%;object-fit:cover"></canvas>
+              <div id="cam-placeholder" style="color:#9ca3af;font-size:13px;text-align:center;padding:20px">
+                <div style="font-size:36px;margin-bottom:8px">📷</div>
+                <div>Camera not started</div>
+              </div>
+              <!-- Scanning overlay -->
+              <div id="cam-scan-overlay" style="display:none;position:absolute;inset:0;pointer-events:none">
+                <div
+                  style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:160px;height:160px;border:2px solid #4ade80;border-radius:8px;animation:scanpulse 1.5s ease-in-out infinite">
+                </div>
+              </div>
+            </div>
+
+            <!-- Camera status -->
+            <div id="cam-status" style="font-size:12px;color:var(--text-muted);margin-bottom:16px;min-height:18px">
+            </div>
+
+            <div style="display:flex;gap:10px">
+              <button id="cam-start-btn" class="btn btn-primary" style="flex:1;justify-content:center"
+                onclick="startCamera()">Start Camera</button>
+              <button id="cam-capture-btn" class="btn btn-outline" style="flex:1;justify-content:center;display:none"
+                onclick="captureAndAnalyse()">📸 Analyse</button>
+              <button class="btn btn-outline" style="flex:1;justify-content:center"
+                onclick="closeVerifyModal()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPORT A PROBLEM MODAL — multi-select reasons + optional free-text -->
+        <div id="report-modal"
+          style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center">
+          <div
+            style="background:var(--white);border-radius:20px;padding:28px;max-width:420px;width:90%;max-height:85vh;overflow-y:auto">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+              <div style="font-size:16px;font-weight:800;color:var(--dark)">Report a Problem</div>
+              <button onclick="closeReportModal()"
+                style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted)">✕</button>
+            </div>
+            <p style="font-size:13px;color:var(--text-soft);margin-bottom:16px">Select everything that applies to this
+              order. Our team will review within 2 hours.</p>
+
+            <div id="report-reason-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+              <!-- populated by openReportModal() -->
+            </div>
+
+            <label style="display:block;font-size:12.5px;font-weight:700;color:var(--dark);margin-bottom:6px">Anything
+              else? (optional)</label>
+            <textarea id="report-other-text" rows="3" maxlength="500"
+              placeholder="Describe the issue in your own words..."
+              style="width:100%;resize:vertical;border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--dark);margin-bottom:18px"></textarea>
+
+            <div id="report-modal-error"
+              style="display:none;color:#dc2626;font-size:12px;font-weight:600;margin-bottom:12px">Please select at
+              least one issue or describe the problem below.</div>
+
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-primary" style="flex:1;justify-content:center" id="report-submit-btn"
+                onclick="submitOrderProblemReport()">Submit Report</button>
+              <button class="btn btn-outline" style="flex:1;justify-content:center"
+                onclick="closeReportModal()">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <style>
+          .report-reason-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark);
+            cursor: pointer;
+          }
+
+          .report-reason-option:hover {
+            border-color: var(--green-400);
+          }
+
+          .report-reason-option input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--green-700);
+            flex-shrink: 0;
+          }
+        </style>
+
+        <style>
+          @keyframes scanpulse {
+
+            0%,
+            100% {
+              opacity: 1;
+              transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+              opacity: 0.5;
+              transform: translate(-50%, -50%) scale(1.05);
+            }
+          }
+
+          /* ── Order card (My Orders) — redesigned for clearer hierarchy ── */
+          .order-card {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px 18px;
+            background: var(--white);
+          }
+
+          .order-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+          }
+
+          .order-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+          }
+
+          .order-emoji {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+          }
+
+          .order-emoji-wrap {
+            position: relative;
+            flex-shrink: 0;
+            display: inline-flex;
+          }
+
+          .order-emoji-wrap .order-emoji {
+            display: block;
+          }
+
+          .order-qty-badge {
+            position: absolute;
+            bottom: -4px;
+            right: -6px;
+            background: var(--green-700);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1;
+            padding: 3px 5px;
+            border-radius: 100px;
+            border: 2px solid var(--white);
+          }
+
+          .order-name {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--dark);
+            line-height: 1.3;
+          }
+
+          .order-meta {
+            font-size: 12px;
+            color: var(--text-soft);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .order-price {
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--green-700);
+            white-space: nowrap;
+            flex-shrink: 0;
+          }
+
+          .order-status-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0;
+          }
+
+          .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 5px 10px 5px 8px;
+            border-radius: 100px;
+            line-height: 1.3;
+          }
+
+          .status-pill .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+          }
+
+          .status-pill--active {
+            background: #fff7ed;
+            color: #c2410c;
+          }
+
+          .status-pill--active .dot {
+            background: var(--orange);
+          }
+
+          .status-pill--closed {
+            background: var(--bg);
+            color: var(--text-muted);
+          }
+
+          .status-pill--closed .dot {
+            background: var(--text-muted);
+          }
+
+          /* ── Order progress tracker (Confirmed → Preparing → Ready) ──
+             Talabat/Keeta-style horizontal stepper. The middle segment
+             fills in as the order advances, and the current stage's dot
+             pulses so it reads as "live" at a glance. */
+          .order-progress {
+            margin: 14px 0 4px;
+          }
+
+          .order-progress-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+          }
+
+          .order-progress-steps::before {
+            content: '';
+            position: absolute;
+            top: 13px;
+            left: 14px;
+            right: 14px;
+            height: 3px;
+            background: var(--border);
+            border-radius: 2px;
+            z-index: 0;
+          }
+
+          .order-progress-fill {
+            position: absolute;
+            top: 13px;
+            left: 14px;
+            height: 3px;
+            background: var(--green-700);
+            border-radius: 2px;
+            z-index: 1;
+            transition: width 0.5s ease;
+          }
+
+          .order-progress-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            flex: 1;
+          }
+
+          .order-progress-dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 2.5px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+          }
+
+          .order-progress-step.done .order-progress-dot {
+            background: var(--green-700);
+            border-color: var(--green-700);
+            color: #fff;
+          }
+
+          .order-progress-step.active .order-progress-dot {
+            background: #fff7ed;
+            border-color: var(--orange);
+            color: #c2410c;
+            animation: orderProgressPulse 1.6s ease-in-out infinite;
+          }
+
+          .order-progress-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.3;
+          }
+
+          .order-progress-step.done .order-progress-label {
+            color: var(--green-800);
+          }
+
+          .order-progress-step.active .order-progress-label {
+            color: #c2410c;
+          }
+
+          @keyframes orderProgressPulse {
+
+            0%,
+            100% {
+              box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.35);
+            }
+
+            50% {
+              box-shadow: 0 0 0 6px rgba(249, 115, 22, 0.12);
+            }
+          }
+
+          .order-mini-map-wrap {
+            position: relative;
+            margin: 12px 0;
+          }
+
+          .order-mini-map {
+            width: 100%;
+            height: 130px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: #e5e3df;
+          }
+
+          .order-mini-map-pill {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            z-index: 400;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--green-800);
+            text-decoration: none;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+          }
+
+          .pickup-code-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: var(--green-50);
+            border: 1.5px dashed var(--green-300);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin: 12px 0;
+          }
+
+          .pickup-code-label {
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-soft);
+            margin-bottom: 2px;
+          }
+
+          .pickup-code-text {
+            font-family: 'Courier New', monospace;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: var(--green-800);
+            line-height: 1.2;
+          }
+
+          .pickup-code-copy {
+            flex-shrink: 0;
+            border: 1.5px solid var(--green-300);
+            background: var(--white);
+            color: var(--green-800);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 100px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+          }
+
+          .pickup-code-copy:hover {
+            background: var(--green-800);
+            color: #fff;
+            border-color: var(--green-800);
+          }
+
+          .order-cancel-link {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #dc2626;
+            padding: 5px 4px;
+            text-decoration: underline;
+          }
+
+          .order-actions {
+            display: flex;
+            align-items: stretch;
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+
+          .order-actions .btn {
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+          }
+
+          .order-footer-link {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: none;
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+            cursor: pointer;
+          }
+
+          .order-footer-link:hover {
+            color: var(--green-800);
+          }
+
+          .order-footer-link:disabled {
+            cursor: default;
+            color: var(--green-700);
+          }
+
+          .order-footer-link:disabled:hover {
+            color: var(--green-700);
+          }
+        </style>
+
+      </div>
+
+      <!-- IMPACT PAGE -->
+      <div id="page-impact" style="display:none">
+        <div class="dash-topbar">
+          <div class="dash-page-title">My Impact</div>
+        </div>
+        <div class="dash-stats-grid" style="margin-bottom:24px">
+          <div class="dash-stat-card" style="text-align:center">
+            <div class="dash-stat-icon" style="margin:0 auto 14px">🍽️</div>
+            <div style="font-size:40px;font-weight:800;color:var(--green-700);letter-spacing:-2px" id="imp-meals">0
+            </div>
+            <div class="dash-stat-label">Meals Saved</div>
+          </div>
+          <div class="dash-stat-card" style="text-align:center">
+            <div class="dash-stat-icon" style="margin:0 auto 14px">🌱</div>
+            <div style="font-size:40px;font-weight:800;color:var(--green-600);letter-spacing:-2px" id="imp-co2">0</div>
+            <div class="dash-stat-label">kg CO2 Prevented</div>
+          </div>
+          <div class="dash-stat-card" style="text-align:center">
+            <div class="dash-stat-icon" style="margin:0 auto 14px">🏆</div>
+            <div style="font-size:40px;font-weight:800;color:var(--yellow);letter-spacing:-2px" id="imp-rank">#-</div>
+            <div class="dash-stat-label">Community Rank</div>
+          </div>
+        </div>
+
+        <!-- MONTHLY REPORTS ─────────────────────────────────── -->
+        <div class="dash-card" style="margin-bottom:24px">
+          <div class="dash-card-header">
+            <div class="dash-card-title">📅 Monthly Impact Reports</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="month-select" onchange="renderMonthReport(this.value)"
+                style="padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;outline:none;background:var(--white);color:var(--dark)">
+                <option value="2026-04">April 2026</option>
+                <option value="2026-03" selected>March 2026</option>
+                <option value="2026-02">February 2026</option>
+                <option value="2026-01">January 2026</option>
+              </select>
+            </div>
+          </div>
+          <div id="month-report-body" style="margin-top:4px"></div>
+        </div>
+
+        <div class="dash-2col">
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Achievement Badges</div>
+            </div>
+            <div id="all-badges" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px"></div>
+          </div>
+          <div class="dash-card">
+            <div class="dash-card-header">
+              <div class="dash-card-title">Community Leaderboard</div>
+            </div>
+            <div id="leaderboard"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS PAGE -->
+      <div id="page-notifications" style="display:none">
+        <div class="dash-topbar">
+          <div class="dash-page-title">Notifications</div>
+          <button class="btn btn-outline btn-sm" onclick="markAllRead()">Mark all read</button>
+        </div>
+        <div class="dash-card" id="notif-wrap"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- EDIT PROFILE MODAL -->
+  <div id="edit-profile-modal"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center;padding:20px">
+    <div
+      style="background:var(--white);border-radius:20px;padding:32px;max-width:400px;width:100%;text-align:center;max-height:90vh;overflow-y:auto">
+      <div style="font-size:17px;font-weight:800;color:var(--dark);margin-bottom:20px">Edit Profile</div>
+
+      <input type="file" id="ep-avatar-input" accept="image/*" style="display:none"
+        onchange="handleAvatarUpload(event)">
+      <div class="ep-avatar-wrap" onclick="document.getElementById('ep-avatar-input').click()">
+        <div class="ep-avatar-preview" id="ep-avatar-preview">U</div>
+        <div class="ep-avatar-edit-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 15.5V19a1 1 0 0 0 1 1h3.5L19 9.5a2 2 0 0 0 0-2.8L16.8 4.5a2 2 0 0 0-2.8 0L4 15.5Z" />
+          </svg>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:20px">Tap the avatar to change your photo</div>
+
+      <form onsubmit="saveProfile(event)" style="text-align:left">
+        <div class="ep-field">
+          <label class="ep-label">Full Name</label>
+          <input type="text" id="ep-name" class="ep-input" required maxlength="60">
+        </div>
+        <div class="ep-field">
+          <label class="ep-label">Date of Birth</label>
+          <input type="text" id="ep-dob" class="ep-input" autocomplete="off" autocorrect="off" spellcheck="false"
+            data-lpignore="true" name="dob-manual-entry">
+        </div>
+        <div class="ep-field">
+          <label class="ep-label">Gender</label>
+          <select id="ep-gender" class="ep-input">
+            <option value="">Prefer not to say</option>
+            <option value="female">Female</option>
+            <option value="male">Male</option>
+            <option value="nonbinary">Non-binary</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:22px">
+          <button type="button" class="btn btn-outline" style="flex:1;justify-content:center"
+            onclick="closeEditProfileModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;justify-content:center">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DELETE ACCOUNT MODAL -->
+  <div id="delete-account-modal"
+    style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center">
+    <div style="background:var(--white);border-radius:20px;padding:32px;max-width:400px;width:90%;text-align:center">
+      <div
+        style="width:56px;height:56px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 9v4M12 16.5h.01" />
+          <path
+            d="M10.3 3.9 2.6 17.1a1.8 1.8 0 0 0 1.55 2.7h15.7a1.8 1.8 0 0 0 1.55-2.7L13.7 3.9a1.8 1.8 0 0 0-3.1 0Z" />
+        </svg>
+      </div>
+      <div style="font-size:17px;font-weight:800;color:var(--dark);margin-bottom:8px">Delete your account?</div>
+      <p style="font-size:13.5px;color:var(--text-soft);line-height:1.6;margin-bottom:24px">
+        This will permanently delete your EchoEats account, including your reservation history, impact stats,
+        and saved badges. <strong style="color:var(--dark)">This action can't be undone and your data can't be
+          recovered.</strong>
+      </p>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline" style="flex:1;justify-content:center"
+          onclick="closeDeleteAccountModal()">Cancel</button>
+        <button class="btn" id="confirm-delete-account-btn"
+          style="flex:1;justify-content:center;background:#dc2626;color:#fff" onclick="confirmDeleteAccount()">Delete
+          Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // @ts-nocheck
+    /* Renders a badge icon as a clean line-SVG (matches the sidebar icon
+       style) instead of an emoji, which looks inconsistent across
+       platforms/OSes and cheap at small sizes. */
+    function badgeSvg(paths, size) {
+      size = size || 22;
+      return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' + paths + '</svg>';
+    }
+
+    /* Each badge belongs to a tier — bronze / silver / gold — which
+       drives the medal styling in buildBadgeCard (metallic gradient +
+       corner ribbon) so easy, mid, and hard achievements read as visually
+       distinct rewards instead of one flat style for everything. */
+    const BADGES_DEF = [
+      { icon: '<path d="M12 20.5V12"/><path d="M12 12c-4.2 0-6.3-2.1-6.3-6.3 4.2 0 6.3 2.1 6.3 6.3Z"/><path d="M12 12c4.2 0 6.3-2.1 6.3-6.3-4.2 0-6.3 2.1-6.3 6.3Z"/>', n: 'First Meal', r: 'Save your first meal', need: 1, key: 'mealsSaved', color: '#15803d', bg: '#dcfce7', tier: 'bronze' },
+      { icon: '<path d="M12 20s-7-4.35-9.5-8.5C.9 8.3 2.3 4.6 5.7 4.6c2 0 3.4 1.2 4.3 2.6.9-1.4 2.3-2.6 4.3-2.6 3.4 0 4.8 3.7 3.2 6.9C19 15.65 12 20 12 20Z"/>', n: '5 Meals', r: 'Save 5 meals total', need: 5, key: 'mealsSaved', color: '#e11d48', bg: '#ffe4e6', tier: 'silver' },
+      { icon: '<rect x="4" y="9.5" width="16" height="4" rx="0.8"/><rect x="5.5" y="13.5" width="13" height="7" rx="0.8"/><path d="M12 9.5V21"/><path d="M12 9.5c-1.4-3.6-4-4.8-5.4-3.7-1.3 1-.7 3.1 1.4 3.7Z"/><path d="M12 9.5c1.4-3.6 4-4.8 5.4-3.7 1.3 1 .7 3.1-1.4 3.7Z"/>', n: 'First Free Meal', r: 'Save 5 meals to earn a free one', need: 5, key: 'mealsSaved', color: '#a1690a', bg: '#fff2c2', tier: 'gold' },
+      { icon: '<circle cx="12" cy="12" r="8.5"/><path d="M3.7 9h16.6M3.7 15h16.6"/><path d="M12 3.5c2.4 2.2 3.6 5.3 3.6 8.5s-1.2 6.3-3.6 8.5c-2.4-2.2-3.6-5.3-3.6-8.5S9.6 5.7 12 3.5Z"/>', n: '10kg CO2', r: 'Prevent 10kg of CO2', need: 10, key: 'co2Saved', color: '#2563eb', bg: '#dbeafe', tier: 'silver' },
+      { icon: '<path d="M4 13.5 12 3l8 10.5"/><path d="M6 11.5V20a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-8.5"/><path d="M10 21v-5h4v5"/><path d="M9 15h6"/>', n: 'Free Meal Pro', r: 'Save 25 meals to earn 5 free', need: 25, key: 'mealsSaved', color: '#0f766e', bg: '#ccfbf1', tier: 'silver' },
+      { icon: '<circle cx="12" cy="15" r="5.3"/><path d="M9.5 10.6 7 3.2h3l2 5.4 2-5.4h3l-2.5 7.4"/><path d="M12 12.8v4.2"/>', n: '50 Meals', r: 'Save 50 meals total', need: 50, key: 'mealsSaved', color: '#ca8a04', bg: '#fef3c7', tier: 'gold' },
+      { icon: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/>', n: 'Speed Saver', r: 'Add to cart within 5 min', need: 1, key: 'badges', color: '#7c3aed', bg: '#ede9fe', tier: 'bronze' },
+      { icon: '<path d="M4 8.5l3 3 5-6.5 5 6.5 3-3-1.6 10.5H5.6L4 8.5Z"/><path d="M6.8 18.2h10.4"/>', n: 'Top 10', r: 'Reach the top 10 leaderboard', need: 100, key: 'mealsSaved', color: '#0d9488', bg: '#ccfbf1', tier: 'gold' },
+      { icon: '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5a3 3 0 0 0 3 4"/><path d="M16 5h3a3 3 0 0 1-3 4"/><path d="M12 12v3"/><path d="M9 19.5h6"/><path d="M9.5 16.5h5l.5 3h-6l.5-3Z"/>', n: 'Legend', r: 'Save 500 meals total', need: 500, key: 'mealsSaved', color: '#4f46e5', bg: '#e0e7ff', tier: 'gold' },
+    ];
+
+    const BADGE_TIER_LABEL = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold' };
+    /* Live Deals Near You — same item IDs, images, vendor/area and prices
+       shown on listings.html, so this preview never drifts out of sync
+       with Browse Deals. Name + vendor/area come straight from
+       EE_ITEM_DETAILS (defined in main.js); only price/discount/image are
+       kept here since those are display-only on the live listing card. */
+    const QUICK_DEALS = [
+      { id: 'croissant-box', price: 2.80, was: 4.70, discount: 58, img: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=600&q=80&fit=crop&auto=format' },
+      { id: 'sushi-platter', price: 3.40, was: 5.90, discount: 55, img: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?w=900&q=80&fit=crop&auto=format' },
+      { id: 'coffee-cake', price: 2.75, was: 4.00, discount: 45, img: 'https://images.unsplash.com/photo-1455731248858-078f60393874?w=600&q=80&fit=crop&auto=format' },
+    ];
+
+    let user = null;
+
+    /* ── BADGE CLAIMING ──────────────────────────────────────────────
+       A badge becomes claimable the moment its requirement is met, and
+       stays that way until the shopper taps "Claim" — at which point it's
+       recorded on the user record so it shows as claimed everywhere. */
+    function isBadgeClaimed(name) {
+      return Array.isArray(user && user.claimedBadges) && user.claimedBadges.indexOf(name) !== -1;
+    }
+
+    function persistUser() {
+      localStorage.setItem('ee_current_user', JSON.stringify(user));
+      try {
+        var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+        var idx = users.findIndex(function (u) { return u.id === user.id || u.email === user.email; });
+        if (idx >= 0) users[idx] = Object.assign({}, users[idx], user);
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      } catch (e) { }
+    }
+
+    function claimBadge(name) {
+      if (!user) return;
+      if (!Array.isArray(user.claimedBadges)) user.claimedBadges = [];
+      if (user.claimedBadges.indexOf(name) === -1) {
+        user.claimedBadges.push(name);
+        persistUser();
+        showToast('🎉 Badge claimed: ' + name + '!');
+      }
+      renderOverview();
+      if (document.getElementById('page-impact').style.display !== 'none') renderImpact();
+    }
+
+    /* Builds one badge card — shared markup for the Overview preview and
+       the full Impact grid, so both stay visually identical. */
+    function buildBadgeCard(b, big) {
+      var progress = user[b.key] || 0;
+      var ok = progress >= b.need;
+      var claimed = ok && isBadgeClaimed(b.n);
+      var tier = b.tier || 'bronze';
+      var el = document.createElement('div');
+      el.className = 'badge-card tier-' + tier + ' ' + (ok ? 'earned' : 'locked');
+      el.title = b.r;
+
+      var footerHtml;
+      var claimBtnStyle = ok && !claimed ? 'background:' + b.color + ';' : '';
+      if (!ok) {
+        var pct = Math.max(4, Math.min(100, Math.round((progress / b.need) * 100)));
+        footerHtml = '<div class="badge-progress-track"><div class="badge-progress-fill" style="width:' + pct + '%"></div></div>'
+          + '<div class="badge-progress-text">' + progress + ' / ' + b.need + '</div>';
+      } else if (!claimed) {
+        footerHtml = '<button class="badge-claim-btn" style="' + claimBtnStyle + '" onclick="event.stopPropagation();claimBadge(\'' + b.n.replace(/'/g, "\\'") + '\')">Claim</button>';
+      } else {
+        footerHtml = '<div class="badge-claimed-tag" style="color:' + b.color + '">✓ Claimed</div>';
+      }
+
+      el.innerHTML = '<div class="badge-tier-tag">' + BADGE_TIER_LABEL[tier] + '</div>'
+        + '<div class="badge-emoji-wrap' + (big ? ' badge-emoji-wrap-lg' : '') + '">' + badgeSvg(b.icon, big ? 26 : 22) + '</div>'
+        + '<div class="badge-name">' + b.n + '</div>'
+        + (big ? '<div class="badge-reason">' + b.r + '</div>' : '')
+        + footerHtml;
+      return el;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      user = JSON.parse(localStorage.getItem('ee_current_user'));
+      if (!user || user.role !== 'consumer') { window.location.href = 'login.html'; return; }
+      renderSidebarProfile();
+      document.getElementById('user-first').textContent = user.name?.split(' ')[0] || 'there';
+      renderOverview();
+      // Show unread notification badge on load
+      setTimeout(() => renderNotifications(), 100);
+      renderActiveReservations();
+      liveOrdersInterval = setInterval(tickActiveReservationCountdowns, 1000);
+
+      // Deep-link support: a "My Orders" nav link elsewhere in the site
+      // points here with #reservations, so open straight to that tab.
+      if (window.location.hash === '#reservations') {
+        showPage('reservations', document.getElementById('sidebar-link-reservations'));
+      }
+    });
+
+    function showPage(name, btn) {
+      ['overview', 'reservations', 'impact', 'notifications'].forEach(p => {
+        document.getElementById('page-' + p).style.display = p === name ? '' : 'none';
+      });
+      document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      if (name === 'impact') { renderImpact(); renderMonthReport(document.getElementById('month-select')?.value || '2026-03'); }
+      if (name === 'notifications') renderNotifications();
+      if (name === 'reservations') renderActiveReservations();
+
+      // Keep the URL hash and top navbar in sync with the active tab —
+      // switching tabs here doesn't reload the page, so without this the
+      // navbar's Browse Deals/My Orders buttons would only reflect
+      // whichever tab was open when the page first loaded.
+      var newHash = name === 'reservations' ? '#reservations' : '';
+      if (window.location.hash !== newHash) {
+        history.replaceState(null, '', window.location.pathname + newHash);
+      }
+      if (typeof window.eeRenderAuthNavbar === 'function') window.eeRenderAuthNavbar();
+      // eeRenderAuthNavbar() just replaced .nav-cta's innerHTML wholesale,
+      // which also wipes out the cart button injectCartUI() added on page
+      // load (it's a child of .nav-cta and only ever gets inserted once).
+      // Re-run it here so "My Cart" survives every tab switch instead of
+      // vanishing after the first one.
+      if (typeof window.injectCartUI === 'function') window.injectCartUI();
+    }
+
+    /* ── LIVE ORDERS (real ee_orders data) ──────────────────────────────
+       Unlike the post-payment success popup on listings.html — whose
+       "Cancel order" button disappears the moment that modal is closed —
+       this reads the same ee_orders localStorage record directly, so an
+       active order (and its 15-minute cancel window) stays reachable from
+       the dashboard no matter where the user navigates.                  */
+    const EE_ORDERS_KEY = 'ee_orders';
+    const EE_STOCK_KEY = 'ee_stock';
+    const EE_RESERVED_PREFIX = 'ee_reserved_';
+    let liveOrdersInterval = null;
+
+    /* Same derivation as listings.html's makeOrderCode() — falls back to
+       deriving a code for older orders saved before `code` was recorded. */
+    /* Copies a pickup code to the clipboard and gives the copy button
+       brief visual feedback, with a manual-select fallback for browsers
+       without the async Clipboard API. */
+    function copyPickupCode(code, btn) {
+      const flash = () => {
+        if (!btn) return;
+        const original = btn.textContent;
+        btn.textContent = '✓ Copied';
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(flash).catch(() => showToast('Pickup code: ' + code));
+        return;
+      }
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = code;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        flash();
+      } catch (e) {
+        showToast('Pickup code: ' + code);
+      }
+    }
+
+    function orderCode(order) {
+      if (order.code) return order.code;
+      const clean = String(order.id).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+      return 'EE-' + clean.slice(-6);
+    }
+
+    /* ── ORDER PREP STAGE (Confirmed → Preparing → Ready for Pickup) ──
+       Simulated vendor-side fulfilment progress, derived purely from how
+       long ago the order was placed — no backend order-status feed exists
+       yet, so this gives shoppers the same reassuring "it's happening"
+       tracker Talabat/Keeta show, without needing the vendor to do anything. */
+    const ORDER_PREP_STAGES = ['confirmed', 'preparing', 'ready'];
+    // These were 30s / 150s — meant to feel snappy for demoing, but fast
+    // enough that a real pickup-ready email (see maybeSendPickupReadyEmails
+    // below) could fire just a couple minutes after checkout, which read
+    // as broken rather than realistic. Stretched to something a genuine
+    // "vendor is prepping your order" flow could plausibly hit.
+    const ORDER_PREP_THRESHOLDS_MS = { confirmed: 0, preparing: 5 * 60 * 1000, ready: 20 * 60 * 1000 };
+
+    function getOrderPrepStage(order) {
+      if (order.status === 'completed') return 'ready';
+      const elapsed = Date.now() - (order.createdAt || 0);
+      if (elapsed >= ORDER_PREP_THRESHOLDS_MS.ready) return 'ready';
+      if (elapsed >= ORDER_PREP_THRESHOLDS_MS.preparing) return 'preparing';
+      return 'confirmed';
+    }
+
+    const ORDER_PREP_LABELS = { confirmed: 'Confirmed', preparing: 'Preparing', ready: 'Ready for Pickup' };
+    const ORDER_PREP_ICONS = { confirmed: '✓', preparing: '🍳', ready: '🛍️' };
+
+    /* Renders the horizontal Confirmed → Preparing → Ready stepper for one
+       order card. Stamps data-order-id/data-created-at/data-stage onto the
+       wrapper so tickActiveReservationCountdowns() can detect a stage
+       change and trigger a re-render at the right moment. */
+    function orderProgressHtml(o) {
+      const stage = getOrderPrepStage(o);
+      const stageIdx = ORDER_PREP_STAGES.indexOf(stage);
+      const fillFrac = stageIdx / (ORDER_PREP_STAGES.length - 1); // 0, 0.5, or 1
+
+      const steps = ORDER_PREP_STAGES.map((s, i) => {
+        let cls = '';
+        if (i < stageIdx) cls = 'done';
+        else if (i === stageIdx) cls = 'active';
+        const dotContent = i < stageIdx ? '✓' : (i === stageIdx ? ORDER_PREP_ICONS[s] : '');
+        return `
+          <div class="order-progress-step ${cls}">
+            <span class="order-progress-dot">${dotContent}</span>
+            <span class="order-progress-label">${ORDER_PREP_LABELS[s]}</span>
+          </div>`;
+      }).join('');
+
+      return `
+        <div class="order-progress" data-order-id="${o.id}" data-created-at="${o.createdAt}" data-stage="${stage}">
+          <div class="order-progress-steps">
+            <div class="order-progress-fill" style="width:calc((100% - 28px) * ${fillFrac})"></div>
+            ${steps}
+          </div>
+        </div>`;
+    }
+
+    function getAllOrders() {
+      try { return JSON.parse(localStorage.getItem(EE_ORDERS_KEY)) || []; }
+      catch (e) { return []; }
+    }
+
+    function sameEmail(a, b) {
+      return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+    }
+
+    function updateOrderRecord(orderId, patch) {
+      const orders = getAllOrders();
+      const idx = orders.findIndex(o => o.id === orderId);
+      if (idx === -1) return null;
+      orders[idx] = Object.assign({}, orders[idx], patch);
+      localStorage.setItem(EE_ORDERS_KEY, JSON.stringify(orders));
+      return orders[idx];
+    }
+
+    function releaseStockForItem(itemId) {
+      localStorage.removeItem(EE_RESERVED_PREFIX + itemId);
+      try {
+        const stock = JSON.parse(localStorage.getItem(EE_STOCK_KEY)) || {};
+        if (typeof stock[itemId] === 'number') {
+          stock[itemId] += 1;
+          localStorage.setItem(EE_STOCK_KEY, JSON.stringify(stock));
+        }
+      } catch (e) { }
+    }
+
+    /* Rough emoji per item, purely cosmetic — falls back to a plate icon
+       for anything not recognised. */
+    function iconForItem(name) {
+      const n = String(name || '').toLowerCase();
+      if (n.includes('croissant') || n.includes('pastr')) return '🥐';
+      if (n.includes('coffee') || n.includes('cake')) return '☕';
+      if (n.includes('sushi')) return '🍱';
+      if (n.includes('pizza')) return '🍕';
+      if (n.includes('bread') || n.includes('sourdough')) return '🍞';
+      if (n.includes('salad') || n.includes('bowl')) return '🥗';
+      if (n.includes('burger')) return '🍔';
+      return '🍽️';
+    }
+
+    /* Food photo if the order has one on file, otherwise a category emoji —
+       used for the thumbnail on each order card in My Orders. */
+    function orderThumbHtml(o) {
+      const emoji = iconForItem(o.itemName);
+      if (o.image) {
+        return `<img src="${escDash(o.image)}" alt="" class="order-emoji" style="object-fit:cover"
+          onerror="this.outerHTML='<span class=&quot;order-emoji&quot;>${emoji}</span>'">`;
+      }
+      return `<span class="order-emoji">${emoji}</span>`;
+    }
+
+    /* "Vendor · Area" pickup location label — e.g. "Blaza Pizza · Al Liwan" —
+       so a shopper can tell where to go without opening the map. */
+    function orderLocationLabel(o) {
+      const vendor = o.vendor || 'Vendor';
+      if (!o.area) return vendor;
+      const areaLower = o.area.toLowerCase();
+      if (vendor.toLowerCase().indexOf(areaLower) !== -1) return vendor; // avoid "X - Area · Area"
+      return vendor + ' · ' + o.area;
+    }
+
+    /* Opens a real, working Google Maps link for a single reservation —
+       directions if we have coordinates, otherwise a text search for the
+       vendor's name. */
+    function openItemInMaps(lat, lng, vendor) {
+      const url = (typeof lat === 'number' && typeof lng === 'number')
+        ? 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng + '&travelmode=walking'
+        : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(vendor || 'EchoEats pickup');
+      window.open(url, '_blank');
+    }
+
+    /* Marks a reservation as picked up — updates the order record and the
+       signed-in user's real impact stats (meals saved, CO2), then
+       persists the change to both localStorage user records. */
+    function markOrderPickedUp(orderId) {
+      const order = getAllOrders().find(o => o.id === orderId);
+      if (!order || order.status !== 'active') return;
+
+      updateOrderRecord(orderId, { status: 'completed', completedAt: Date.now() });
+
+      user.mealsSaved = (user.mealsSaved || 0) + 1;
+      user.co2Saved = +(((user.co2Saved || 0) + 0.4).toFixed(1));
+      user.lastPickupDate = Date.now();
+
+      localStorage.setItem('ee_current_user', JSON.stringify(user));
+      try {
+        const users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+        const idx = users.findIndex(u => sameEmail(u.email, user.email));
+        if (idx >= 0) { users[idx] = Object.assign({}, users[idx], user); localStorage.setItem('ee_users', JSON.stringify(users)); }
+      } catch (e) { }
+
+      showToast('✓ Picked up! +1 meal saved 🌱');
+      renderOverview();
+      renderActiveReservations();
+    }
+
+    function dashCancelOrder(orderId) {
+      if (!window.confirm('Cancel this order? This can\'t be undone. Your payment will be refunded as EchoEats credit.')) return;
+
+      const orders = getAllOrders();
+      const order = orders.find(o => o.id === orderId);
+      if (!order || order.status !== 'active') return;
+      if (Date.now() > order.cancelWindowExpiresAt) {
+        showToast('⏱ Cancellation window has passed for this order.', 'warning');
+        renderActiveReservations();
+        return;
+      }
+      addCreditBalance(order.userEmail, order.price);
+      updateOrderRecord(orderId, { status: 'cancelled', cancelledAt: Date.now() });
+      sendOrderCancelledEmail(order);
+      releaseStockForItem(order.itemId);
+      showToast('✅ Order cancelled — BD ' + order.price.toFixed(3) + ' added to your EchoEats credit.');
+      renderOverview();
+      renderActiveReservations();
+    }
+
+    /* ── REPORT A PROBLEM MODAL ──────────────────────────────────────
+       Multi-select checklist of common issues, plus an optional free-text
+       field for anything not covered. Submitting persists the selected
+       reasons (and any extra text) onto the order record — one-shot, same
+       as before, so the report can't be filed twice. */
+    const REPORT_REASONS = [
+      'Item was missing from my order',
+      'Wrong item given',
+      'Food quality issue (spoiled, stale, etc.)',
+      'Portion size much smaller than described',
+      'Vendor was closed / unreachable at pickup time',
+      'Order was late or pickup window was too short'
+    ];
+
+    let reportModalOrderId = null;
+
+    function openReportModal(orderId) {
+      reportModalOrderId = orderId;
+      const list = document.getElementById('report-reason-list');
+      list.innerHTML = REPORT_REASONS.map((reason, i) => `
+        <label class="report-reason-option">
+          <input type="checkbox" value="${escDash(reason)}" id="report-reason-${i}">
+          ${escDash(reason)}
+        </label>`).join('');
+      document.getElementById('report-other-text').value = '';
+      document.getElementById('report-modal-error').style.display = 'none';
+      const submitBtn = document.getElementById('report-submit-btn');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Report';
+      document.getElementById('report-modal').style.display = 'flex';
+    }
+
+    function closeReportModal() {
+      document.getElementById('report-modal').style.display = 'none';
+      reportModalOrderId = null;
+    }
+
+    function submitOrderProblemReport() {
+      const orderId = reportModalOrderId;
+      const order = orderId && getAllOrders().find(o => o.id === orderId);
+      if (!order) { closeReportModal(); return; }
+      if (order.reportedAt && (Date.now() - order.reportedAt) < 60000) { closeReportModal(); return; }
+
+      const checked = Array.from(document.querySelectorAll('#report-reason-list input:checked')).map(el => el.value);
+      const otherText = document.getElementById('report-other-text').value.trim();
+
+      if (!checked.length && !otherText) {
+        document.getElementById('report-modal-error').style.display = 'block';
+        return;
+      }
+
+      const submitBtn = document.getElementById('report-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+
+      const reportEntry = { reasons: checked, other: otherText || null, at: Date.now() };
+      const history = Array.isArray(order.reportHistory) ? order.reportHistory : [];
+      history.push(reportEntry);
+
+      updateOrderRecord(orderId, {
+        reportedAt: reportEntry.at,
+        reportHistory: history
+      });
+
+      closeReportModal();
+      showToast('Report submitted — our team will review within 2 hours.');
+      renderActiveReservations();
+    }
+
+    /* ── ORDER CANCELLATION EMAIL ──────────────────────────────────────
+       Fires once per cancelled order. Hits
+       netlify/functions/send-order-cancelled-email.js (Resend), same
+       pattern as sendOrderConfirmationEmail() in listings.html. Never
+       blocks the cancellation itself. */
+    function sendOrderCancelledEmail(order) {
+      if (!order || !order.userEmail) return;
+      fetch('/.netlify/functions/send-order-cancelled-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          toEmail: order.userEmail,
+          toName: user ? user.name : '',
+          itemName: order.itemName,
+          orderCode: orderCode(order),
+          refundAmount: order.price,
+          vendor: order.vendor
+        })
+      }).catch(function (err) {
+        console.warn('Order-cancelled email error:', err);
+      });
+    }
+
+    /* ── READY-FOR-PICKUP EMAIL ─────────────────────────────────────────
+       Fires once per order, the moment its simulated prep stage (see
+       ORDER_PREP_STAGES above) reaches "ready". Hits a real Netlify
+       Function (netlify/functions/send-pickup-ready-email.js) backed by
+       Resend — same pattern as sendOrderConfirmationEmail() in
+       listings.html — so it needs RESEND_API_KEY set in the site's
+       environment variables. Respects the "Order updates" toggle in
+       Settings (eeGetNotifPrefs().orderUpdates) and is deduped through
+       localStorage so re-renders / reloads never send it twice for the
+       same order. Failure here never interrupts the shopper's UI.
+
+       A cart checkout creates one *order* per line item (see
+       finalizeReservation() in item-detail.html/listings.html), so a
+       single purchase can span several vendors. Rather than firing one
+       email per item, maybeSendPickupReadyEmails() below groups the
+       newly-ready orders by vendor first — items from the same
+       restaurant are combined into a single email, and only orders from
+       genuinely different restaurants get separate emails. */
+    function getReadyEmailsSent() {
+      try { return JSON.parse(localStorage.getItem('ee_ready_emails_sent') || '[]'); }
+      catch (e) { return []; }
+    }
+    function markReadyEmailSent(orderId) {
+      const sent = getReadyEmailsSent();
+      if (sent.indexOf(orderId) === -1) {
+        sent.push(orderId);
+        localStorage.setItem('ee_ready_emails_sent', JSON.stringify(sent));
+      }
+    }
+    function maybeSendPickupReadyEmails(orders) {
+      if (typeof eeGetNotifPrefs === 'function' && !eeGetNotifPrefs().orderUpdates) return;
+
+      const sent = getReadyEmailsSent();
+      const eligible = (orders || []).filter(function (o) {
+        return getOrderPrepStage(o) === 'ready' && sent.indexOf(o.id) === -1 && o.userEmail;
+      });
+      if (!eligible.length) return;
+
+      // Group by restaurant — one email per vendor, not per item.
+      const byVendor = {};
+      eligible.forEach(function (o) {
+        const key = o.vendor || 'EchoEats';
+        (byVendor[key] = byVendor[key] || []).push(o);
+      });
+
+      Object.keys(byVendor).forEach(function (vendor) {
+        const group = byVendor[vendor];
+        // Mark first so a slow/failed request can't fire twice for these orders.
+        group.forEach(function (o) { markReadyEmailSent(o.id); });
+
+        fetch('/.netlify/functions/send-pickup-ready-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            toEmail: group[0].userEmail,
+            toName: user ? user.name : '',
+            vendor: vendor,
+            items: group.map(function (o) { return { name: o.itemName, qty: o.qty || 1 }; }),
+            orderCode: group.map(function (o) { return orderCode(o); }).join('  ·  ')
+          })
+        }).then(function (res) {
+          if (!res.ok) return;
+          const label = group.length > 1 ? (group.length + ' items') : ('"' + group[0].itemName + '"');
+          showToast('📧 ' + label + ' ready at ' + vendor + ' — email sent!');
+        }).catch(function (err) {
+          console.warn('Pickup-ready email error:', err);
+        });
+      });
+    }
+
+    function renderActiveReservations() {
+      const list = document.getElementById('active-reservations-list');
+      const empty = document.getElementById('active-reservations-empty');
+      if (!list || !empty || !user) return;
+
+      const myActiveOrders = getAllOrders()
+        .filter(o => sameEmail(o.userEmail, user.email) && o.status === 'active')
+        .sort((a, b) => b.createdAt - a.createdAt);
+
+      maybeSendPickupReadyEmails(myActiveOrders);
+
+      if (!myActiveOrders.length) {
+        list.innerHTML = '';
+        empty.style.display = '';
+        teardownDashMiniMaps();
+        return;
+      }
+      empty.style.display = 'none';
+
+      list.innerHTML = myActiveOrders.map(o => {
+        const msLeft = o.cancelWindowExpiresAt - Date.now();
+        const cancellable = msLeft > 0;
+        let statusPillHtml = '';
+        if (cancellable) {
+          const secs = Math.ceil(msLeft / 1000);
+          const m = Math.floor(secs / 60);
+          const s = secs % 60;
+          statusPillHtml = `
+            <span class="status-pill status-pill--active" data-order-id="${o.id}" data-cancel-expires="${o.cancelWindowExpiresAt}"><span class="dot"></span>Cancel window <span class="cancel-countdown-text">${m}:${String(s).padStart(2, '0')}</span></span>
+            <button class="order-cancel-link" onclick="dashCancelOrder('${o.id}')">Cancel order</button>`;
+        } else {
+          statusPillHtml = `<span class="status-pill status-pill--closed"><span class="dot"></span>Pick up within your 15-min hold</span>`;
+        }
+
+        const code = orderCode(o);
+        const hasCoords = typeof o.lat === 'number' && typeof o.lng === 'number';
+        const miniMapHtml = hasCoords ? `
+            <div class="order-mini-map-wrap">
+              <div id="dash-mini-map-${o.id}" class="order-mini-map"></div>
+            </div>` : '';
+
+        return `
+          <div class="order-card">
+            <div class="order-card-top">
+              <div class="order-item">
+                <span class="order-emoji-wrap">${orderThumbHtml(o)}${o.qty > 1 ? `<span class="order-qty-badge">×${o.qty}</span>` : ''}</span>
+                <div style="min-width:0">
+                  <div class="order-name">${o.qty > 1 ? `${o.qty}× ` : ''}${escDash(o.itemName)}</div>
+                  <div class="order-meta">📍 ${escDash(orderLocationLabel(o))}</div>
+                </div>
+              </div>
+              <div class="order-price">BD ${(o.price || 0).toFixed(3)}</div>
+            </div>
+${orderProgressHtml(o)}
+${miniMapHtml}
+            <div class="pickup-code-box">
+              <div>
+                <div class="pickup-code-label">Show this code at pickup</div>
+                <div class="pickup-code-text">${escDash(code)}</div>
+              </div>
+              <button type="button" class="pickup-code-copy" onclick="copyPickupCode('${code.replace(/'/g, "\\'")}', this)">Copy</button>
+            </div>
+
+            <div class="order-status-row">${statusPillHtml}</div>
+
+            <div class="order-actions">
+              <button class="btn btn-primary btn-sm" onclick="markOrderPickedUp('${o.id}')"><span>✓</span><span>Mark Picked Up</span></button>
+              <button class="btn btn-outline btn-sm" title="Open in Google Maps"
+                onclick="openItemInMaps(${typeof o.lat === 'number' ? o.lat : 'null'}, ${typeof o.lng === 'number' ? o.lng : 'null'}, '${escDash(o.vendor).replace(/'/g, "\\'")}')">Open with Google Maps</button>
+              <button class="btn btn-outline btn-sm" title="Verify food quality" onclick="openVerifyModal()">Scan Item</button>
+            </div>
+            ${(() => {
+            const cooldownMs = 60000;
+            const reportedRecently = o.reportedAt && (Date.now() - o.reportedAt) < cooldownMs;
+            if (!reportedRecently) {
+              return `<button class="order-footer-link" id="report-btn-${o.id}" onclick="openReportModal('${o.id}')">Report a problem with this order</button>`;
+            }
+            const resetAt = o.reportedAt + cooldownMs;
+            return `<button class="order-footer-link" id="report-btn-${o.id}" disabled data-report-reset="${resetAt}">✓ Problem reported — our team will review within 2 hours</button>`;
+          })()}
+          </div>`;
+      }).join('');
+
+      initDashMiniMaps(myActiveOrders);
+    }
+
+    /* ── EMBEDDED PICKUP MINI-MAPS (Active Reservations) ──────────────
+       One small, non-interactive Leaflet map per reservation that has
+       pickup coordinates, plus an "Open with Google Maps" pill for real
+       turn-by-turn directions. Rebuilt only when the card list itself is
+       rebuilt (not on every 1-second countdown tick — see
+       tickActiveReservationCountdowns) so maps aren't torn down and
+       reloaded every second. */
+    let dashMiniMaps = {};
+
+    function teardownDashMiniMaps() {
+      Object.values(dashMiniMaps).forEach(m => { try { m.remove(); } catch (e) { } });
+      dashMiniMaps = {};
+    }
+
+    function initDashMiniMaps(orders) {
+      teardownDashMiniMaps();
+      if (typeof L === 'undefined') return; // Leaflet failed to load (e.g. offline)
+
+      const withCoords = orders.filter(o => typeof o.lat === 'number' && typeof o.lng === 'number');
+      if (!withCoords.length) return;
+
+      // Defer until the newly-inserted map containers have actually laid
+      // out, otherwise Leaflet measures 0×0 divs.
+      setTimeout(() => {
+        withCoords.forEach(o => {
+          const mapId = 'dash-mini-map-' + o.id;
+          const mapEl = document.getElementById(mapId);
+          if (!mapEl) return;
+          const map = L.map(mapId, {
+            zoomControl: false,
+            attributionControl: false,
+            dragging: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false
+          });
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+          L.marker([o.lat, o.lng]).addTo(map);
+          map.setView([o.lat, o.lng], 15);
+          map.invalidateSize();
+          dashMiniMaps[mapId] = map;
+        });
+      }, 120);
+    }
+
+    /* Lightweight per-second tick that only updates the visible cancel
+       countdown text, instead of rebuilding the whole reservations list
+       (and its embedded maps) every second. Triggers one full rebuild
+       only when a countdown actually expires. */
+    function tickActiveReservationCountdowns() {
+      const pills = document.querySelectorAll('#active-reservations-list .status-pill--active[data-order-id]');
+      const reportBtns = document.querySelectorAll('#active-reservations-list [data-report-reset]');
+      if (!pills.length && !reportBtns.length) return;
+      let needsFullRerender = false;
+      pills.forEach(pill => {
+        const expiresAt = parseInt(pill.dataset.cancelExpires, 10);
+        const msLeft = expiresAt - Date.now();
+        if (msLeft <= 0) { needsFullRerender = true; return; }
+        const secs = Math.ceil(msLeft / 1000);
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        const textEl = pill.querySelector('.cancel-countdown-text');
+        if (textEl) textEl.textContent = m + ':' + String(s).padStart(2, '0');
+      });
+      reportBtns.forEach(btn => {
+        const resetAt = parseInt(btn.dataset.reportReset, 10);
+        if (Date.now() >= resetAt) needsFullRerender = true;
+      });
+      document.querySelectorAll('#active-reservations-list .order-progress[data-order-id]').forEach(el => {
+        const createdAt = parseInt(el.dataset.createdAt, 10);
+        const newStage = getOrderPrepStage({ status: 'active', createdAt: createdAt });
+        if (newStage !== el.dataset.stage) needsFullRerender = true;
+      });
+      if (needsFullRerender) renderActiveReservations();
+    }
+
+    function escDash(s) {
+      return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* ── NOTIFICATIONS TAB — minimal stub ──────────────────────────────
+       Referenced by the sidebar and the on-load badge check but was never
+       defined, throwing a console error on every dashboard load. */
+    function renderNotifications() {
+      var badge = document.getElementById('notif-badge');
+      if (badge) badge.style.display = 'none';
+      var wrap = document.getElementById('notif-wrap');
+      if (wrap) {
+        wrap.innerHTML = '<div style="padding:20px 0;text-align:center;color:var(--text-muted);font-size:13px">No notifications yet.</div>';
+      }
+    }
+    function markAllRead() {
+      var badge = document.getElementById('notif-badge');
+      if (badge) badge.style.display = 'none';
+    }
+
+    /* ── RECENT ACTIVITY (overview page) ──────────────────────────────
+       Shows every past order — active, cancelled, or otherwise — with
+       its order number, so it stays visible long after the post-payment
+       screen is gone. */
+    function renderRecentActivity() {
+      const el = document.getElementById('recent-activity');
+      const browseMoreLink = document.getElementById('recent-activity-browse-more');
+      if (!el || !user) return;
+
+      const myOrders = getAllOrders()
+        .filter(o => sameEmail(o.userEmail, user.email))
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .slice(0, 5);
+
+      if (!myOrders.length) {
+        if (browseMoreLink) browseMoreLink.style.display = 'none';
+        return; // keep the default empty state markup
+      }
+
+      if (browseMoreLink) browseMoreLink.style.display = '';
+
+      const statusStyle = {
+        active: { bg: '#d1fae5', color: '#065f46', label: 'Active' },
+        completed: { bg: '#dbeafe', color: '#1e40af', label: 'Completed' },
+        cancelled: { bg: '#fee2e2', color: '#991b1b', label: 'Cancelled' }
+      };
+
+      el.innerHTML = myOrders.map(o => {
+        const st = statusStyle[o.status] || { bg: 'var(--bg)', color: 'var(--text-soft)', label: o.status };
+        return `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-weight:700;font-size:13px">${escDash(o.itemName)}</div>
+              <div style="font-size:11px;color:var(--text-muted)">Order #${orderCode(o)} · ${new Date(o.createdAt).toLocaleDateString()}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700;font-size:13px;color:var(--green-700)">BD ${(o.price || 0).toFixed(3)}</div>
+              <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:${st.bg};color:${st.color}">${st.label}</span>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderOverview() {
+      document.getElementById('d-meals').textContent = user.mealsSaved || 0;
+      document.getElementById('d-co2').textContent = (user.co2Saved || 0) + 'kg';
+      document.getElementById('d-saved').textContent = 'BD ' + ((user.mealsSaved || 0) * 3.2).toFixed(3);
+      document.getElementById('d-credit').textContent = 'BD ' + (typeof getCreditBalance === 'function' ? getCreditBalance(user.email) : (user.creditBalance || 0)).toFixed(3);
+      renderRecentActivity();
+
+      // Badges (4 preview)
+      var _ovBadges = document.getElementById('overview-badges');
+      _ovBadges.innerHTML = '';
+      BADGES_DEF.slice(0, 4).forEach(function (b) {
+        _ovBadges.appendChild(buildBadgeCard(b, false));
+      });
+
+      // Live Deals Near You — same data (name, vendor/area, image) as
+      // the live listing cards on listings.html, plus a View button that
+      // opens the same item on item-detail.html.
+      var _qdEl = document.getElementById('quick-deals');
+      _qdEl.innerHTML = '';
+      QUICK_DEALS.forEach(function (d) {
+        var details = (typeof EE_ITEM_DETAILS !== 'undefined' && EE_ITEM_DETAILS[d.id]) || {};
+        var name = details.name || d.id;
+        var vendorArea = (typeof vendorLineWithArea === 'function')
+          ? vendorLineWithArea(d.id, details.vendor)
+          : (details.vendor || '');
+        var card = document.createElement('div');
+        card.className = 'qd-card';
+        card.innerHTML = '<div class="qd-img-wrap">'
+          + '<img class="qd-img-bg" src="' + d.img + '" alt="" aria-hidden="true" loading="lazy">'
+          + '<img class="qd-img-fg" src="' + d.img + '" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'">'
+          + '<span class="qd-discount">-' + d.discount + '%</span></div>'
+          + '<div class="qd-body">'
+          + '<div class="qd-name">' + escDash(name) + '</div>'
+          + '<div class="qd-vendor">' + escDash(vendorArea) + '</div>'
+          + '<div class="qd-footer">'
+          + '<div><span class="qd-price">BD ' + d.price.toFixed(2) + '</span><span class="qd-was">BD ' + d.was.toFixed(2) + '</span></div>'
+          + '<a href="item-detail.html?item=' + encodeURIComponent(d.id) + '" class="qd-view-btn">View</a>'
+          + '</div></div>';
+        _qdEl.appendChild(card);
+      });
+    }
+
+    function renderImpact() {
+      document.getElementById('imp-meals').textContent = user.mealsSaved || 0;
+      document.getElementById('imp-co2').textContent = user.co2Saved || 0;
+      const rank = Math.max(1, 50 - (user.mealsSaved || 0));
+      document.getElementById('imp-rank').textContent = '#' + rank;
+
+      // All badges
+      var _allBadges = document.getElementById('all-badges');
+      _allBadges.innerHTML = '';
+      BADGES_DEF.forEach(function (b) {
+        _allBadges.appendChild(buildBadgeCard(b, true));
+      });
+
+      // Leaderboard
+      const lb = [
+        { av: 'AK', bg: '#ca8a04', name: 'Ahmad K.', meals: 143 },
+        { av: 'SL', bg: '#6b7280', name: 'Sara L.', meals: 128 },
+        { av: 'MR', bg: '#c2410c', name: 'Maya R.', meals: 117 },
+        { av: user.name?.[0] || 'U', bg: 'var(--green-600)', name: 'You · ' + user.name, meals: user.mealsSaved || 0, you: true },
+      ].sort((a, b) => b.meals - a.meals);
+      const medals = ['🥇', '🥈', '🥉'];
+      var _lbEl = document.getElementById('leaderboard');
+      _lbEl.innerHTML = '';
+      lb.forEach(function (r, i) {
+        var row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);'
+          + (r.you ? 'background:var(--green-50);border-radius:8px;padding:10px 8px;border-bottom:none;' : '');
+        row.innerHTML = '<div style="font-size:16px;width:22px">' + (medals[i] || i + 1) + '</div>'
+          + '<div style="width:34px;height:34px;border-radius:50%;background:' + r.bg + ';display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0">' + r.av + '</div>'
+          + '<div style="flex:1;font-size:13px;font-weight:700;color:var(--dark)">' + r.name + '</div>'
+          + '<div style="font-size:13px;font-weight:800;color:var(--green-700)">' + r.meals + '</div>';
+        _lbEl.appendChild(row);
+      });
+    }
+
+    /* ── LIVE NOTIFICATION SYSTEM ─────────────────────────────────────── */
+    const NOTIF_KEY = 'ee_notifications_';
+
+    function getNotifKey() {
+      return NOTIF_KEY + (user ? user.id : 'anon');
+    }
+
+    function loadNotifs() {
+      try { return JSON.parse(localStorage.getItem(getNotifKey())) || []; }
+      catch (e) { return []; }
+    }
+
+    function saveNotifs(list) {
+      localStorage.setItem(getNotifKey(), JSON.stringify(list));
+    }
+
+    /* Generate system notifications from user activity */
+    function buildSystemNotifs() {
+      const generated = [];
+
+      // Reservation-based notifications
+      const reservedKeys = Object.keys(localStorage).filter(k => k.startsWith('ee_reserved_'));
+      reservedKeys.forEach(k => {
+        const raw = localStorage.getItem(k);
+        if (!raw) return;
+        try {
+          const r = JSON.parse(raw);
+          const expiresAt = r.reservedAt + 15 * 60 * 1000;
+          const expired = Date.now() > expiresAt;
+          const minAgo = Math.round((Date.now() - r.reservedAt) / 60000);
+          const timeLabel = minAgo < 60 ? minAgo + ' min ago' : Math.round(minAgo / 60) + 'h ago';
+          generated.push({
+            id: 'res_' + k,
+            icon: expired ? '✅' : '🛒',
+            title: expired ? 'Pickup window closed' : 'Reservation confirmed',
+            text: expired
+              ? `Your reservation for "${r.name || 'item'}" has expired. Remember to pick up on time next time!`
+              : `Your reservation for "${r.name || 'item'}" is active. Head to the vendor to pick it up.`,
+            time: timeLabel,
+            unread: false,
+            category: 'reservation'
+          });
+        } catch (e) { }
+      });
+
+      // Badge / milestone notifications
+      if (user) {
+        if (user.mealsSaved >= 1)
+          generated.push({ id: 'badge_first', icon: '🌱', title: 'Badge unlocked: First Meal', text: 'You saved your first meal on EchoEats — welcome to the movement!', time: '', unread: false, category: 'badge' });
+        if (user.mealsSaved >= 10)
+          generated.push({ id: 'badge_10', icon: '💚', title: 'Badge unlocked: 10 Meals', text: 'Amazing — you\'ve saved 10 meals and helped reduce food waste in your community.', time: '', unread: false, category: 'badge' });
+        if (user.mealsSaved >= 50)
+          generated.push({ id: 'badge_50', icon: '🏅', title: 'Badge unlocked: 50 Meals', text: '50 meals saved! You\'re officially a food waste hero.', time: '', unread: false, category: 'badge' });
+        if (user.co2Saved >= 10)
+          generated.push({ id: 'badge_co2', icon: '🌍', title: 'CO₂ milestone: 10kg prevented', text: `You've prevented ${user.co2Saved.toFixed(1)}kg of CO₂ emissions — that's equivalent to planting a tree!`, time: '', unread: false, category: 'impact' });
+      }
+
+      // General platform notifications
+      generated.push(
+        { id: 'deal_alert_1', icon: '🔥', title: 'Hot deal nearby', text: 'EL&N London: Coffee + Cake is 55% off — only 30 mins left!', time: '2 min ago', unread: true, category: 'deal' },
+        { id: 'deal_alert_2', icon: '📍', title: 'New listing near you', text: 'Romeos Cafe just posted Pain au Chocolat x3 — grab it before it\'s gone.', time: '18 min ago', unread: true, category: 'deal' },
+        { id: 'deal_alert_3', icon: '⏰', title: 'Expiring soon', text: 'Croissant Box from Hypermax expires in 1 hour. Price has dropped 45%.', time: '45 min ago', unread: false, category: 'deal' }
+      );
+
+      return generated;
+    }
+
+    function mergeNotifs() {
+      const saved = loadNotifs();
+      const savedIds = new Set(saved.map(n => n.id));
+      const system = buildSystemNotifs();
+
+      // Add new system notifs not yet saved; preserve read state of existing ones
+      system.forEach(n => {
+        if (!savedIds.has(n.id)) saved.unshift(n);
+      });
+
+      // Apply saved read state back
+      const savedMap = {};
+      saved.forEach(n => { savedMap[n.id] = n; });
+      return saved.map(n => ({ ...n, unread: savedMap[n.id]?.unread ?? n.unread }));
+    }
+
+    // renderNotifications, markOneRead, markAllRead defined above
+
+    // ── MONTHLY IMPACT REPORTS ────────────────────────────────────────────────
+    const MONTHLY_DATA = {
+      '2026-04': { meals: 1240, co2: 178, saved: 4800, sellThrough: 92, topSaver: 'Ahmad K. (14)', weeks: 4 },
+      '2026-03': { meals: 4820, co2: 712, saved: 18400, sellThrough: 91, topSaver: 'Ahmad K. (38)', weeks: 4 },
+      '2026-02': { meals: 4210, co2: 621, saved: 16100, sellThrough: 88, topSaver: 'Sara L. (31)', weeks: 4 },
+      '2026-01': { meals: 3370, co2: 487, saved: 13500, sellThrough: 85, topSaver: 'Maya R. (28)', weeks: 4 },
+    };
+
+    function renderMonthReport(key) {
+      const d = MONTHLY_DATA[key];
+      if (!d) return;
+      const monthName = document.getElementById('month-select')
+        ? document.getElementById('month-select').options[document.getElementById('month-select').selectedIndex].text
+        : key;
+
+      // Build user-specific contribution (fraction of total)
+      const userMeals = user ? (user.mealsSaved || 0) : 0;
+      const userCo2 = user ? (user.co2Saved || 0) : 0;
+      const userSaved = (userMeals * 3.20).toFixed(2);
+
+      document.getElementById('month-report-body').innerHTML =
+        '<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px">'
+        + '<div style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--green-700)">' + d.meals.toLocaleString() + '</div><div style="font-size:12px;color:var(--text-soft)">🍽️ Community meals saved</div></div>'
+        + '<div style="background:var(--green-50);border:1px solid var(--green-200);border-radius:12px;padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--green-700)">' + d.co2 + ' kg</div><div style="font-size:12px;color:var(--text-soft)">🌿 CO₂ prevented</div></div>'
+        + '<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--dark)">BD ' + d.saved.toLocaleString() + '</div><div style="font-size:12px;color:var(--text-soft)">💰 Community savings</div></div>'
+        + '<div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center"><div style="font-size:24px;font-weight:800;color:var(--dark)">' + d.sellThrough + '%</div><div style="font-size:12px;color:var(--text-soft)">📈 Avg sell-through</div></div>'
+        + '</div>'
+        + '<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:14px;margin-bottom:12px"><div style="font-size:13px;font-weight:700;color:#92400e">🏆 Top saver — ' + monthName + '</div><div style="font-size:12px;color:#78350f">' + d.topSaver + '</div></div>'
+        + '<div style="background:var(--green-50);border:1.5px solid var(--green-300);border-radius:12px;padding:14px"><div style="font-size:13px;font-weight:800;color:var(--green-800);margin-bottom:8px">Your contribution in ' + monthName + '</div>'
+        + '<div style="display:flex;gap:16px;flex-wrap:wrap"><span style="font-size:12px;color:var(--green-700)">🍽️ <strong>' + userMeals + '</strong> meals</span>'
+        + '<span style="font-size:12px;color:var(--green-700)">🌿 <strong>' + userCo2 + ' kg</strong> CO₂</span>'
+        + '<span style="font-size:12px;color:var(--green-700)">💰 <strong>BD ' + userSaved + '</strong> saved</span></div></div>';
+    }
+
+    // ── CAMERA-BASED IMAGE VERIFICATION ──────────────────────────────────────
+    let camStream = null;
+
+    function openVerifyModal() {
+      document.getElementById('verify-modal').style.display = 'flex';
+      document.getElementById('cam-status').textContent = 'Press "Start Camera" to begin quality scan.';
+    }
+
+    function closeVerifyModal() {
+      stopCamera();
+      document.getElementById('verify-modal').style.display = 'none';
+      // Reset UI
+      document.getElementById('cam-video').style.display = 'none';
+      document.getElementById('cam-canvas').style.display = 'none';
+      document.getElementById('cam-placeholder').style.display = 'flex';
+      document.getElementById('cam-scan-overlay').style.display = 'none';
+      document.getElementById('cam-start-btn').style.display = '';
+      document.getElementById('cam-start-btn').textContent = 'Start Camera';
+      document.getElementById('cam-capture-btn').style.display = 'none';
+      document.getElementById('cam-status').textContent = '';
+    }
+
+    function stopCamera() {
+      if (camStream) {
+        camStream.getTracks().forEach(t => t.stop());
+        camStream = null;
+      }
+    }
+
+    async function startCamera() {
+      const btn = document.getElementById('cam-start-btn');
+      btn.textContent = 'Starting…';
+      btn.disabled = true;
+      const statusEl = document.getElementById('cam-status');
+      try {
+        camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+        const video = document.getElementById('cam-video');
+        video.srcObject = camStream;
+        video.style.display = 'block';
+        document.getElementById('cam-placeholder').style.display = 'none';
+        document.getElementById('cam-scan-overlay').style.display = 'block';
+        btn.style.display = 'none';
+        document.getElementById('cam-capture-btn').style.display = '';
+        statusEl.textContent = '✅ Camera active — point at the food item, then press Analyse.';
+        statusEl.style.color = 'var(--green-600)';
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Start Camera';
+        if (err.name === 'NotAllowedError') {
+          statusEl.textContent = '⚠️ Camera permission denied. Please allow access in your browser settings.';
+        } else if (err.name === 'NotFoundError') {
+          statusEl.textContent = '⚠️ No camera found. Please use a device with a camera.';
+        } else {
+          statusEl.textContent = '⚠️ Could not access camera: ' + err.message;
+        }
+        statusEl.style.color = 'var(--orange)';
+      }
+    }
+
+    function captureAndAnalyse() {
+      const video = document.getElementById('cam-video');
+      const canvas = document.getElementById('cam-canvas');
+      const statusEl = document.getElementById('cam-status');
+      const overlay = document.getElementById('cam-scan-overlay');
+
+      // Capture frame from video
+      canvas.width = video.videoWidth || 320;
+      canvas.height = video.videoHeight || 240;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Show captured frame
+      video.style.display = 'none';
+      canvas.style.display = 'block';
+      stopCamera();
+
+      // Simulate AI analysis with a brief delay
+      document.getElementById('cam-capture-btn').disabled = true;
+      statusEl.textContent = '🔍 Analysing food quality…';
+      statusEl.style.color = 'var(--text-soft)';
+      overlay.style.display = 'block';
+
+      const outcomes = [
+        { label: 'Excellent', color: 'var(--green-700)', msg: '✅ Quality verified — Excellent condition. Safe to consume.' },
+        { label: 'Good', color: 'var(--green-600)', msg: '✅ Quality verified — Good condition. Safe to consume.' },
+        { label: 'Acceptable', color: 'var(--orange)', msg: '⚠️ Quality verified — Acceptable. Consume today.' },
+      ];
+      const result = outcomes[Math.floor(Math.random() * outcomes.length)];
+
+      setTimeout(() => {
+        overlay.style.display = 'none';
+        statusEl.textContent = result.msg;
+        statusEl.style.color = result.color;
+        document.getElementById('cam-capture-btn').disabled = false;
+        document.getElementById('cam-capture-btn').textContent = '🔄 Re-scan';
+        showToast('Food quality: ' + result.label + ' ✓');
+      }, 2200);
+    }
+
+    function runVerification() { startCamera(); } // legacy alias
+
+    function logout() {
+      localStorage.removeItem('ee_current_user');
+      if (typeof clearSupabaseSession === 'function') clearSupabaseSession();
+      window.location.href = 'index.html';
+    }
+
+    /* ── PROFILE (avatar / name / DOB / gender) ── */
+    function renderSidebarProfile() {
+      var av = document.getElementById('sb-av');
+      av.innerHTML = user.avatarUrl
+        ? '<img src="' + user.avatarUrl + '" alt="">'
+        : (user.name?.[0]?.toUpperCase() || 'U');
+      av.style.setProperty('--avatar-color', eeGetAvatarColor(user));
+      document.getElementById('sb-name').textContent = user.name || 'Consumer';
+      document.getElementById('sb-email').textContent = user.email || '';
+    }
+
+    function openEditProfileModal() {
+      document.getElementById('ep-name').value = user.name || '';
+      populateDobSelects('ep-dob');
+      setDobValue('ep-dob', user.dob || '');
+      document.getElementById('ep-gender').value = user.gender || '';
+      var preview = document.getElementById('ep-avatar-preview');
+      preview.innerHTML = user.avatarUrl
+        ? '<img src="' + user.avatarUrl + '" alt="">'
+        : (user.name?.[0]?.toUpperCase() || 'U');
+      preview.style.setProperty('--avatar-color', eeGetAvatarColor(user));
+      document.getElementById('edit-profile-modal').style.display = 'flex';
+    }
+
+    function closeEditProfileModal() {
+      document.getElementById('edit-profile-modal').style.display = 'none';
+    }
+
+    function handleAvatarUpload(event) {
+      var file = event.target.files && event.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith('image/')) { showToast('Please choose an image file.'); return; }
+      if (file.size > 2 * 1024 * 1024) { showToast('Image must be under 2MB.'); return; }
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById('ep-avatar-preview').innerHTML = '<img src="' + e.target.result + '" alt="">';
+        document.getElementById('ep-avatar-preview').dataset.pending = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveProfile(event) {
+      event.preventDefault();
+      var name = document.getElementById('ep-name').value.trim();
+      if (!name) { showToast('Please enter your name.'); return; }
+      var dob = getDobValue('ep-dob');
+      var gender = document.getElementById('ep-gender').value;
+      var pendingAvatar = document.getElementById('ep-avatar-preview').dataset.pending;
+
+      user.name = name;
+      user.dob = dob;
+      user.gender = gender;
+      if (pendingAvatar) user.avatarUrl = pendingAvatar;
+
+      localStorage.setItem('ee_current_user', JSON.stringify(user));
+      try {
+        var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+        var idx = users.findIndex(function (u) { return u.id === user.id || u.email === user.email; });
+        if (idx >= 0) users[idx] = Object.assign({}, users[idx], user);
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      } catch (e) { }
+
+      renderSidebarProfile();
+      document.getElementById('user-first').textContent = user.name?.split(' ')[0] || 'there';
+      delete document.getElementById('ep-avatar-preview').dataset.pending;
+      closeEditProfileModal();
+      showToast('✅ Profile updated!');
+    }
+
+    function openDeleteAccountModal() {
+      document.getElementById('delete-account-modal').style.display = 'flex';
+    }
+
+    function closeDeleteAccountModal() {
+      document.getElementById('delete-account-modal').style.display = 'none';
+    }
+
+    function confirmDeleteAccount() {
+      var raw = localStorage.getItem('ee_current_user');
+      if (!raw) { window.location.href = 'index.html'; return; }
+      var current = JSON.parse(raw);
+
+      try {
+        var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+        users = users.filter(function (u) { return u.email !== current.email; });
+        localStorage.setItem('ee_users', JSON.stringify(users));
+      } catch (e) { }
+
+      localStorage.removeItem('ee_current_user');
+      if (typeof clearSupabaseSession === 'function') clearSupabaseSession();
+      showToast('Your account has been deleted.');
+      setTimeout(function () { window.location.href = 'index.html'; }, 900);
+    }
+  </script>
+</body>
+
+</html>

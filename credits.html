@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script>(function () { try { var p = localStorage.getItem('ee_theme') || 'system'; var d = p === 'dark' || (p === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.setAttribute('data-theme', d ? 'dark' : 'light'); } catch (e) { } })();</script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Credits — EchoEats</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>" />
+
+    <style>
+        /* ── Credit balance hero card — its own look, distinct from the
+       plain dash-stat-card grid used elsewhere on the dashboard, since
+       this page exists specifically to spotlight the wallet balance. ── */
+        .credit-hero-card {
+            position: relative;
+            background: linear-gradient(150deg, #0d2e12 0%, #1a4a26 55%, #0f2d16 100%);
+            border-radius: 22px;
+            padding: 36px 32px;
+            overflow: hidden;
+            margin-bottom: 22px;
+            color: #fff;
+        }
+
+        .credit-hero-card::before {
+            content: "";
+            position: absolute;
+            top: -60px;
+            right: -40px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .credit-hero-top {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--green-200);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 10px;
+        }
+
+        .credit-hero-icon {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .credit-hero-amount {
+            position: relative;
+            z-index: 1;
+            font-size: 44px;
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            margin-bottom: 6px;
+        }
+
+        .credit-hero-desc {
+            position: relative;
+            z-index: 1;
+            font-size: 13.5px;
+            color: var(--green-200);
+            max-width: 480px;
+            line-height: 1.6;
+        }
+
+        /* ── Recent Activity rows (cancelled orders only) ── */
+        .credit-activity-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .credit-activity-row:last-child {
+            border-bottom: none;
+        }
+
+        .credit-activity-name {
+            font-weight: 700;
+            font-size: 13.5px;
+            color: var(--dark);
+        }
+
+        .credit-activity-meta {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .credit-activity-amount {
+            font-weight: 800;
+            font-size: 14px;
+            color: var(--green-700);
+            white-space: nowrap;
+        }
+
+        .credit-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            line-height: 1.7;
+        }
+
+        .credit-empty-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar scrolled" id="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-logo">
+                <div class="nav-logo-icon">🌿</div>EchoEats
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="listings.html">Browse Deals</a></li>
+                <li><a href="how-it-works.html">How It Works</a></li>
+                <li><a href="vendors.html">For Vendors</a></li>
+                <li><a href="impact.html">Our Impact</a></li>
+            </ul>
+            <div class="nav-cta">
+                <a href="login.html" class="nav-signin">Sign In</a>
+                <a href="register.html" class="btn btn-primary btn-sm">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dash-wrap">
+
+        <!-- SIDEBAR -->
+        <div class="dash-sidebar">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar" id="sb-av">U</div>
+                <div>
+                    <div class="sidebar-name" id="sb-name">Consumer</div>
+                    <div class="sidebar-role" id="sb-email">Loading...</div>
+                </div>
+            </div>
+            <div class="sidebar-section-label">Main</div>
+            <a href="consumer-dashboard.html" class="sidebar-link">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 11.5 12 4l9 7.5" />
+                    <path
+                        d="M5.5 10v9a1 1 0 0 0 1 1H9.5a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-9" />
+                </svg>
+                Overview
+            </a>
+            <a href="consumer-dashboard.html#reservations" class="sidebar-link">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8h12l-1 12H7L6 8Z" />
+                    <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+                </svg>
+                My Orders
+            </a>
+            <a href="consumer-dashboard.html" class="sidebar-link">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="8.5" />
+                    <path d="M3.7 9h16.6M3.7 15h16.6" />
+                    <path
+                        d="M12 3.5c2.4 2.2 3.6 5.3 3.6 8.5s-1.2 6.3-3.6 8.5c-2.4-2.2-3.6-5.3-3.6-8.5S9.6 5.7 12 3.5Z" />
+                </svg>
+                My Impact
+            </a>
+            <a href="credits.html" class="sidebar-link active">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2.5" y="6" width="19" height="13" rx="2.4" />
+                    <path d="M2.5 10.5h19" />
+                    <path d="M6 15h4" />
+                </svg>
+                My Credits
+            </a>
+            <div class="sidebar-section-label">Explore</div>
+            <a href="impact.html" class="sidebar-link">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M7 4h10v4.5A5 5 0 0 1 12 13.5 5 5 0 0 1 7 8.5V4Z" />
+                    <path d="M7 5.5H4a2.5 2.5 0 0 0 2.5 4.5M17 5.5h3a2.5 2.5 0 0 1-2.5 4.5" />
+                    <path d="M12 13.5V18M9 20.5h6M10 20.5v-2.3M14 20.5v-2.3" />
+                </svg>
+                Leaderboard
+            </a>
+            <div class="sidebar-section-label">Account</div>
+            <button class="sidebar-link" onclick="openSettingsModal()">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3" />
+                    <path
+                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+                </svg>
+                Settings
+                <span id="notif-badge"
+                    style="display:none;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:100px;margin-left:auto"></span>
+            </button>
+            <button class="sidebar-link" onclick="logout()">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />
+                    <path d="M15 16.5 20 12l-5-4.5" />
+                    <path d="M20 12H9" />
+                </svg>
+                Sign Out
+            </button>
+            <button class="sidebar-link sidebar-link-danger" onclick="openDeleteAccountModal()">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 7h14" />
+                    <path d="M9.5 7V5a1.5 1.5 0 0 1 1.5-1.5h2A1.5 1.5 0 0 1 14.5 5v2" />
+                    <path d="M7 7v11.5A2 2 0 0 0 9 20.5h6a2 2 0 0 0 2-2V7" />
+                    <path d="M10.5 11v5M13.5 11v5" />
+                </svg>
+                Delete Account
+            </button>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="dash-main">
+            <div class="dash-topbar">
+                <div class="dash-page-title">My Credits</div>
+            </div>
+
+            <div class="credit-hero-card">
+                <div class="credit-hero-top">
+                    <span class="credit-hero-icon">🎁</span>
+                    EchoEats Credit
+                </div>
+                <div class="credit-hero-amount" id="cr-balance">BD 0.000</div>
+                <p class="credit-hero-desc">
+                    Credit is added automatically whenever you cancel an order within its cancellation window — instead
+                    of a
+                    refund to your card, the amount is added here so you can put it toward your next order.
+                </p>
+            </div>
+
+            <div class="dash-card">
+                <div class="dash-card-header">
+                    <div class="dash-card-title">Recent Activity</div>
+                </div>
+                <div id="cr-activity">
+                    <div class="credit-empty-state">
+                        <div class="credit-empty-icon">🎁</div>
+                        No cancelled orders yet — credit shows up here the moment one is cancelled.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE ACCOUNT MODAL -->
+    <div id="delete-account-modal"
+        style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;align-items:center;justify-content:center">
+        <div
+            style="background:var(--white);border-radius:20px;padding:32px;max-width:400px;width:90%;text-align:center">
+            <div
+                style="width:56px;height:56px;border-radius:50%;background:#fef2f2;display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.8"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 9v4M12 16.5h.01" />
+                    <path
+                        d="M10.3 3.9 2.6 17.1a1.8 1.8 0 0 0 1.55 2.7h15.7a1.8 1.8 0 0 0 1.55-2.7L13.7 3.9a1.8 1.8 0 0 0-3.1 0Z" />
+                </svg>
+            </div>
+            <div style="font-size:17px;font-weight:800;color:var(--dark);margin-bottom:8px">Delete your account?</div>
+            <p style="font-size:13.5px;color:var(--text-soft);line-height:1.6;margin-bottom:24px">
+                This will permanently delete your EchoEats account, including your reservation history, impact stats,
+                and saved badges. <strong style="color:var(--dark)">This action can't be undone and your data can't be
+                    recovered.</strong>
+            </p>
+            <div style="display:flex;gap:10px">
+                <button class="btn btn-outline" style="flex:1;justify-content:center"
+                    onclick="closeDeleteAccountModal()">Cancel</button>
+                <button class="btn" id="confirm-delete-account-btn"
+                    style="flex:1;justify-content:center;background:#dc2626;color:#fff"
+                    onclick="confirmDeleteAccount()">Delete
+                    Account</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        const EE_ORDERS_KEY = 'ee_orders';
+        let user = null;
+
+        function getAllOrders() {
+            try { return JSON.parse(localStorage.getItem(EE_ORDERS_KEY)) || []; }
+            catch (e) { return []; }
+        }
+
+        function sameEmail(a, b) {
+            return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+        }
+
+        function escDash(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+            });
+        }
+
+        function orderCode(order) {
+            if (order.code) return order.code;
+            const clean = String(order.id).replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            return 'EE-' + clean.slice(-6);
+        }
+
+        /* ── Recent Activity — cancelled orders only ──────────────────────
+           Unlike the Overview tab's "Recent Activity" card (which shows every
+           order regardless of status), this page exists specifically for
+           credit, so the list here is filtered down to just the orders that
+           actually generated credit — i.e. status === 'cancelled'. */
+        function renderCreditActivity() {
+            const el = document.getElementById('cr-activity');
+            if (!el || !user) return;
+
+            const cancelledOrders = getAllOrders()
+                .filter(o => sameEmail(o.userEmail, user.email) && o.status === 'cancelled')
+                .sort((a, b) => (b.cancelledAt || b.createdAt || 0) - (a.cancelledAt || a.createdAt || 0));
+
+            if (!cancelledOrders.length) return; // keep the default empty state markup
+
+            el.innerHTML = cancelledOrders.map(o => {
+                const when = o.cancelledAt || o.createdAt || Date.now();
+                return `
+          <div class="credit-activity-row">
+            <div>
+              <div class="credit-activity-name">${escDash(o.itemName)}</div>
+              <div class="credit-activity-meta">Order #${orderCode(o)} · Cancelled ${new Date(when).toLocaleDateString()}</div>
+            </div>
+            <div class="credit-activity-amount">+ BD ${(o.price || 0).toFixed(3)}</div>
+          </div>`;
+            }).join('');
+        }
+
+        function renderSidebarProfile() {
+            var av = document.getElementById('sb-av');
+            av.innerHTML = user.avatarUrl
+                ? '<img src="' + user.avatarUrl + '" alt="">'
+                : (user.name?.[0]?.toUpperCase() || 'U');
+            av.style.setProperty('--avatar-color', eeGetAvatarColor(user));
+            document.getElementById('sb-name').textContent = user.name || 'Consumer';
+            document.getElementById('sb-email').textContent = user.email || '';
+        }
+
+        function logout() {
+            localStorage.removeItem('ee_current_user');
+            if (typeof clearSupabaseSession === 'function') clearSupabaseSession();
+            window.location.href = 'index.html';
+        }
+
+        function openDeleteAccountModal() {
+            document.getElementById('delete-account-modal').style.display = 'flex';
+        }
+
+        function closeDeleteAccountModal() {
+            document.getElementById('delete-account-modal').style.display = 'none';
+        }
+
+        function confirmDeleteAccount() {
+            var raw = localStorage.getItem('ee_current_user');
+            if (!raw) { window.location.href = 'index.html'; return; }
+            var current = JSON.parse(raw);
+            try {
+                var users = JSON.parse(localStorage.getItem('ee_users') || '[]');
+                users = users.filter(function (u) { return u.email !== current.email; });
+                localStorage.setItem('ee_users', JSON.stringify(users));
+            } catch (e) { }
+            localStorage.removeItem('ee_current_user');
+            if (typeof clearSupabaseSession === 'function') clearSupabaseSession();
+            showToast('Your account has been deleted.');
+            setTimeout(function () { window.location.href = 'index.html'; }, 900);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            user = JSON.parse(localStorage.getItem('ee_current_user'));
+            if (!user || user.role !== 'consumer') { window.location.href = 'login.html'; return; }
+            renderSidebarProfile();
+            document.getElementById('cr-balance').textContent =
+                'BD ' + (typeof getCreditBalance === 'function' ? getCreditBalance(user.email) : (user.creditBalance || 0)).toFixed(3);
+            renderCreditActivity();
+        });
+    </script>
+</body>
+
+</html>
