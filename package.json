@@ -1,9 +1,0 @@
-{
-  "name": "echoeats",
-  "version": "1.0.0",
-  "private": true,
-  "description": "EchoEats — SWEN 360 / CMPE 460 dynamic pricing food waste marketplace",
-  "dependencies": {
-    "stripe": "^16.0.0"
-  }
-}
